@@ -1,0 +1,9 @@
+v 0.5.0
+
+use (
+	./vcroe-api
+	./vcustomer-rpc
+	./vsite-api
+	./vtenant-api
+	./vadmin-api
+)
