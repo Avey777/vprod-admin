@@ -1,0 +1,23 @@
+[web]
+port = '9009'
+
+[mysql0]
+host = 'vprod.amiemall.com'
+# host = 'ipv4.amiemall.com'
+port = '3306'
+username = 'root'
+password = 'mysql_123456'
+dbname = 'pool_1688'
+# ssl-cert = ''
+
+[mysql]
+host = 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com'
+port = '4000'
+username = 'xfQRtLXKTtPHsUi.root'
+password = 'GkFU6Q3uvt0O9F0A'
+dbname = 'pool_1688'
+# ssl-cert = 'credentials/client-cert.pem'
+
+[trans_images]
+# req_url = 'https://gti.tospino.com.gh'
+req_url = 'https://translateimage.amiemall.com'

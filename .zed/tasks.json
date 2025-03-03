@@ -1,0 +1,69 @@
+// Static tasks configuration.
+//
+// Example:
+[
+  {
+    "label": "V run .",
+    "command": "v",
+    "args": ["run", "."],
+    "tags": ["v-main"],
+    "use_new_terminal": false,
+    "reveal": "always"
+  },
+  {
+    "label": "V -d veb_livereload watch run .",
+    "command": "v",
+    "args": ["-d", "veb_livereload", "watch", "run", "."],
+    "tags": ["v-main"],
+    "use_new_terminal": false,
+    "reveal": "always"
+  },
+  {
+    "label": "V run main",
+    "command": "v",
+    "args": ["run", "$ZED_FILE"],
+    "tags": ["v-main"],
+    "use_new_terminal": false,
+    "reveal": "always"
+  },
+  {
+    "label": "V test .",
+    "command": "v",
+    "args": ["-stats", "test", "."],
+    "tags": ["v-test"],
+    "use_new_terminal": false,
+    "reveal": "always"
+  },
+  {
+    "label": "V test",
+    "command": "v",
+    "args": ["test", "$ZED_DIRNAME"],
+    "tags": ["v-test"],
+    "use_new_terminal": false,
+    "reveal": "always"
+  },
+  {
+    "label": "edadmin-api",
+    "tags": ["run-test"],
+    // 转换后的命令行指令，用于启动V程序
+    "command": "go run $ZED_WORKTREE_ROOT/core-api/main.v",
+    "args": ["-f", "$ZED_WORKTREE_ROOT/core-api/etc/core_dev.toml"],
+    // 环境变量可以根据需要添加或留空。
+    "env": {},
+    // 是否在新终端标签页运行任务，默认是false。
+    "use_new_terminal": true,
+    // 是否允许并发运行同一任务，默认是false。
+    "allow_concurrent_runs": true,
+    // 启动任务时如何处理终端面板和标签页，默认是`always`。
+    "reveal": "always",
+    // 任务完成后如何处理终端标签页，默认是`never`。
+    "hide": "never",
+    // 使用哪种shell来运行任务，默认使用系统设置。
+    "shell": "system",
+    // 是否显示任务总结行，默认是true。
+    "show_summary": true,
+    // 是否显示执行的命令行内容，默认是true。
+    //
+    "show_output": true
+  }
+]

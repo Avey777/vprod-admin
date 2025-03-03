@@ -1,0 +1,34 @@
+# 使用官方的 V 语言镜像作为基础镜像
+FROM debian:bullseye-slim
+
+# 设置工作目录
+WORKDIR /app
+
+# 安装 V 语言
+RUN apt update && \
+    apt install -y gcc git make build-essential libssl-dev libatomic1 default-libmysqlclient-dev && \
+    git clone https://github.com/vlang/v /opt/v && \
+    cd /opt/v && \
+    # 指定v语言版本
+    # git checkout 736067d && \
+    make && \
+    # 清理不再需要的软件包和缓存
+    rm -rf /var/lib/apt/lists/* && \
+    # 配置v语言环境变量
+    ./v symlink
+
+# 设置工作目录
+WORKDIR /app
+
+# 将当前目录下的所有文件复制到容器的 /app 目录下
+COPY . /app
+
+# 使用 V 构建项目
+# RUN v -prod -o app .
+RUN v -o app .
+
+# 暴露端口（如果有必要）
+EXPOSE 9009
+
+# 定义容器启动命令
+CMD ["./app"]
