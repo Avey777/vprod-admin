@@ -1,9 +1,16 @@
 v 0.5.0
 
 use (
-	./vcroe-api
-	./vcustomer-rpc
-	./vsite-api
-	./vtenant-api
-	./vadmin-api
+	./croe-api //部门 权限 菜单 鉴权  用户 会员 租户 团队 应用  语言 行政地区资料
+	./job-api  // 定时任务
+	./file-api // oss  文件上传 文件下载
+	./msg-api  // 站内信 短信 邮件
+	./pay-api  // 支付服务
+
+	./admin-api    // 运营后台服务
+	./tenant-rpc   // 租户服务
+	./customer-api // 客户服务
+	./driver-api   // 驾驶员服务
+	./courier-api  // 快递员服务
+	./driver-api   // 司机服务
 )
