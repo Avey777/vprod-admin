@@ -1,31 +1,31 @@
 module svc
 
-import 	c-core-api.internal.config
+// import 	c-core-api.internal.config
 // import (
-	// "express-delivery/edcores/edcoresclient"
+// "express-delivery/edcores/edcoresclient"
 
-	// "gitea.com/Tos/ed-driver/internal/config"
-	// i18n2 "gitea.com/Tos/ed-driver/internal/i18n"
-	// "gitea.com/Tos/ed-driver/internal/middleware"
+// "gitea.com/Tos/ed-driver/internal/config"
+// i18n2 "gitea.com/Tos/ed-driver/internal/i18n"
+// "gitea.com/Tos/ed-driver/internal/middleware"
 
-	// "github.com/suyuan32/simple-admin-common/i18n"
-	// "github.com/suyuan32/simple-admin-core/rpc/coreclient"
+// "github.com/suyuan32/simple-admin-common/i18n"
+// "github.com/suyuan32/simple-admin-core/rpc/coreclient"
 
-	// "github.com/casbin/casbin/v2"
-	// "github.com/zeromicro/go-zero/rest"
-	// "github.com/zeromicro/go-zero/zrpc"
+// "github.com/casbin/casbin/v2"
+// "github.com/zeromicro/go-zero/rest"
+// "github.com/zeromicro/go-zero/zrpc"
 // )
 
-ServiceContext struct {
-  Config     config.Config
+// ServiceContext struct {
+//   Config     config.Config
 
-	// Casbin     *casbin.Enforcer
-	// Authority  rest.Middleware
-	// Trans      *i18n.Translator
-	// CoreRpc    coreclient.Core       //simple-adminRpc
-	// EdcoresRpc edcoresclient.Edcores // EdRpc
-}
-
+// Casbin     *casbin.Enforcer
+// Authority  rest.Middleware
+// Trans      *i18n.Translator
+// CoreRpc    coreclient.Core       //simple-adminRpc
+// EdcoresRpc edcoresclient.Edcores // EdRpc
+// }
+//
 // func NewServiceContext(c config.Config) *ServiceContext {
 
 // 	rds := c.RedisConf.MustNewUniversalRedis()

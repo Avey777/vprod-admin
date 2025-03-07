@@ -1,68 +1,64 @@
 module config
 
-import time
+// import time
 
-// MiddlewaresConf is the config of middlewares.
-struct MddlewaresConf {
-	Trace      bool @['default=true'; json: 'trace']
-	Log        bool @['default=true'; json: 'Log']
-	Prometheus bool @['default=true'; json: 'Prometheus']
-	MaxConns   bool @['default=true'; json: 'MaxConns']
-	Breaker    bool @['default=true'; json: 'Breaker']
-	Shedding   bool @['default=true'; json: 'Shedding']
-	Timeout    bool @['default=true'; json: 'Timeout']
-	Recover    bool @['default=true'; json: 'Recover']
-	Metrics    bool @['default=true'; json: 'Metrics']
-	MaxBytes   bool @['default=true'; json: 'MaxBytes']
-	Gunzip     bool @['default=true'; json: 'Gunzip']
-	I18n       bool @['default=true'; json: 'I18n']
-	Tenant     bool @['default=false'; json: 'Tenant']
-	ClientIP   bool @['default=false'; json: 'ClientIP']
-}
+// // MiddlewaresConf is the config of middlewares.
+// pub struct MddlewaresConf {
+// pub:
+// 	trace      bool @['default=true'; json: 'Trace']      // Enable trace middleware
+// 	log        bool @['default=true'; json: 'Log']        // 日志中间件
+// 	prometheus bool @['default=true'; json: 'Prometheus'] // Enable prometheus middleware
+// 	max_conns  bool @['default=true'; json: 'MaxConns']   // Enable max connections middleware
+// 	breaker    bool @['default=true'; json: 'Breaker']    // Enable circuit breaker middleware
+// 	shedding   bool @['default=true'; json: 'Shedding']   // Enable shedding middleware
+// 	timeout    bool @['default=true'; json: 'Timeout']    // 超时中间件
+// 	recover    bool @['default=true'; json: 'Recover']    // Enable recover middleware
+// 	metrics    bool @['default=true'; json: 'Metrics']    // Enable metrics middleware
+// 	max_bytes  bool @['default=true'; json: 'MaxBytes']   // Enable max bytes middleware
+// 	gunzip     bool @['default=true'; json: 'Gunzip']     // Enable gunzip middleware
+// 	i18n       bool @['default=true'; json: 'I18n']       // Enable i18n middleware
+// 	tenant     bool @['default=false'; json: 'Tenant']    // Enable tenant middleware
+// 	clientIP   bool @['default=false'; json: 'ClientIP']  // Enable client IP middleware
+// }
 
-// A PrivateKeyConf is a private key config.
-struct PrivateKeyConf {
-	fingerprint string
-	key_file    string
-}
+// // A PrivateKeyConf is a private key config.
+// struct PrivateKeyConf {
+// 	fingerprint string
+// 	key_file    string
+// }
 
-// A SignatureConf is a signature config.
-struct SignatureConf {
-	Strict       bool          @['default=false'; json: 'Strict']
-	Expiry       time.Duration @['default=1h'; json: 'Expiry']
-	Private_keys []PrivateKeyConf
-}
+// // A SignatureConf is a signature config.
+// struct SignatureConf {
+// 	strict       bool          @['default=false'; json: 'Strict'] // Enable strict signature validation
+// 	expiry       time.Duration @['default=1h'; json: 'Expiry']    // Set the duration for signature expiry
+// 	private_keys []PrivateKeyConf // Configure private keys for signature validation
+// }
 
-// AuthConf is a JWT config
-struct AuthConf {
-	Access_secret string @[json: 'optional,env=AUTH_SECRET']
-	Access_expire i64    @[json: 'optional,env=AUTH_EXPIRE']
-}
+// // AuthConf is a JWT config
+// struct AuthConf {
+// 	access_secret string @[json: 'optional,env=AUTH_SECRET'] // Configure access secret for JWT authentication
+// 	access_expire i64    @[json: 'optional,env=AUTH_EXPIRE'] // Configure access expiration time for JWT authentication
+// }
 
-/*
-A RestConf is a http service config.
-Why not name it as Conf, because we need to consider usage like:
- type Config struct {
-    zrpc.RpcConf
-    rest.RestConf
- }
-if with the name Conf, there will be two Conf inside Config.
-*/
-struct RestConf {
-	service.ServiceConf
-	Host     string @[json: 'default=0.0.0.0,env=API_HOST']
-	Port     int    @[json: 'env=API_PORT']
-	CertFile string @[json: 'optional,env=API_CERT_FILE']
-	KeyFile  string @[json: 'optional,env=API_KEY_FILE']
-	Verbose  bool   @[json: 'optional,env=API_VERBOSE']
-	MaxConns int    @[json: 'default=10000,env=API_MAX_CONNS']
-	MaxBytes int64  @[json: 'default=1048576,env=API_MAX_BYTES']
-	// milliseconds
-	Timeout      int64         @[json: 'default=3000,env=API_TIMEOUT']
-	CpuThreshold int64         @[json: 'default=900,range=[0:1000)']
-	Signature    SignatureConf @[json: 'optional,env=API_SIGNATURE']
-	// There are default values for all the items in Middlewares.
-	Middlewares MiddlewaresConf
-	// TraceIgnorePaths is paths blacklist for trace middleware.
-	TraceIgnorePaths []string @[json: 'optional']
-}
+// /* A RestConf is a http service config.
+// Why not name it as Conf, because we need to consider usage like:
+//  type Config struct {
+//     zrpc.RpcConf
+//     rest.RestConf
+//  }
+// if with the name Conf, there will be two Conf inside Config */
+// struct RestConf {
+// 	service.ServiceConf
+// 	host               string        @[json: 'default=0.0.0.0,env=API_HOST']      // Configure host address for HTTP service
+// 	port               int           @[json: 'env=API_PORT']                      // Configure port number for HTTP service
+// 	certFile           string        @[json: 'optional,env=API_CERT_FILE']        // Configure certificate file for HTTPS service
+// 	keyFile            string        @[json: 'optional,env=API_KEY_FILE']         // Configure key file for HTTPS service
+// 	verbose            bool          @[json: 'optional,env=API_VERBOSE']          // Configure verbose mode for HTTP service
+// 	mmax_conns         int           @[json: 'default=10000,env=API_MAX_CONNS']   // Configure maximum number of concurrent connections for HTTP service
+// 	max_bytes          int64         @[json: 'default=1048576,env=API_MAX_BYTES'] // Configure maximum request body size for HTTP service
+// 	timeout            int64         @[json: 'default=3000,env=API_TIMEOUT']      // [milliseconds] Configure timeout for HTTP service
+// 	cpu_threshold      int64         @[json: 'default=900,range=[0:1000)']
+// 	signature          SignatureConf @[json: 'optional,env=API_SIGNATURE']
+// 	middlewares        MiddlewaresConf // There are default values for all the items in Middlewares
+// 	trace_ignore_paths []string @[json: 'optional'] // TraceIgnorePaths is paths blacklist for trace middleware
+// }

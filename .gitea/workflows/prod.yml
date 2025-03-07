@@ -1,0 +1,34 @@
+name: Gitea Actions vprod
+run-name: ${{ gitea.actor }} is testing out Gitea Actions 🚀
+on:
+  push:
+    branches:
+      - "main"
+jobs:
+  Explore-Gitea-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ gitea.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Gitea!"
+      - run: echo "🔎 The name of your branch is ${{ gitea.ref }} and your repository is ${{ gitea.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - run: echo "💡 The ${{ gitea.repository }} repository has been cloned to the runner."
+      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - name: List files in the repository
+        run: |
+          ls ${{ gitea.workspace }}
+      - name: Delete Container
+        run: |
+          docker rm -f v_prod
+          docker rmi -f avey777/vprod
+      - name: Docker build
+        run: |
+          docker buildx build -f Dockerfile-docker -t avey777/vprod .
+      - name: Run Container
+        run: |
+          docker run --name=v_prod --restart=unless-stopped -p 9009:9009 -e CONFIG_PATH=/app/vprod/config.toml -v /opt/vprod/config.toml:/app/vprod/config.toml -d avey777/vprod
+      - name: Clean Docker cache
+        run: |
+          docker builder prune -f
+      - run: echo "🍏 This job's status is ${{ job.status }}."
