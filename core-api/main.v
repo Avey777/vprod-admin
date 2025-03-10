@@ -1,11 +1,11 @@
 module main
 
 import internal.handler { new_app }
-// import config
+import os
 import log
 // import time
 // import sync
-import os
+// import config
 
 fn main() {
 	mut l := log.Log{}

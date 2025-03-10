@@ -36,6 +36,7 @@ vprod-service
 · handler：可选，一般 http 服务会有这一层做路由管理，handler 为固定后缀
 · i18n：国际化(本地化)目录
 · logic：业务目录，所有业务编码文件都存放在这个目录下面，logic 为固定后缀
+· middleware：中间件目录，所有中间件文件都存放在这个目录下面，middleware 为固定后缀
 · svc：(service context)依赖注入目录，所有 logic 层需要用到的依赖都要在这里进行显式注入
 · structs：结构体存放目录
 ````

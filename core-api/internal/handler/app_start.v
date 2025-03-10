@@ -6,8 +6,7 @@ import log
 // import rand
 import internal.structs { json_success }
 
-// port = 9090
-const cors_origin = '*'
+const cors_origin = ['*', 'xx.com']
 
 pub struct Context {
 	veb.Context
@@ -23,25 +22,23 @@ pub fn new_app() {
 	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut app := &App{} // 实例化 App 结构体 并返回指针
+	register_routes(mut app) // veb.Controller  使用路由控制器 | handler/register_routes.v
+	// app.use(veb.decode_gzip[Context]()) //使用解码gzip中间件
 
-	register_routes(mut app) // veb.Controller  使用路由控制器
-
-	// 使用cors进行跨域处理 ｜ use vweb's cors middleware to handle CORS requests
+	// 使用cors中间件行跨域处理 ｜ use veb's cors middleware to handle CORS requests
 	app.use(veb.cors[Context](veb.CorsOptions{
 		// 允许跨域请求的域名 ｜ allow CORS requests from every domain
-		origins: ['*', '*']
-		// 允许跨域请求的请求方法 ｜ allow CORS requests with the following request methods:
+		origins: cors_origin // origins: ['*', 'xx.com']
+		// 允许跨域请求的方法 ｜ allow CORS requests from methods:
 		allowed_methods: [.get, .head, .patch, .put, .post, .delete, .options]
 	}))
 
-	// start our app at port 9090
-	// port := config.set_web_port()
-	veb.run_at[App, Context](mut app, host: '', port: 9009, family: .ip6, timeout_in_seconds: 30) or {
+	port := 9009 // config.set_web_port()
+	veb.run_at[App, Context](mut app, host: '', port: port, family: .ip6, timeout_in_seconds: 30) or {
 		panic(err)
 	}
 }
 
-//
 pub fn (app &App) before_request() {
 	$if trace_before_request ? {
 		eprintln('[veb] before_request: ${app.req.method} ${app.req.url}')
