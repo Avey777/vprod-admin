@@ -15,7 +15,16 @@ fn (app &Base) index(mut ctx Context) veb.Result {
 	sql db {
 		create table schema.SysUser
 		create table schema.SysUserRole
+		create table schema.SysUserPosition
+		create table schema.SysToken
 		create table schema.SysRole
+		create table schema.SysPosition
+		create table schema.SysOauthProvider
+		create table schema.SysMenu
+		create table schema.SysDictionaryDetail
+		create table schema.SysDictionary
+		create table schema.SysDepartment
+		create table schema.SysConfiguration
 		create table schema.SysAPI
 	} or { return ctx.text('error creating table ${err}') }
 

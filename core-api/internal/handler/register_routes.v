@@ -7,7 +7,12 @@ import internal.logic.base { Base }
 pub fn register_routes(mut app App) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
+	// mut base := mut &Base{}
+	// mut admin_r := &Admin{}
+
 	app.use(handler: logger_middleware)
+	// base.use(handler: logger_middleware)
+	// admin_r.use(handler: logger_middleware)
 	// register the controllers the same way as how we start a veb app
 	app.register_controller[Base, Context]('/base', mut &Base{}) or { log.error('${err}') }
 	app.register_controller[Admin, Context]('/admin', mut &Admin{}) or { log.error('${err}') }

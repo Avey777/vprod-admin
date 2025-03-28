@@ -6,4 +6,6 @@ struct Context {
 	veb.Context // logger &log.ThreadSafeLogger
 }
 
-pub struct Base {}
+pub struct Base {
+	// veb.Middleware[Context]
+}
