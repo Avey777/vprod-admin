@@ -1,1 +1,25 @@
 module schema
+CREATE TABLE `pay_refund` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NOT NULL COMMENT 'Create Time | 创建日期',
+  `updated_at` timestamp NOT NULL COMMENT 'Update Time | 修改日期',
+  `status` tinyint unsigned DEFAULT '1' COMMENT 'Status 1: normal 2: ban | 状态 1 正常 2 禁用',
+  `deleted_at` timestamp NULL DEFAULT NULL COMMENT 'Delete Time | 删除日期',
+  `no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '退款单号',
+  `channel_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '渠道编码',
+  `order_id` bigint unsigned NOT NULL COMMENT '支付订单编号 pay_order 表id',
+  `order_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '支付订单 no',
+  `merchant_order_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '商户订单编号（商户系统生成）',
+  `merchant_refund_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '商户退款订单号（商户系统生成）',
+  `pay_price` int NOT NULL COMMENT '支付金额,单位分',
+  `refund_price` int NOT NULL COMMENT '退款金额,单位分',
+  `reason` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '退款原因',
+  `user_ip` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '用户 IP',
+  `channel_order_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '渠道订单号，pay_order 中的 channel_order_no 对应',
+  `channel_refund_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '渠道退款单号，渠道返回',
+  `success_time` timestamp NULL DEFAULT NULL COMMENT '退款成功时间',
+  `channel_error_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '渠道调用报错时，错误码',
+  `channel_error_msg` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '渠道调用报错时，错误信息',
+  `channel_notify_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT '支付渠道异步通知的内容',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
