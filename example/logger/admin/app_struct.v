@@ -3,7 +3,7 @@ module admin
 import veb
 
 struct Context {
-	veb.Context // logger &log.ThreadSafeLogger
+	veb.Context
 }
 
 pub struct Admin {}

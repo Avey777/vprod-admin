@@ -1,4 +1,6 @@
-[web]
+module config
+
+const data = "[web]
 port = 9009
 
 [i18nconf]
@@ -27,3 +29,4 @@ ssl_cert = ''
 ssl_ca = './etc/client-cert.pem'
 ssl_capath = ''
 ssl_cipher = ''
+"

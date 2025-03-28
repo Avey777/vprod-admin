@@ -18,7 +18,7 @@ module config
 // 	gunzip     bool @['default=true'; json: 'Gunzip']     // Enable gunzip middleware
 // 	i18n       bool @['default=true'; json: 'I18n']       // Enable i18n middleware
 // 	tenant     bool @['default=false'; json: 'Tenant']    // Enable tenant middleware
-// 	clientIP   bool @['default=false'; json: 'ClientIP']  // Enable client IP middleware
+// 	client_ip  bool @['default=false'; json: 'ClientIP']  // Enable client IP middleware
 // }
 
 // // A PrivateKeyConf is a private key config.
@@ -27,12 +27,12 @@ module config
 // 	key_file    string
 // }
 
-// // A SignatureConf is a signature config.
-// struct SignatureConf {
-// 	strict       bool          @['default=false'; json: 'Strict'] // Enable strict signature validation
-// 	expiry       time.Duration @['default=1h'; json: 'Expiry']    // Set the duration for signature expiry
-// 	private_keys []PrivateKeyConf // Configure private keys for signature validation
-// }
+// // // A SignatureConf is a signature config.
+// // struct SignatureConf {
+// // 	strict       bool          @['default=false'; json: 'Strict'] // Enable strict signature validation
+// // 	expiry       time.Duration @['default=1h'; json: 'Expiry']    // Set the duration for signature expiry
+// // 	private_keys []PrivateKeyConf // Configure private keys for signature validation
+// // }
 
 // // AuthConf is a JWT config
 // struct AuthConf {

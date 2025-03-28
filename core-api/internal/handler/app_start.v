@@ -19,11 +19,10 @@ pub struct App {
 }
 
 pub fn new_app() {
-	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut app := &App{} // 实例化 App 结构体 并返回指针
 	register_routes(mut app) // veb.Controller  使用路由控制器 | handler/register_routes.v
-	// app.use(veb.decode_gzip[Context]()) //使用解码gzip中间件
 
 	// 使用cors中间件行跨域处理 ｜ use veb's cors middleware to handle CORS requests
 	app.use(veb.cors[Context](veb.CorsOptions{
@@ -39,16 +38,10 @@ pub fn new_app() {
 	}
 }
 
-pub fn (app &App) before_request() {
-	$if trace_before_request ? {
-		eprintln('[veb] before_request: ${app.req.method} ${app.req.url}')
-	}
-}
-
 // 此方法将仅处理对 index 页面的GET请求 ｜ This method will only handle GET requests to the index page
 @['/'; get]
 pub fn (app &App) index(mut ctx Context) veb.Result {
-	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	return ctx.json(json_success(1, 'req success'))
+	return ctx.json(json_success('req success',''))
 }

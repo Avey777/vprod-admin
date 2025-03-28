@@ -1,4 +1,4 @@
-module admin
+module base
 
 import veb
 
@@ -6,4 +6,4 @@ struct Context {
 	veb.Context // logger &log.ThreadSafeLogger
 }
 
-pub struct Admin {}
+pub struct Base {}

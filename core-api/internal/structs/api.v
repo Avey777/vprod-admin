@@ -4,40 +4,67 @@ import rand
 
 pub struct ApiErrorResponse {
 pub:
+  resp_id string
 	status  bool
 	code    int
-	req_id  string
-	message string
+	msg     string
 }
 
 pub struct ApiSuccessResponse[T] {
 pub:
+	resp_id string
 	status bool
 	code   int
-	req_id string
+	msg     string
 	result T
 }
 
-pub fn json_success[T](status_code int, respose_data T) ApiSuccessResponse[T] {
+pub fn json_success[T](message_success string ,respose_data T) ApiSuccessResponse[T] {
 	mut uuid := rand.uuid_v4()
 	response := ApiSuccessResponse[T]{
-		status: true
-		code:   status_code
-		req_id: uuid
-		result: respose_data
+	  resp_id: uuid
+		status:  true
+		code:    0
+		msg:     message_success
+		result:  respose_data
 	}
-
 	return response
 }
 
 pub fn json_error(status_code int, message_error string) ApiErrorResponse {
 	mut uuid := rand.uuid_v4()
 	response := ApiErrorResponse{
+		resp_id: uuid
 		status:  false
 		code:    status_code
-		req_id:  uuid
-		message: message_error
+		msg:     message_error
 	}
-
 	return response
 }
+
+
+/*******可选参支持 - 不支持泛型*******->*/
+type SumResp = []string | string | bool | map[string]string | []int | int | map[string]int | map[string]bool
+
+@[params]
+pub struct ApiErrorResponseOptparams {
+pub:
+	resp_id string
+	status bool
+	code   int
+	msg     string
+	result SumResp
+}
+
+pub fn json_success_optparams(c ApiErrorResponseOptparams) ApiErrorResponseOptparams {
+  mut uuid := rand.uuid_v4()
+    response := ApiErrorResponseOptparams{
+		resp_id: uuid
+		status:  true
+		code:    0
+		msg:     c.msg
+		result:  c.result
+	}
+	return response
+}
+/*******可选参支持 - 不支持泛型*******<-*/

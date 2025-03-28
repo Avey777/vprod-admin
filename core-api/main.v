@@ -1,16 +1,16 @@
 module main
 
+import internal.config { check_all, log_sevel }
 import internal.handler { new_app }
-import os
 import log
 // import time
 // import sync
-// import config
+
 
 fn main() {
-	mut l := log.Log{}
-	l.set_output_stream(os.stdout())
-	// check_all() //启动前配置检查
+  log_sevel()
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+	check_all() //启动前配置检查
 
 	// // 定义全局互斥锁
 	// mut mx := sync.Mutex{}
@@ -30,8 +30,5 @@ fn main() {
 
 	new_app()
 }
-
-// import test {start}
-// fn main() {
-// 	start()
-// }
+// lsof -i :9009
+// sudo kill -9 $(lsof -t -i :9009)

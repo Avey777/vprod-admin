@@ -1,0 +1,101 @@
+module config
+
+import os
+import log
+
+const config_template := './etc/config_template.toml'
+
+pub fn check_all() {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+	check_config_toml() //检查配置文件是否存在
+	check_config_toml_data() //检查配置文件内必要数据是否配置
+
+	log.info('正在检测数据库连接...')
+	// 检查mysql数据库连接
+	mut conn := db_mysql() or {
+		log.error('数据库连接检测失败,请检查配置文件: ${config_toml()}')
+		return
+	}
+
+	defer {
+		conn.close()
+		log.info('数据库连接检测完成，关闭连接')
+	}
+}
+
+//检查配置文件是否存在
+fn check_config_toml() {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
+	log.debug('配置文件路径: ${config_toml()}')
+	if !os.exists(config_toml()) {
+		log.warn('${config_toml()}配置文件不存在，生成新配置文件')
+		mut f := os.create(config_template) or {
+			log.fatal('配置文件创建失败')
+			return
+		}
+		log.info('配置文件已创建')
+
+		log.info('初始化配置数据')
+		os.write_file(config_template, data) or {
+			log.error('${config_template} 配置数据初始化失败')
+			return
+		}
+		log.error('配置数据初始化完成,请完善配置')
+
+		defer {
+			f.close()
+		} // 记得关闭文件句柄
+	} else {
+		log.info('配置文件加载完成: ${config_toml()}')
+	}
+}
+
+//检查配置文件内必要数据是否配置
+fn check_config_toml_data() {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
+	log.info('开始检测必要配置')
+	doc := toml_load() or { return }
+
+	doc.value_opt('web.port') or {
+		log.warn('配置数据：web.port 键无效或键没有值，请检查配置数据')
+	}
+	web_port := doc.value('web.port').int()
+	if web_port < 1000 || web_port > 65535 {
+		log.error('web.port监听端口: 1000 < port < 65535')
+	}
+
+	doc.value_opt('dbconf.type') or {
+		log.fatal('必要配置数据：dbconf.type 键无效或键没有值，请检查配置数据,应为mysql或tidb')
+	}
+	dbconf_type := doc.value('dbconf.type').string()
+	if dbconf_type != 'mysql' && dbconf_type != 'tidb' {
+		log.fatal('必要配置数据：dbconf.type 的值无效，应为mysql或tidb')
+	}
+
+	doc.value_opt('dbconf.host') or {
+		log.fatal('必要配置数据：dbconf.host 键无效或键没有值，请检查配置数据')
+	}
+	doc.value_opt('dbconf.port') or {
+		log.fatal('必要配置数据：dbconf.port 键无效或键没有值，请检查配置数据')
+	}
+	doc.value_opt('dbconf.username') or {
+		log.fatal('必要配置数据：dbconf.username 键无效或键没有值，请检查配置数据')
+	}
+	doc.value_opt('dbconf.password') or {
+		log.fatal('必要配置数据：dbconf.password 键无效或键没有值，请检查配置数据')
+	}
+	doc.value_opt('dbconf.dbname') or {
+		log.fatal('必要配置数据：dbconf.dbname 键无效或键没有值，请检查配置数据')
+	}
+	doc.value_opt('dbconf.ssl_verify') or {
+		log.warn('配置数据：dbconf.ssl_verify 键无效或键没有值')
+	}
+	ssl_verify := doc.value('dbconf.ssl_verify').bool()
+	if ssl_verify != true && ssl_verify != false {
+		log.warn('配置数据：dbconf.ssl_verify 的值无效，应为true或false')
+	}
+
+	log.info('必要配置检测完毕')
+}
