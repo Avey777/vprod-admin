@@ -2,12 +2,12 @@ module schema
 
 import time
 
-// 云存储文件表
+// 云文件表
 @[table: 'fms_cloud_files']
 pub struct FmsCloudFile {
 pub:
 	id                           string @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID']
-	state                        u8     @[default: 1; omitempty; sql: 'state'; sql_type: 'tinyint(1)'; zcomments: 'State true: normal false: ban | 状态 true 正常 false 禁用']
+	status                       u8     @[default: 1; omitempty; sql: 'status'; sql_type: 'tinyint(1)'; zcomments: 'State true: normal false: ban | 状态 true 正常 false 禁用']
 	name                         string @[index: 'cloudfile_name'; omitempty; required; sql: 'name'; sql_type: 'VARCHAR(255)'; zcomments: 'The file`s name | 文件名']
 	url                          string @[omitempty; required; sql: 'url'; sql_type: 'VARCHAR(255)'; zcomments: 'The file`s url | 文件地址']
 	size                         u64    @[omitempty; required; sql: 'size'; sql_type: 'bigint unsigned'; zcomments: 'The file`s size | 文件大小']
