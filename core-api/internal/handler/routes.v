@@ -4,10 +4,9 @@ import log
 import internal.logic.admin { Admin } // 必须是路由模块内部声明的结构体
 import internal.logic.base { Base }
 
-pub fn register_handlers() {
+pub fn register_handlers(mut app App) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	mut app := &App{}
 	// mut base := mut &Base{}
 	// mut admin_r := &Admin{}
 

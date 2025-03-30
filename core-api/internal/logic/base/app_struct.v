@@ -7,5 +7,5 @@ pub struct Context {
 }
 
 pub struct Base {
-	// veb.Middleware[Context]
+	veb.Middleware[Context]
 }

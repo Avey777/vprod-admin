@@ -22,16 +22,10 @@ pub fn new_app() {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut app := &App{} // 实例化 App 结构体 并返回指针
-	register_handlers() // veb.Controller  使用路由控制器 | handler/register_routes.v
-	// 使用cors中间件行跨域处理 ｜ use veb's cors middleware to handle CORS requests
-	app.use(veb.cors[Context](veb.CorsOptions{
-		// 允许跨域请求的域名 ｜ allow CORS requests from every domain
-		origins: cors_origin // origins: ['*', 'xx.com']
-		// 允许跨域请求的方法 ｜ allow CORS requests from methods:
-		allowed_methods: [.get, .head, .patch, .put, .post, .delete, .options]
-	}))
+	register_handlers(mut app) // veb.Controller  使用路由控制器 | handler/register_routes.v
+	cores_middleware(mut app)
 
-	port := 9009 // config.set_web_port()
+	mut port := 9009  //config.set_web_port()
 	veb.run_at[App, Context](mut app, host: '', port: port, family: .ip6, timeout_in_seconds: 30) or {
 		panic(err)
 	}
