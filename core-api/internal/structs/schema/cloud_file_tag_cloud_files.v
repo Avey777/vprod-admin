@@ -1,5 +1,9 @@
-CREATE TABLE `cloud_file_tag_cloud_files` (
-  `cloud_file_tag_id` bigint unsigned NOT NULL,
-  `cloud_file_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  PRIMARY KEY (`cloud_file_tag_id`,`cloud_file_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+module schema
+
+// 云文件与标签关联表
+@[table: 'cloud_file_tag_cloud_files']
+pub struct CloudFileTagCloudFile {
+pub:
+	cloud_file_tag_id string @[primary; sql: 'cloud_file_tag_id'; sql_type: 'CHAR(36)'; zcomments: '云文件标签ID']
+	cloud_file_id     string @[primary; sql: 'cloud_file_id'; sql_type: 'CHAR(36)'; zcomments: '云文件UUID']
+}

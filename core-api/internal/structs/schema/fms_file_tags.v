@@ -1,10 +1,20 @@
-CREATE TABLE `fms_file_tags` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `created_at` timestamp NOT NULL COMMENT 'Create Time | 创建日期',
-  `updated_at` timestamp NOT NULL COMMENT 'Update Time | 修改日期',
-  `status` tinyint unsigned DEFAULT '1' COMMENT 'Status 1: normal 2: ban | 状态 1 正常 2 禁用',
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'FileTag''s name | 标签名称',
-  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'The remark of tag | 标签的备注',
-  PRIMARY KEY (`id`),
-  KEY `filetag_name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+module schema
+
+import time
+
+// 文件标签表
+@[table: 'fms_file_tags']
+pub struct FmsFileTag {
+pub:
+	id     u64     @[primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID']
+	status u8      @[default: 1; omitempty; sql: 'status'; sql_type: 'tinyint unsigned'; zcomments: 'Status 1: normal 2: ban | 状态 1 正常 2 禁用']
+	name   string  @[index: 'filetag_name'; omitempty; required; sql: 'name'; sql_type: 'VARCHAR(255)'; zcomments: 'FileTag`s name | 标签名称']
+	remark ?string @[omitempty; sql: 'remark'; sql_type: 'VARCHAR(255)'; zcomments: 'The remark of tag | 标签的备注']
+
+	updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']
+	updated_at time.Time  @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Update Time | 修改日期']
+	creator_id ?string    @[immutable; omitempty; sql_type: 'CHAR(36)'; zcomments: '创建者ID']
+	created_at time.Time  @[immutable; omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Create Time | 创建日期']
+	del_flag   u8         @[default: 0; omitempty; sql_type: 'tinyint(1)'; zcomments: '删除标记，0：未删除，1：已删除']
+	deleted_at ?time.Time @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Delete Time | 删除日期']
+}
