@@ -29,19 +29,19 @@ fn check_config_toml() {
 
 	log.debug('配置文件路径: ${config_toml()}')
 	if !os.exists(config_toml()) {
-		log.warn('${config_toml()}配置文件不存在，生成新配置文件')
+		log.warn('${config_toml()}配置文件不存在，生成新配置文件模板: ${config_template}')
 		mut f := os.create(config_template) or {
 			log.fatal('配置文件创建失败')
 			return
 		}
 		log.info('配置文件已创建')
 
-		log.info('初始化配置数据')
+		log.info('初始化配置数据文件模板: ${config_template}')
 		os.write_file(config_template, data) or {
-			log.error('${config_template} 配置数据初始化失败')
+			log.error('${config_template} 配置数据模板写入错误')
 			return
 		}
-		log.error('配置数据初始化完成,请完善配置')
+		log.info('${config_template} 配置数据模板写入成功,请参考模板配置：${config_toml()}')
 
 		defer {
 			f.close()
@@ -56,7 +56,7 @@ fn check_config_toml_data() {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	log.info('开始检测必要配置')
-	doc := toml_load() or { return }
+	doc := toml_load()
 
 	doc.value_opt('web.port') or {
 		log.warn('配置数据：web.port 键无效或键没有值，请检查配置数据')

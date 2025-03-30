@@ -7,7 +7,7 @@ import db.mysql
 pub fn db_mysql() !mysql.DB {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	doc := toml_load()!
+	doc := toml_load()
 	mut mysql_config := mysql.Config{
 		host:     doc.value('dbconf.host').string()
 		port:     doc.value('dbconf.port').string().u32()

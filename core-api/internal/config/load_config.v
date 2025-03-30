@@ -22,12 +22,12 @@ pub fn config_toml() string {
 	return cf_toml
 }
 
-pub fn toml_load() !toml.Doc {
+pub fn toml_load() toml.Doc {
 	log.debug('准备读取${config_toml()}配置 ${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	doc_toml := toml.parse_file(config_toml()) or {
 		log.error('${config_toml()} 文件不存在; ${@METHOD}  ${@MOD}.${@FILE_LINE}')
-		return err
+		return toml.Doc{}
 	}
 	log.debug('${config_toml()} 读取成功：' + typeof(doc_toml).name)
 	return doc_toml
