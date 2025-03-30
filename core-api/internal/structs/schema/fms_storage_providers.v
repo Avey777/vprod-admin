@@ -7,7 +7,6 @@ import time
 pub struct FmsStorageProvider {
 pub:
 	id         string  @[primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID']
-	state      u8      @[default: 1; omitempty; sql: 'state'; sql_type: 'tinyint(1)'; zcomments: 'State true: normal false: ban | 状态 true 正常 false 禁用']
 	name       string  @[omitempty; required; sql: 'name'; sql_type: 'VARCHAR(255)'; unique: 'name'; zcomments: 'The cloud storage service name | 服务名称']
 	bucket     string  @[omitempty; required; sql: 'bucket'; sql_type: 'VARCHAR(255)'; zcomments: 'The cloud storage bucket name | 云存储服务的存储桶']
 	secret_id  string  @[omitempty; required; sql: 'secret_id'; sql_type: 'VARCHAR(255)'; zcomments: 'The secret ID | 密钥 ID']
@@ -18,6 +17,7 @@ pub:
 	is_default u8      @[default: 0; omitempty; sql: 'is_default'; sql_type: 'tinyint(1)'; zcomments: 'Is it the default provider | 是否为默认提供商']
 	use_cdn    u8      @[default: 0; omitempty; sql: 'use_cdn'; sql_type: 'tinyint(1)'; zcomments: 'Does it use CDN | 是否使用 CDN']
 	cdn_url    ?string @[omitempty; sql: 'cdn_url'; sql_type: 'VARCHAR(255)'; zcomments: 'CDN URL | CDN 地址']
+	status      u8      @[default: 1; omitempty; sql: 'status'; sql_type: 'tinyint(1)'; zcomments: 'State true: normal false: ban | 状态 true 正常 false 禁用']
 
 	updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']
 	updated_at time.Time  @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Update Time | 修改日期']

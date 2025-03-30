@@ -7,9 +7,9 @@ import time
 pub struct FmsCloudFileTag {
 pub:
 	id     string  @[primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID']
-	status u8      @[default: 1; omitempty; sql: 'status'; sql_type: 'tinyint unsigned'; zcomments: 'Status 1: normal 2: ban | 状态 1 正常 2 禁用']
 	name   string  @[index: 'cloudfiletag_name'; omitempty; required; sql: 'name'; sql_type: 'VARCHAR(255)'; zcomments: 'CloudFileTag`s name | 标签名称']
 	remark ?string @[omitempty; sql: 'remark'; sql_type: 'VARCHAR(255)'; zcomments: 'The remark of tag | 标签的备注']
+	status u8      @[default: 1; omitempty; sql: 'status'; sql_type: 'tinyint unsigned'; zcomments: 'Status 1: normal 2: ban | 状态 1 正常 2 禁用']
 
 	updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']
 	updated_at time.Time  @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Update Time | 修改日期']
