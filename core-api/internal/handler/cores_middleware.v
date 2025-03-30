@@ -3,6 +3,8 @@ module handler
 import log
 import veb
 
+const cors_origin = ['*', 'xx.com']
+
 pub fn cores_middleware(mut app App) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 

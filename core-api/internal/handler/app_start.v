@@ -3,17 +3,6 @@ module handler
 import veb
 import log
 
-const cors_origin = ['*', 'xx.com']
-
-pub struct Context {
-	veb.Context
-}
-
-pub struct App {
-	veb.Middleware[Context]
-	veb.Controller
-	veb.StaticHandler
-}
 
 pub fn new_app() {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
