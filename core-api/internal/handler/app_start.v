@@ -2,9 +2,6 @@ module handler
 
 import veb
 import log
-// import config
-// import rand
-import internal.structs { json_success }
 
 const cors_origin = ['*', 'xx.com']
 
@@ -29,12 +26,4 @@ pub fn new_app() {
 	veb.run_at[App, Context](mut app, host: '', port: port, family: .ip6, timeout_in_seconds: 30) or {
 		panic(err)
 	}
-}
-
-// 此方法将仅处理对 index 页面的GET请求 ｜ This method will only handle GET requests to the index page
-@['/'; get]
-pub fn (app &App) index(mut ctx Context) veb.Result {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-
-	return ctx.json(json_success('req success', ''))
 }
