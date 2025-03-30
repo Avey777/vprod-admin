@@ -2,7 +2,7 @@ module base
 
 import veb
 
-struct Context {
+pub struct Context {
 	veb.Context // logger &log.ThreadSafeLogger
 }
 
