@@ -22,8 +22,7 @@ pub fn new_app() {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut app := &App{} // 实例化 App 结构体 并返回指针
-	register_routes(mut app) // veb.Controller  使用路由控制器 | handler/register_routes.v
-
+	register_handlers() // veb.Controller  使用路由控制器 | handler/register_routes.v
 	// 使用cors中间件行跨域处理 ｜ use veb's cors middleware to handle CORS requests
 	app.use(veb.cors[Context](veb.CorsOptions{
 		// 允许跨域请求的域名 ｜ allow CORS requests from every domain
@@ -43,5 +42,5 @@ pub fn new_app() {
 pub fn (app &App) index(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	return ctx.json(json_success('req success',''))
+	return ctx.json(json_success('req success', ''))
 }
