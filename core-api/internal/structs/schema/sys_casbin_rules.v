@@ -1,8 +1,8 @@
 module schema
 
 // Casbin 规则表
-@[table: 'casbin_rules']
-pub struct CasbinRule {
+@[table: 'sys_casbin_rules']
+pub struct SysCasbinRule {
 pub:
 	id    string @[primary; serial; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID']
 	ptype string @[default: ''; omitempty; required; sql: 'ptype'; sql_type: 'VARCHAR(255)'; zcomments: '策略类型 (p/g)']

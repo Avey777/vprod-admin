@@ -3,8 +3,8 @@ module schema
 import time
 
 // 站内私信消息表
-@[table: 'site_msg_inner_msgs']
-pub struct SiteMsgInnerMsg {
+@[table: 'mcms_site_inner_msgs']
+pub struct McmsSiteInnerMsg {
 pub:
 	id                            string  @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID']
 	avatar                        ?string @[omitempty; sql: 'avatar'; sql_type: 'VARCHAR(255)'; zcomments: 'Avatar | 头像或图标']

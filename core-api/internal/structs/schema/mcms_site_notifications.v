@@ -3,8 +3,8 @@ module schema
 import time
 
 // 站内消息通知表
-@[table: 'site_msg_notifications']
-pub struct SiteMsgNotification {
+@[table: 'mcms_site_notifications']
+pub struct McmsSiteNotification {
 pub:
 	id      string  @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID']
 	state   u8      @[default: 1; omitempty; sql: 'state'; sql_type: 'tinyint(1)'; zcomments: 'State true: normal false: ban | 状态 true 正常 false 禁用']
