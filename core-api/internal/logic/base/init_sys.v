@@ -45,6 +45,7 @@ fn (app &Base) index(mut ctx Context) veb.Result {
 		create table schema.FmsStorageProvider
 		create table schema.FmsFileJoinTag
 		create table schema.FmsFile
+		create table schema.FmsFileTag
 		create table schema.FmsCloudFileCloudFileTag
 		create table schema.FmsCloudFile
 		create table schema.FmsCloudFileTag
