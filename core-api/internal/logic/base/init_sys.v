@@ -18,6 +18,7 @@ fn (app &Base) index(mut ctx Context) veb.Result {
 		create table schema.SysUserPosition
 		create table schema.SysToken
 		create table schema.SysRole
+		create table schema.SysRoleMenu
 		create table schema.SysPosition
 		create table schema.SysOauthProvider
 		create table schema.SysMenu
@@ -25,6 +26,7 @@ fn (app &Base) index(mut ctx Context) veb.Result {
 		create table schema.SysDictionary
 		create table schema.SysDepartment
 		create table schema.SysConfiguration
+		create table schema.SysCasbinRule
 		create table schema.SysAPI
 	} or { return ctx.text('error creating table ${err}') }
 

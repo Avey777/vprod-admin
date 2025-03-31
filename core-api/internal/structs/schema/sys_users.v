@@ -12,7 +12,7 @@ pub:
 	password      string  @[omitempty; required; sql: 'password'; sql_type: 'VARCHAR(255)'; zcomments: 'Password | 密码']
 	nickname      string  @[omitempty; sql_type: 'VARCHAR(255)'; unique: 'nickname'; zcomments: 'Nickname | 昵称']
 	description   ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomments: 'The description of user | 用户的描述信息']
-	home_path     string  @[default: '\"/dashboard\"'; omitempty; sql_type: 'VARCHAR(255)'; zcomments: 'The home page that the user enters after logging in | 用户登陆后进入的首页']
+	home_path     string  @[default: '"/dashboard"'; omitempty; sql_type: 'VARCHAR(255)'; zcomments: 'The home page that the user enters after logging in | 用户登陆后进入的首页']
 	mobile        ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomments: 'Mobile number | 手机号']
 	email         ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomments: 'Email | 邮箱号']
 	avatar        ?string @[omitempty; sql_type: 'VARCHAR(512)'; zcomments: 'Avatar | 头像路径']

@@ -15,7 +15,7 @@ pub:
 	redirect              ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: ' Redirect path | 跳转路径 （外链）']
 	component             ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'The path of vue file | 组件路径']
 	disabled              ?u8     @[default: 0; omitempty; sql_type: 'tinyint(1)'; zcomment: 'Disable status | 是否停用']
-	service_name          ?string @[default: '\"Other\"'; omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Service Name | 服务名称'] //
+	service_name          ?string @[default: '"Other"'; omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Service Name | 服务名称'] //
 	permission            ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Permission symbol | 权限标识']
 	title                 string  @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Menu name | 菜单显示标题']
 	icon                  string  @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Menu icon | 菜单图标']

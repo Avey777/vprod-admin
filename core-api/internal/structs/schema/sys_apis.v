@@ -10,8 +10,8 @@ pub:
 	path         string  @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'API path | API 路径']
 	description  ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'API description | API 描述']
 	api_group    string  @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'API group | API 分组']
-	service_name string  @[default: '\"Other\"'; omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Service name | 服务名称']
-	method       string  @[default: '\"POST\"'; omitempty; sql_type: 'VARCHAR(32)'; zcomment: 'HTTP method | HTTP 请求类型']
+	service_name string  @[default: '"Other"'; omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Service name | 服务名称']
+	method       string  @[default: '"POST"'; omitempty; sql_type: 'VARCHAR(32)'; zcomment: 'HTTP method | HTTP 请求类型']
 	is_required  u8      @[default: 0; omitempty; sql_type: 'tinyint(1)'; zcomment: 'Whether is required | 是否必选']
 
 	updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']
