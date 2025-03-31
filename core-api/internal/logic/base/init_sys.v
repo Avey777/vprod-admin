@@ -28,6 +28,27 @@ fn (app &Base) index(mut ctx Context) veb.Result {
 		create table schema.SysConfiguration
 		create table schema.SysCasbinRule
 		create table schema.SysAPI
+
+		create table schema.PayRefund
+		create table schema.PayOrderExtension
+		create table schema.PayOrder
+		create table schema.PayDemoOrder
+		create table schema.McmsSmsProvider
+		create table schema.McmsSmsLog
+		create table schema.McmsSiteNotification
+		create table schema.McmsSiteInnerMsg
+		create table schema.McmsSiteInnerCategory
+		create table schema.McmsEmailProvider
+		create table schema.McmsEmailLog
+		create table schema.JobTask
+		create table schema.JobTaskLog
+		create table schema.FmsStorageProvider
+		create table schema.FmsFileJoinTag
+		create table schema.FmsFile
+		create table schema.FmsCloudFileCloudFileTag
+		create table schema.FmsCloudFile
+		create table schema.FmsCloudFileTag
+
 	} or { return ctx.text('error creating table ${err}') }
 
 	return ctx.json(json_success_optparams(msg: 'sys database init Successfull'))

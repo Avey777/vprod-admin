@@ -3,8 +3,8 @@ module schema
 import time
 
 // 系统定时任务表
-@[table: 'sys_tasks']
-pub struct SysTask {
+@[table: 'job_tasks']
+pub struct JobTask {
 pub:
 	id              string @[auto_inc; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID']
 	name            string @[omitempty; required; sql: 'name'; sql_type: 'VARCHAR(255)'; zcomments: 'Task Name | 任务名称']

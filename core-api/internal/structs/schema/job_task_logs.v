@@ -3,8 +3,8 @@ module schema
 import time
 
 // 系统任务日志表
-@[table: 'sys_task_logs']
-pub struct SysTaskLog {
+@[table: 'job_task_logs']
+pub struct JobTaskLog {
 pub:
 	id             string    @[primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID']
 	started_at     time.Time @[omitempty; required; sql: 'started_at'; sql_type: 'TIMESTAMP'; zcomments: 'Task Started Time | 任务启动时间']
