@@ -1,4 +1,4 @@
-//订阅
+//订阅申请表
 module team
 
 import time
