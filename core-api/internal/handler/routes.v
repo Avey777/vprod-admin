@@ -7,15 +7,15 @@ import internal.logic.base { Base }
 pub fn register_handlers(mut app App) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	// mut base := mut &Base{}
-	// mut admin_r := &Admin{}
+	mut base_app := &Base{}
+	mut admin_app := &Admin{}
 
 	app.use(handler: logger_middleware)
-	// base.use(handler: logger_middleware)
-	// admin_r.use(handler: logger_middleware)
+	// base_app.use(handler: logger_middleware)
+	// admin_app.use(handler: logger_middleware)
 	// register the controllers the same way as how we start a veb app
-	app.register_controller[Base, Context]('/base', mut &Base{}) or { log.error('${err}') }
-	app.register_controller[Admin, Context]('/admin', mut &Admin{}) or { log.error('${err}') }
+	app.register_controller[Base, Context]('/base', mut base_app) or { log.error('${err}') }
+	app.register_controller[Admin, Context]('/admin', mut admin_app) or { log.error('${err}') }
 
 	// app.register_controller[Member, Context]('/member', mut &Member{}) or { log.error('${err}') }
 	// app.register_controller[Teant, Context]('/teant', mut &Teant{}) or { log.error('${err}') }
