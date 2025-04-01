@@ -2,8 +2,10 @@ module admin
 
 import veb
 
-struct Context {
+pub struct Context {
 	veb.Context
 }
 
-pub struct Admin {}
+pub struct Admin {
+	veb.Middleware[Context]
+}
