@@ -7,7 +7,7 @@ import internal.config { db_mysql }
 import internal.structs.schema
 
 @['/init/database'; get]
-fn (app &Base) index(mut ctx Context) veb.Result {
+fn (app &Base) index(mut ctx structs.Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db := db_mysql() or { return ctx.json(json_error(1, 'failed to connect to database')) }

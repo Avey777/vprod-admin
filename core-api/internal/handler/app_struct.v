@@ -1,13 +1,13 @@
 module handler
 
 import veb
-
-pub struct Context {
-	veb.Context
-}
+import internal.structs
+// pub struct Context {
+// 	veb.Context
+// }
 
 pub struct App {
-	veb.Middleware[Context]
+	veb.Middleware[structs.Context]
 	veb.Controller
 	veb.StaticHandler
 }
