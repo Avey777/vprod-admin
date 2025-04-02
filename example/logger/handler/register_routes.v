@@ -1,18 +1,18 @@
 module handler
 
 import log
-// import admin
+import admin
 import structt
 
 pub fn register_routes(mut app App) {
 	app.use(handler: before_request)
-	// mut admin_app := &admin.Admin{}
+	mut admin_app := &admin.Admin{}
 
-	// admin_app.use(handler: before_request_admin)
+	admin_app.use(handler: before_request)
 
-	// app.register_controller[admin.Admin, admin.Context]('/admin', mut admin_app) or {
-	// 	log.error('${err}')
-	// }
+	app.register_controller[admin.Admin, structt.Context]('/admin', mut admin_app) or {
+		log.error('${err}')
+	}
 }
 
 pub fn before_request(mut ctx structt.Context) bool {
