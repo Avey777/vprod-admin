@@ -9,6 +9,6 @@ import internal.structs { Context, json_success }
 @['/router'; get]
 fn (app &Admin) index(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	// log.info('[veb] before_request: ${ctx.req.method} ${ctx.req.url} ')
+
 	return ctx.json(json_success('success', ''))
 }
