@@ -12,6 +12,8 @@ pub fn register_handlers(mut app App) {
 	mut base_app := &Base{}
 	mut admin_app := &Admin{}
 
+	app.use(cores_middleware())
+
 	app.use(handler: logger_middleware)
 	base_app.use(handler: logger_middleware)
 	admin_app.use(handler: logger_middleware)
