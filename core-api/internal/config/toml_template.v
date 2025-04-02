@@ -2,6 +2,7 @@ module config
 
 const data = "[web]
 port = 9009
+timeout = 30
 
 [i18nconf]
 Dir = './internal/i18n'
