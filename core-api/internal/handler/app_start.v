@@ -13,10 +13,11 @@ pub fn new_app() {
 	register_handlers(mut app) // veb.Controller  使用路由控制器 | handler/register_routes.v
 
 	mut port := doc.value('web.port').int()
+	mut timeout_seconds := doc.value('web.timeout').int()
 	veb.run_at[App, Context](mut app,
 		host:               ''
 		port:               port
 		family:             .ip6
-		timeout_in_seconds: 30
+		timeout_in_seconds: timeout_seconds
 	) or { panic(err) }
 }

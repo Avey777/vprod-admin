@@ -3,7 +3,7 @@ module config
 import os
 import log
 
-const config_template := './etc/config_template.toml'
+const config_template = './etc/config_template.toml'
 
 pub fn check_all() {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -64,6 +64,14 @@ fn check_config_toml_data() {
 	web_port := doc.value('web.port').int()
 	if web_port < 1000 || web_port > 65535 {
 		log.error('web.port监听端口: 1000 < port < 65535')
+	}
+
+	doc.value_opt('web.timeout') or {
+		log.warn('配置数据：web.timeout 键无效或键没有值，请检查配置数据')
+	}
+	web_timeout := doc.value('web.timeout').int()
+	if web_timeout < 3 || web_timeout > 1000 {
+		log.error('web.timeout监听端口: 3 < port < 1000')
 	}
 
 	doc.value_opt('dbconf.type') or {
