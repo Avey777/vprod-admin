@@ -1,9 +1,10 @@
 module handler
 
 import log
+import internal.structs { Context }
 import internal.logic.admin { Admin } // 必须是路由模块内部声明的结构体
 import internal.logic.base { Base }
-import internal.structs { Context }
+import internal.middleware { logger_middleware }
 
 pub fn register_handlers(mut app App) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -23,12 +24,4 @@ pub fn register_handlers(mut app App) {
 	// app.register_controller[Teant, Context]('/teant', mut &Teant{}) or { log.error('${err}') }
 	// app.register_controller[Driver, Context]('/driver', mut &Driver{}) or { log.error('${err}') }
 	// app.register_controller[Courier, Context]('/courier', mut &Courier{}) or { log.error('${err}') }
-}
-
-//日志中间件（未知原因：对 register_controller 的路由不生效）
-pub fn logger_middleware(mut ctx Context) bool {
-	// $if trace_before_request ? {
-	log.info('[veb] trace_before_request: ${ctx.req.method} ${ctx.req.url}')
-	// }
-	return true
 }
