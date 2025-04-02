@@ -1,4 +1,4 @@
-module handler
+module middleware
 
 import log
 import veb

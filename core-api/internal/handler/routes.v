@@ -4,7 +4,7 @@ import log
 import internal.structs { Context }
 import internal.logic.admin { Admin } // 必须是路由模块内部声明的结构体
 import internal.logic.base { Base }
-import internal.middleware { logger_middleware }
+import internal.middleware { cores_middleware, logger_middleware }
 
 pub fn register_handlers(mut app App) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -13,6 +13,7 @@ pub fn register_handlers(mut app App) {
 	mut admin_app := &Admin{}
 
 	app.use(cores_middleware())
+	admin_app.use(cores_middleware())
 
 	app.use(handler: logger_middleware)
 	base_app.use(handler: logger_middleware)
