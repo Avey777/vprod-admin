@@ -1,0 +1,250 @@
+// package user
+
+// import (
+// 	"context"
+
+// 	"github.com/suyuan32/simple-admin-common/i18n"
+
+// 	"github.com/suyuan32/simple-admin-core/api/internal/svc"
+// 	"github.com/suyuan32/simple-admin-core/api/internal/types"
+// 	"github.com/suyuan32/simple-admin-core/rpc/types/core"
+
+// 	"github.com/zeromicro/go-zero/core/logx"
+// )
+
+// type GetUserListLogic struct {
+// 	logx.Logger
+// 	ctx    context.Context
+// 	svcCtx *svc.ServiceContext
+// }
+
+// func NewGetUserListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUserListLogic {
+// 	return &GetUserListLogic{
+// 		Logger: logx.WithContext(ctx),
+// 		ctx:    ctx,
+// 		svcCtx: svcCtx,
+// 	}
+// }
+
+// func (l *GetUserListLogic) GetUserList(req *types.UserListReq) (resp *types.UserListResp, err error) {
+// 	data, err := l.svcCtx.CoreRpc.GetUserList(l.ctx, &core.UserListReq{
+// 		Page:         req.Page,
+// 		PageSize:     req.PageSize,
+// 		Username:     req.Username,
+// 		Nickname:     req.Nickname,
+// 		Email:        req.Email,
+// 		Mobile:       req.Mobile,
+// 		RoleIds:      req.RoleIds,
+// 		DepartmentId: req.DepartmentId,
+// 		Description:  req.Description,
+// 	})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	resp = &types.UserListResp{}
+// 	for _, v := range data.Data {
+// 		resp.Data.Data = append(resp.Data.Data, types.UserInfo{
+// 			BaseUUIDInfo: types.BaseUUIDInfo{
+// 				Id:        v.Id,
+// 				CreatedAt: v.CreatedAt,
+// 				UpdatedAt: v.UpdatedAt,
+// 			},
+// 			Username:     v.Username,
+// 			Nickname:     v.Nickname,
+// 			Mobile:       v.Mobile,
+// 			RoleIds:      v.RoleIds,
+// 			Email:        v.Email,
+// 			Avatar:       v.Avatar,
+// 			Status:       v.Status,
+// 			Description:  v.Description,
+// 			HomePath:     v.HomePath,
+// 			DepartmentId: v.DepartmentId,
+// 			PositionIds:  v.PositionIds,
+// 		})
+// 	}
+// 	resp.Data.Total = data.Total
+// 	resp.Msg = l.svcCtx.Trans.Trans(l.ctx, i18n.Success)
+// 	return resp, nil
+// }
+
+module user
+
+// pub fn mall_1688(offer_id_i64 i64) ![]map[string]string {
+// 	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
+// 	mut db := database_mysql() or { return err }
+// 	defer {
+// 		log.info('数据库连接关闭')
+// 		db.close()
+// 	}
+
+// 	res := sql db {
+// 		select from Pool where offer_id == offer_id_i64
+// 	} or {
+// 		log.error('sql查询失败')
+// 		return err
+// 	}
+
+// 	// eprintln(res)
+
+// 	mut mapstrlist := []map[string]string{} //创建空数组
+// 	for row in res {
+// 		mut data := map[string]string{} // a map with string keys and string values
+// 		data['id'] = '${row.id}' //主键ID
+// 		data['offer_id'] = '${row.offer_id}' //商品id
+// 		// data["raw_data"] = '$row.raw_data'
+// 		data['category_id'] = '${row.category_id}' //类目id
+// 		data['category_name'] = '${row.category_name}' //类目名称
+// 		data['subject'] = '${row.subject}' // 标题
+// 		data['subject_trans'] = '${row.subject_trans}' // 外文标题
+// 		// data["description"] = '$row.description'// 描述
+
+// 		mapstrlist << data //追加data到mapstrlist 数组
+// 	}
+
+// 	mut offerid := '${res[0].offer_id}'
+// 	eprintln(offerid)
+
+// 	return mapstrlist
+// }
+
+// 用户列表请求参数
+// swagger:model UserListReq
+pub struct UserListReq {
+pub:
+	// 分页信息
+	// page_info PageInfo
+	// 用户名 | User Name
+	// 最大长度: 20 | max length: 20
+	username ?string @[json: 'username,optional'; validate: 'omitempty,alphanum,max=20']
+
+	// 用户昵称 | User's nickname
+	// 最大长度: 10 | max length: 10
+	nickname ?string @[json: 'nickname,optional'; validate: 'omitempty,alphanumunicode,max=10']
+
+	// 手机号码 | User's mobile phone number
+	// 最大长度: 18 | max length: 18
+	mobile ?string @[json: 'mobile,optional'; validate: 'omitempty,eq=|numeric,max=18']
+
+	// 邮箱地址 | User's email address
+	// 最大长度: 100 | max length: 100
+	email ?string @[json: 'email,optional'; validate: 'omitempty,email,max=100']
+
+	// 角色ID列表 | User's role IDs
+	role_ids []u64 @[json: 'roleIds,optional']
+
+	// 部门ID | User's department ID
+	department_id ?u64 @[json: 'departmentId,optional']
+
+	// 职位ID | User's position ID
+	position_id ?u64 @[json: 'positionId,optional']
+
+	// 描述信息 | Description
+	// 最大长度: 100 | max length: 100
+	description ?string @[json: 'description,optional'; validate: 'omitempty,max=100']
+}
+
+// 用户信息响应
+// swagger:model UserInfoResp
+// pub struct UserInfoResp {
+// pub:
+// 	// 基础响应信息
+// 	// base_data []BaseDataInfo
+
+// 	// 用户数据 | User information
+// 	// data []UserInfo @[json: 'data']
+// }
+
+// 注册请求参数
+// swagger:model RegisterReq
+pub struct RegisterReq {
+pub:
+	// 用户名 | User Name
+	// 必填 | required: true
+	// 最大长度: 20 | max length: 20
+	username string @[json: 'username'; validate: 'required,alphanum,max=20']
+
+	// 密码 | Password
+	// 必填 | required: true
+	// 最小长度: 6 | min length: 6
+	// 最大长度: 30 | max length: 30
+	password string @[json: 'password'; validate: 'required,max=30,min=6']
+
+	// 验证码ID | Captcha ID
+	// 必填 | required: true
+	// 固定长度: 20 | length: 20
+	captcha_id string @[json: 'captchaId'; validate: 'required,len=20']
+
+	// 验证码 | Captcha
+	// 必填 | required: true
+	// 固定长度: 5 | length: 5
+	captcha string @[json: 'captcha'; validate: 'required,len=5']
+
+	// 邮箱地址 | Email address
+	// 必填 | required: true
+	// 最大长度: 100 | max length: 100
+	email string @[json: 'email'; validate: 'required,email,max=100']
+}
+
+// The page request parameters | 列表请求参数
+// swagger:model PageInfo
+struct PageInfo {
+	// Page number | 第几页
+	// required : true
+	// min : 0
+	page u64 @[json: 'page'; validate: 'required,number,gt=0']
+	// Page size | 单页数据行数
+	// required : true
+	// max : 100000
+	pagesize u64 @[json: 'pageSize'; validate: 'required,number,lt=100000']
+}
+
+// The basic response with data | 基础带数据信息
+// swagger:model BaseDataInfo
+struct BaseDataInfo {
+	// Error code | 错误代码
+	code int @[json: 'code']
+	// Message | 提示信息
+	msg string @[json: 'msg']
+	// Data | 数据
+	data string @[json: 'data,omitempty']
+}
+
+// The response data of user information | 用户信息
+// swagger:model UserInfo
+struct UserInfo {
+	// BaseUUIDInfo
+	// Status | 状态
+	// max : 20
+	status &u32 @[json: 'status,optional'; validate: 'omitempty,lt=20']
+	// Username | 用户名
+	// max length : 50
+	username &string @[json: 'username,optional'; validate: 'omitempty,max=50']
+	// Nickname | 昵称
+	// max length : 40
+	nickname &string @[json: 'nickname,optional'; validate: 'omitempty,max=40']
+	// Password | 密码
+	// min length : 6
+	password &string @[json: 'password,optional'; validate: 'omitempty,min=6']
+	// Description | 描述
+	// max length : 100
+	description &string @[json: 'description,optional'; validate: 'omitempty,max=100']
+	// HomePath | 首页
+	// max length : 70
+	homepath &string @[json: 'homePath,optional'; validate: 'omitempty,max=70']
+	// RoleId | 角色ID
+	roleids []u64 @[json: 'roleIds,optional']
+	// Mobile | 手机号
+	// max length : 18
+	mobile &string @[json: 'mobile,optional'; validate: 'omitempty,max=18']
+	// Email | 邮箱
+	// max length : 80
+	email &string @[json: 'email,optional'; validate: 'omitempty,max=80']
+	// Avatar | 头像地址
+	// max length : 300
+	avatar &string @[json: 'avatar,optional'; validate: 'omitempty,max=300']
+	// Department ID | 部门ID
+	departmentid &u64 @[json: 'departmentId,optional,omitempty']
+	// Position ID | 职位ID
+	positionids []u64 @[json: 'positionId,optional,omitempty']
+}
