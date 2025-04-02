@@ -1,4 +1,4 @@
-module structt
+module structs
 
 import veb
 

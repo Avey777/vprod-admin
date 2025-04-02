@@ -4,16 +4,13 @@ import veb
 import log
 // import config
 // import rand
-import structt
+import structs {Context}
 
 const cors_origin = ['*', 'xx.com']
 
-// pub struct Context {
-// 	veb.Context
-// }
 
 pub struct App {
-	veb.Middleware[structt.Context]
+	veb.Middleware[Context]
 	veb.Controller
 	veb.StaticHandler
 }
@@ -24,13 +21,13 @@ pub fn new_app() {
 	mut app := &App{}
 	register_routes(mut app)
 
-	app.use(veb.cors[structt.Context](veb.CorsOptions{
+	app.use(veb.cors[Context](veb.CorsOptions{
 		origins:         cors_origin
 		allowed_methods: [.get, .head, .patch, .put, .post, .delete, .options]
 	}))
 
 	port := 9009
-	veb.run_at[App, structt.Context](mut app,
+	veb.run_at[App, Context](mut app,
 		host:               ''
 		port:               port
 		family:             .ip6
@@ -39,7 +36,7 @@ pub fn new_app() {
 }
 
 @['/get'; get]
-pub fn (app &App) index(mut ctx structt.Context) veb.Result {
+pub fn (app &App) index(mut ctx Context) veb.Result {
 	// log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	return ctx.json('req success')

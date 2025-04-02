@@ -1,12 +1,12 @@
 module admin
 
 import veb
-import structt
+import structs {Context}
 
 // pub struct Context {
 // 	veb.Context
 // }
 
 pub struct Admin {
-	veb.Middleware[structt.Context]
+	veb.Middleware[Context]
 }
