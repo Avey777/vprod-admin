@@ -3,7 +3,7 @@ module handler
 import log
 import internal.logic.admin { Admin } // 必须是路由模块内部声明的结构体
 import internal.logic.base { Base }
-import internal.structs
+import internal.structs { Context }
 
 pub fn register_handlers(mut app App) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -16,10 +16,8 @@ pub fn register_handlers(mut app App) {
 	admin_app.use(handler: logger_middleware)
 
 	// register the controllers the same way as how we start a veb app
-	app.register_controller[Base, structs.Context]('/base', mut base_app) or { log.error('${err}') }
-	app.register_controller[Admin, structs.Context]('/admin', mut admin_app) or {
-		log.error('${err}')
-	}
+	app.register_controller[Base, Context]('/base', mut base_app) or { log.error('${err}') }
+	app.register_controller[Admin, Context]('/admin', mut admin_app) or { log.error('${err}') }
 
 	// app.register_controller[Member, Context]('/member', mut &Member{}) or { log.error('${err}') }
 	// app.register_controller[Teant, Context]('/teant', mut &Teant{}) or { log.error('${err}') }
@@ -28,7 +26,7 @@ pub fn register_handlers(mut app App) {
 }
 
 //日志中间件（未知原因：对 register_controller 的路由不生效）
-pub fn logger_middleware(mut ctx structs.Context) bool {
+pub fn logger_middleware(mut ctx Context) bool {
 	// $if trace_before_request ? {
 	log.info('[veb] trace_before_request: ${ctx.req.method} ${ctx.req.url}')
 	// }

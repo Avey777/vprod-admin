@@ -1,11 +1,8 @@
 module admin
 
 import veb
-import internal.structs
-// pub struct Context {
-// 	veb.Context // logger &log.ThreadSafeLogger
-// }
+import internal.structs { Context }
 
 pub struct Admin {
-	veb.Middleware[structs.Context]
+	veb.Middleware[Context]
 }

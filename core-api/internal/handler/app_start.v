@@ -3,7 +3,7 @@ module handler
 import veb
 import log
 import internal.config { toml_load }
-import internal.structs
+import internal.structs { Context }
 
 pub fn new_app() {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -14,7 +14,7 @@ pub fn new_app() {
 	// cores_middleware(mut app)
 
 	mut port := doc.value('web.port').int()
-	veb.run_at[App, structs.Context](mut app,
+	veb.run_at[App, Context](mut app,
 		host:               ''
 		port:               port
 		family:             .ip6

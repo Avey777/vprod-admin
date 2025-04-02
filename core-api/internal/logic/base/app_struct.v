@@ -1,11 +1,8 @@
 module base
 
 import veb
-import internal.structs
-// pub struct Context {
-// 	veb.Context // logger &log.ThreadSafeLogger
-// }
+import internal.structs { Context }
 
 pub struct Base {
-	veb.Middleware[structs.Context]
+	veb.Middleware[Context]
 }
