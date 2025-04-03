@@ -12,10 +12,10 @@ pub fn check_all() {
 
 	log.info('正在检测数据库连接...')
 	// 检查mysql数据库连接
-	mut conn := db_mysql() or {
-		log.error('数据库连接检测失败,请检查配置文件: ${config_toml()}')
-		return
-	}
+	mut conn := db_mysql() // or {
+	// 	log.error('数据库连接检测失败,请检查配置文件: ${config_toml()}')
+	// 	return
+	// }
 
 	defer {
 		conn.close()

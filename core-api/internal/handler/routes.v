@@ -3,6 +3,7 @@ module handler
 import log
 import internal.structs { Context }
 import internal.logic.admin { Admin } // 必须是路由模块内部声明的结构体
+import internal.logic.admin.user { User }
 import internal.logic.base { Base }
 import internal.middleware { cores_middleware, logger_middleware }
 
@@ -11,6 +12,7 @@ pub fn register_handlers(mut app App) {
 
 	mut base_app := &Base{}
 	mut admin_app := &Admin{}
+	mut user_app := &User{}
 
 	app.use(cores_middleware())
 	admin_app.use(cores_middleware())
@@ -18,10 +20,12 @@ pub fn register_handlers(mut app App) {
 	app.use(handler: logger_middleware)
 	base_app.use(handler: logger_middleware)
 	admin_app.use(handler: logger_middleware)
+	user_app.use(handler: logger_middleware)
 
 	// register the controllers the same way as how we start a veb app
 	app.register_controller[Base, Context]('/base', mut base_app) or { log.error('${err}') }
 	app.register_controller[Admin, Context]('/admin', mut admin_app) or { log.error('${err}') }
+	app.register_controller[User, Context]('/user', mut user_app) or { log.error('${err}') }
 
 	// app.register_controller[Member, Context]('/member', mut &Member{}) or { log.error('${err}') }
 	// app.register_controller[Teant, Context]('/teant', mut &Teant{}) or { log.error('${err}') }

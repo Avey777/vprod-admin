@@ -4,7 +4,7 @@ import log
 import db.mysql
 
 //连接Mysql/TiDB数据库
-pub fn db_mysql() !mysql.DB {
+pub fn db_mysql() mysql.DB {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	doc := toml_load()
@@ -29,8 +29,8 @@ pub fn db_mysql() !mysql.DB {
 
 	log.debug('正在连接数据库...')
 	mut conn := mysql.connect(mysql_config) or {
-		log.error('Mysql/TiDB数据库连接失败:${doc.value('dbconf')}')
-		return err
+		log.error('Mysql/TiDB数据库连接失败,请检查配置文件: ${config_toml()}: ${doc.value('dbconf')} : ${err}')
+		return mysql.DB{}
 	}
 
 	log.debug('${conn}')

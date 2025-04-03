@@ -51,3 +51,36 @@ func (l *CreateUserLogic) CreateUser(req *types.UserInfo) (resp *types.BaseMsgRe
 	}
 	return &types.BaseMsgResp{Msg: l.svcCtx.Trans.Trans(l.ctx, data.Msg)}, nil
 }
+
+
+
+// 注册请求参数
+// swagger:model RegisterReq
+pub struct RegisterReq {
+pub:
+	// 用户名 | User Name
+	// 必填 | required: true
+	// 最大长度: 20 | max length: 20
+	username string @[json: 'username'; validate: 'required,alphanum,max=20']
+
+	// 密码 | Password
+	// 必填 | required: true
+	// 最小长度: 6 | min length: 6
+	// 最大长度: 30 | max length: 30
+	password string @[json: 'password'; validate: 'required,max=30,min=6']
+
+	// 验证码ID | Captcha ID
+	// 必填 | required: true
+	// 固定长度: 20 | length: 20
+	captcha_id string @[json: 'captchaId'; validate: 'required,len=20']
+
+	// 验证码 | Captcha
+	// 必填 | required: true
+	// 固定长度: 5 | length: 5
+	captcha string @[json: 'captcha'; validate: 'required,len=5']
+
+	// 邮箱地址 | Email address
+	// 必填 | required: true
+	// 最大长度: 100 | max length: 100
+	email string @[json: 'email'; validate: 'required,email,max=100']
+}

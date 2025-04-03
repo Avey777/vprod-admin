@@ -69,44 +69,56 @@
 
 module user
 
-// pub fn mall_1688(offer_id_i64 i64) ![]map[string]string {
-// 	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+import veb
+import log
+import internal.config { db_mysql }
+import internal.structs.schema
+import internal.structs { Context, json_error, json_success }
 
-// 	mut db := database_mysql() or { return err }
-// 	defer {
-// 		log.info('数据库连接关闭')
-// 		db.close()
-// 	}
+pub struct User {
+	veb.Middleware[Context]
+}
 
-// 	res := sql db {
-// 		select from Pool where offer_id == offer_id_i64
-// 	} or {
-// 		log.error('sql查询失败')
-// 		return err
-// 	}
+@['/user_id'; get]
+pub fn (app &User) index(mut ctx Context) veb.Result {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+	mut data := get_user_list() or { return ctx.json(json_error(503, '')) }
+	return ctx.json(json_success('success', '${data}'))
+}
 
-// 	// eprintln(res)
+pub fn get_user_list() ![]map[string]string {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-// 	mut mapstrlist := []map[string]string{} //创建空数组
-// 	for row in res {
-// 		mut data := map[string]string{} // a map with string keys and string values
-// 		data['id'] = '${row.id}' //主键ID
-// 		data['offer_id'] = '${row.offer_id}' //商品id
-// 		// data["raw_data"] = '$row.raw_data'
-// 		data['category_id'] = '${row.category_id}' //类目id
-// 		data['category_name'] = '${row.category_name}' //类目名称
-// 		data['subject'] = '${row.subject}' // 标题
-// 		data['subject_trans'] = '${row.subject_trans}' // 外文标题
-// 		// data["description"] = '$row.description'// 描述
+	mut db := db_mysql()
+	dump('dump: ${db}')
+	defer { db.close() }
 
-// 		mapstrlist << data //追加data到mapstrlist 数组
-// 	}
+	log.debug('开始查询sql')
+	mut res := sql db {
+		select from schema.SysUser
+	} or {
+		log.error('sql查询失败')
+		return err
+	}
+	log.debug('结束查询sql')
+	// eprintln(res)
 
-// 	mut offerid := '${res[0].offer_id}'
-// 	eprintln(offerid)
+	mut mapstrlist := []map[string]string{} //创建空数组
+	for row in res {
+		mut data := map[string]string{} // a map with string keys and string values
+		data['id'] = '${row.id}' //主键ID
+		// data["raw_data"] = '$row.raw_data'
+		// data['category_id'] = '${row.category_id}' //类目id
+		// data['category_name'] = '${row.category_name}' //类目名称
+		// data['subject'] = '${row.subject}' // 标题
+		// data['subject_trans'] = '${row.subject_trans}' // 外文标题
+		// data["description"] = '$row.description'// 描述
 
-// 	return mapstrlist
-// }
+		mapstrlist << data //追加data到mapstrlist 数组
+	}
+
+	return mapstrlist
+}
 
 // 用户列表请求参数
 // swagger:model UserListReq
@@ -146,44 +158,13 @@ pub:
 
 // 用户信息响应
 // swagger:model UserInfoResp
-// pub struct UserInfoResp {
-// pub:
-// 	// 基础响应信息
-// 	// base_data []BaseDataInfo
-
-// 	// 用户数据 | User information
-// 	// data []UserInfo @[json: 'data']
-// }
-
-// 注册请求参数
-// swagger:model RegisterReq
-pub struct RegisterReq {
+pub struct UserInfoResp {
 pub:
-	// 用户名 | User Name
-	// 必填 | required: true
-	// 最大长度: 20 | max length: 20
-	username string @[json: 'username'; validate: 'required,alphanum,max=20']
+	// 基础响应信息
+	base_data []BaseDataInfo
 
-	// 密码 | Password
-	// 必填 | required: true
-	// 最小长度: 6 | min length: 6
-	// 最大长度: 30 | max length: 30
-	password string @[json: 'password'; validate: 'required,max=30,min=6']
-
-	// 验证码ID | Captcha ID
-	// 必填 | required: true
-	// 固定长度: 20 | length: 20
-	captcha_id string @[json: 'captchaId'; validate: 'required,len=20']
-
-	// 验证码 | Captcha
-	// 必填 | required: true
-	// 固定长度: 5 | length: 5
-	captcha string @[json: 'captcha'; validate: 'required,len=5']
-
-	// 邮箱地址 | Email address
-	// 必填 | required: true
-	// 最大长度: 100 | max length: 100
-	email string @[json: 'email'; validate: 'required,email,max=100']
+	// 用户数据 | User information
+	data []UserInfo @[json: 'data']
 }
 
 // The page request parameters | 列表请求参数
