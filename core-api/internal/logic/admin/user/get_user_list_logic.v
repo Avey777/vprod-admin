@@ -82,7 +82,7 @@ pub struct User {
 @['/user_id'; get]
 pub fn (app &User) index(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	mut data := get_user_list() or { return ctx.json(json_error(503, '')) }
+	mut data := get_user_list() or { return ctx.json(json_error(503, '${err}')) }
 	return ctx.json(json_success('success', '${data}'))
 }
 
@@ -97,7 +97,7 @@ pub fn get_user_list() ![]map[string]string {
 	mut res := sql db {
 		select from schema.SysUser
 	} or {
-		log.error('sql查询失败')
+		log.debug('sql查询失败')
 		return err
 	}
 	log.debug('结束查询sql')
