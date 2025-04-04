@@ -14,20 +14,29 @@ Dir = './internal/i18n'
 # dbname = 'vcore'
 # ssl_verify = false        #设置为false 时，不验证ssl证书
 
-
 [dbconf]
-type = 'tidb'
-host = 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com'
-port = '4000'
-username = 'xfQRtLXKTtPHsUi.root'
-password = 'GkFU6Q3uvt0O9F0A'
-dbname = 'vcore'
-ssl_verify = true                                        #设置为true时，验证ssl证书
-ssl_key = ''
-ssl_cert = ''
-ssl_ca = './etc/client-cert.pem'
-ssl_capath = ''
-ssl_cipher = ''
+type = 'mysql'            # mysql  tidb
+host = 'mysql2.sqlpub.com'
+port = '3307'
+username = 'vcore_test'
+password = 'wfo8wS7CylT0qIMg'
+dbname = 'vcore_test'
+ssl_verify = false        #设置为false 时，不验证ssl证书
+
+
+# [dbconf]
+# type = 'tidb'
+# host = 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com'
+# port = '4000'
+# username = 'xfQRtLXKTtPHsUi.root'
+# password = 'GkFU6Q3uvt0O9F0A'
+# dbname = 'vcore'
+# ssl_verify = true                                        #设置为true时，验证ssl证书
+# ssl_key = ''
+# ssl_cert = ''
+# ssl_ca = './etc/client-cert.pem'
+# ssl_capath = ''
+# ssl_cipher = ''
 
 [redisconf]
 Host = '127.0.0.1:6379'

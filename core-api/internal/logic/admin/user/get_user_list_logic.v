@@ -101,13 +101,13 @@ pub fn get_user_list() ![]map[string]string {
 		return err
 	}
 	log.debug('结束查询sql')
-	// eprintln(res)
+	eprintln(res)
 
 	mut mapstrlist := []map[string]string{} //创建空数组
 	for row in res {
 		mut data := map[string]string{} // a map with string keys and string values
 		data['id'] = '${row.id}' //主键ID
-		// data["raw_data"] = '$row.raw_data'
+		data["raw_data"] = '$row.deleted_at'
 		// data['category_id'] = '${row.category_id}' //类目id
 		// data['category_name'] = '${row.category_name}' //类目名称
 		// data['subject'] = '${row.subject}' // 标题
