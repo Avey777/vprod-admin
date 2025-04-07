@@ -25,7 +25,7 @@ pub fn register_handlers(mut app App) {
 	// register the controllers the same way as how we start a veb app
 	app.register_controller[Base, Context]('/base', mut base_app) or { log.error('${err}') }
 	app.register_controller[Admin, Context]('/admin', mut admin_app) or { log.error('${err}') }
-	app.register_controller[User, Context]('/user', mut user_app) or { log.error('${err}') }
+	app.register_controller[User, Context]('/admin/user', mut user_app) or { log.error('${err}') }
 
 	// app.register_controller[Member, Context]('/member', mut &Member{}) or { log.error('${err}') }
 	// app.register_controller[Teant, Context]('/teant', mut &Teant{}) or { log.error('${err}') }
