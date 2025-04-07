@@ -90,7 +90,7 @@ pub fn get_user_list() ![]map[string]string {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
-	dump('dump: ${db}')
+	// dump('dump: ${db}')
 	defer { db.close() }
 
 	// log.debug('开始查询sql')

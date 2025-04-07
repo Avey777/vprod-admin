@@ -34,6 +34,6 @@ pub fn db_mysql() mysql.DB {
 	}
 
 	log.debug('${conn}')
-	log.info(doc.value('dbconf.type').string() + '数据库连接成功')
+	log.debug(doc.value('dbconf.type').string() + '数据库连接成功')
 	return conn
 }
