@@ -17,7 +17,7 @@ struct User {
 pub:
 	id           string  @[immutable; primary; sql: 'id'; sql_type: 'VARCHAR(255)'; unique]
 	created_at    ?time.Time @[omitempty; sql_type: 'TIMESTAMP' ]
-	updated_at    ?time.Time @[omitempty; sql_type: 'TIMESTAMP']
+	updated_at    time.Time @[default:'0001-01-01T00:00:00 +00:00';omitempty; sql_type: 'TIMESTAMP']
 }
 
 fn query_db(db mysql.DB) {

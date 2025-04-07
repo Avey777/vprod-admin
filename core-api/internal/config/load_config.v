@@ -7,7 +7,7 @@ import os
 //指定配置文件 [v run . -f 'etc/config_dev.toml']
 pub fn config_toml() string {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	mut cf_toml := './etc/config.toml' // 默认值前置
+	mut cf_toml := os.join_path('.', 'etc', 'config.toml') // 默认值前置，使用跨平台路径拼接
 	args := os.args[1..]
 	for i in 0 .. args.len {
 		if args[i] == '-f' {
@@ -18,7 +18,7 @@ pub fn config_toml() string {
 			break
 		}
 	}
-	log.debug('toml配置文件路径：'+os.getwd().str()+'/'+'${cf_toml}')
+	log.debug('toml配置文件路径：' + os.join_path(os.getwd(), cf_toml))
 	return cf_toml
 }
 
