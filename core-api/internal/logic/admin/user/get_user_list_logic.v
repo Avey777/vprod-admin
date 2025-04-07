@@ -79,6 +79,19 @@ pub struct User {
 	veb.Middleware[Context]
 }
 
+// The page request parameters | 列表请求参数
+// swagger:model PageInfo
+struct PageInfo {
+	// Page number | 第几页,当前页码
+	// required : true
+	// min : 0
+	page u64 @[json: 'page'; validate: 'required,number,gt=0']
+	// Page size | 单页数据行数
+	// required : true
+	// max : 100000
+	page_size u64 @[json: 'pageSize'; validate: 'required,number,lt=100000']
+}
+
 @['/user_id'; get]
 pub fn (app &User) index(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -90,24 +103,33 @@ pub fn get_user_list() ![]map[string]string {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
-	// dump('dump: ${db}')
 	defer { db.close() }
 
-	// log.debug('开始查询sql')
-	mut res := sql db {
-		select from schema.SysUser
+	mut count := sql db {
+		select count from schema.SysUser
 	} or {
 		log.debug('sql查询失败')
 		return err
 	}
-	// log.debug('结束查询sql')
-	// dump(res)
+	dump(count)
+
+	page_size := 2
+
+	// // 分页数据查询
+ //  offset_page := (PageInfo.page - 1) * PageInfo.page_size
+
+	mut res := sql db {
+		select  from schema.SysUser limit page_size offset 0
+	} or {
+		log.debug('sql查询失败')
+		return err
+	}
 
 	mut mapstrlist := []map[string]string{} //创建空数组
 	for row in res {
 		mut data := map[string]string{} // a map with string keys and string values
 		data['id'] = '${row.id}' //主键ID
-		data['raw_data'] = '${row.deleted_at}'
+		// data['raw_data'] = '${row.deleted_at}'
 		// data['category_id'] = '${row.category_id}' //类目id
 		// data['category_name'] = '${row.category_name}' //类目名称
 		// data['subject'] = '${row.subject}' // 标题
@@ -167,18 +189,7 @@ pub:
 	data []UserInfo @[json: 'data']
 }
 
-// The page request parameters | 列表请求参数
-// swagger:model PageInfo
-struct PageInfo {
-	// Page number | 第几页
-	// required : true
-	// min : 0
-	page u64 @[json: 'page'; validate: 'required,number,gt=0']
-	// Page size | 单页数据行数
-	// required : true
-	// max : 100000
-	pagesize u64 @[json: 'pageSize'; validate: 'required,number,lt=100000']
-}
+
 
 // The basic response with data | 基础带数据信息
 // swagger:model BaseDataInfo
