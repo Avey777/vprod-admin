@@ -104,11 +104,6 @@ fn (app &User) index(mut ctx Context) veb.Result {
 	return ctx.json(json_success('success', data))
 }
 
-// 定义通用分页响应结构体
-struct Result {
-    total int   @[json: 'total']  // 总记录数
-    data  []map[string]string   @[json: 'data']   // 实际数据
-}
 
 pub fn get_user_list(page int ,page_size int)  Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -150,7 +145,11 @@ pub fn get_user_list(page int ,page_size int)  Result {
 	return result_data
 }
 
-
+// 定义通用分页响应结构体
+struct Result {
+    total int   @[json: 'total']  // 总记录数
+    data  []map[string]string   @[json: 'data']   // 实际数据
+}
 
 /***************************************************************************************************/
 // 用户列表请求参数
@@ -184,68 +183,65 @@ pub:
 	// 职位ID | User's position ID
 	position_id ?u64 @[json: 'positionId,optional']
 
-	// 描述信息 | Description
-	// 最大长度: 100 | max length: 100
-	description ?string @[json: 'description,optional'; validate: 'omitempty,max=100']
 }
 
-// 用户信息响应
-// swagger:model UserInfoResp
-pub struct UserInfoResp {
-pub:
-	// 基础响应信息
-	base_data []BaseDataInfo
+// // 用户信息响应
+// // swagger:model UserInfoResp
+// pub struct UserInfoResp {
+// pub:
+// 	// 基础响应信息
+// 	base_data []BaseDataInfo
 
-	// 用户数据 | User information
-	data []UserInfo @[json: 'data']
-}
+// 	// 用户数据 | User information
+// 	data []UserInfo @[json: 'data']
+// }
 
-// The basic response with data | 基础带数据信息
-// swagger:model BaseDataInfo
-struct BaseDataInfo {
-	// Error code | 错误代码
-	code int @[json: 'code']
-	// Message | 提示信息
-	msg string @[json: 'msg']
-	// Data | 数据
-	data string @[json: 'data,omitempty']
-}
+// // The basic response with data | 基础带数据信息
+// // swagger:model BaseDataInfo
+// struct BaseDataInfo {
+// 	// Error code | 错误代码
+// 	code int @[json: 'code']
+// 	// Message | 提示信息
+// 	msg string @[json: 'msg']
+// 	// Data | 数据
+// 	data string @[json: 'data,omitempty']
+// }
 
-// The response data of user information | 用户信息
-// swagger:model UserInfo
-struct UserInfo {
-	// BaseUUIDInfo
-	// Status | 状态
-	// max : 20
-	status &u32 @[json: 'status,optional'; validate: 'omitempty,lt=20']
-	// Username | 用户名
-	// max length : 50
-	username &string @[json: 'username,optional'; validate: 'omitempty,max=50']
-	// Nickname | 昵称
-	// max length : 40
-	nickname &string @[json: 'nickname,optional'; validate: 'omitempty,max=40']
-	// Password | 密码
-	// min length : 6
-	password &string @[json: 'password,optional'; validate: 'omitempty,min=6']
-	// Description | 描述
-	// max length : 100
-	description &string @[json: 'description,optional'; validate: 'omitempty,max=100']
-	// HomePath | 首页
-	// max length : 70
-	homepath &string @[json: 'homePath,optional'; validate: 'omitempty,max=70']
-	// RoleId | 角色ID
-	roleids []u64 @[json: 'roleIds,optional']
-	// Mobile | 手机号
-	// max length : 18
-	mobile &string @[json: 'mobile,optional'; validate: 'omitempty,max=18']
-	// Email | 邮箱
-	// max length : 80
-	email &string @[json: 'email,optional'; validate: 'omitempty,max=80']
-	// Avatar | 头像地址
-	// max length : 300
-	avatar &string @[json: 'avatar,optional'; validate: 'omitempty,max=300']
-	// Department ID | 部门ID
-	departmentid &u64 @[json: 'departmentId,optional,omitempty']
-	// Position ID | 职位ID
-	positionids []u64 @[json: 'positionId,optional,omitempty']
-}
+// // The response data of user information | 用户信息
+// // swagger:model UserInfo
+// struct UserInfo {
+// 	// BaseUUIDInfo
+// 	// Status | 状态
+// 	// max : 20
+// 	status &u32 @[json: 'status,optional'; validate: 'omitempty,lt=20']
+// 	// Username | 用户名
+// 	// max length : 50
+// 	username &string @[json: 'username,optional'; validate: 'omitempty,max=50']
+// 	// Nickname | 昵称
+// 	// max length : 40
+// 	nickname &string @[json: 'nickname,optional'; validate: 'omitempty,max=40']
+// 	// Password | 密码
+// 	// min length : 6
+// 	password &string @[json: 'password,optional'; validate: 'omitempty,min=6']
+// 	// Description | 描述
+// 	// max length : 100
+// 	description &string @[json: 'description,optional'; validate: 'omitempty,max=100']
+// 	// HomePath | 首页
+// 	// max length : 70
+// 	homepath &string @[json: 'homePath,optional'; validate: 'omitempty,max=70']
+// 	// RoleId | 角色ID
+// 	roleids []u64 @[json: 'roleIds,optional']
+// 	// Mobile | 手机号
+// 	// max length : 18
+// 	mobile &string @[json: 'mobile,optional'; validate: 'omitempty,max=18']
+// 	// Email | 邮箱
+// 	// max length : 80
+// 	email &string @[json: 'email,optional'; validate: 'omitempty,max=80']
+// 	// Avatar | 头像地址
+// 	// max length : 300
+// 	avatar &string @[json: 'avatar,optional'; validate: 'omitempty,max=300']
+// 	// Department ID | 部门ID
+// 	departmentid &u64 @[json: 'departmentId,optional,omitempty']
+// 	// Position ID | 职位ID
+// 	positionids []u64 @[json: 'positionId,optional,omitempty']
+// }
