@@ -11,13 +11,12 @@ import internal.structs { Context, json_error, json_success }
 fn (app &User) index(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	mut data := get_user_list(1,2) //or { return ctx.json(json_error(503, '${err}')) }
-	dump(data)
-	return ctx.json(json_success('success', data))
+	mut result := get_user_list(1,2) or { return ctx.json(json_error(503, '${err}')) }
+	return ctx.json(json_success('success', result))
 }
 
 
-pub fn get_user_list(page int ,page_size int)  Result {
+pub fn get_user_list(page int ,page_size int)  !Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
@@ -27,25 +26,35 @@ pub fn get_user_list(page int ,page_size int)  Result {
 		select count from schema.SysUser
 	} or {
 		log.debug('select count from schema.SysUser 查询失败')
-		panic(err)
-		// return err
+		return err
 	}
-	dump(count)
 	// 分页数据查询
 	offset_num := (page - 1) * page_size
 	mut result := sql db {
 		select from schema.SysUser limit page_size offset offset_num
 	} or {
 		log.debug('result 查询失败')
-		panic(err)
-		// return err
+		return err
 	}
 
 	mut maplist := []map[string]string{} //map空数组初始化
  	for row in result {
 		mut data := map[string]string{} // map初始化
 		data['id'] = '${row.id}' //主键ID
-		data['raw_data'] = '${row.deleted_at}'
+		data['Username'] = '${row.username}'
+		data['Nickname'] = '${row.nickname}'
+		data['Mobile'] = '${row.mobile}'
+		// data['RoleIds'] = '${row.role_id}'
+		data['Email'] = '${row.email}'
+		data['Avatar'] = '${row.avatar}'
+		data['Status'] = '${row.status}'
+		data['Description'] = '${row.description}'
+		data['HomePath'] = '${row.home_path}'
+		data['DepartmentIds'] = '${row.department_id}'
+		// data['PositionIds'] = '${row.position_id}'
+		data['CreatedAt'] = '${row.created_at}'
+		data['UpdatedAt'] = '${row.updated_at}'
+		data['DeletedAt'] = '${row.deleted_at}'
 
 		maplist << data //追加data到maplist 数组
  	}
