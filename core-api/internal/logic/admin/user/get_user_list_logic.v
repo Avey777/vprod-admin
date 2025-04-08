@@ -92,56 +92,67 @@ struct PageInfo {
 	page_size u64 @[json: 'pageSize'; validate: 'required,number,lt=100000']
 }
 
+
 @['/user_id'; get]
-pub fn (app &User) index(mut ctx Context) veb.Result {
+fn (app &User) index(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	mut data := get_user_list() or { return ctx.json(json_error(503, '${err}')) }
-	return ctx.json(json_success('success', '${data}'))
+
+	mut data := get_user_list(1,2) //or { return ctx.json(json_error(503, '${err}')) }
+	dump(data)
+
+
+	return ctx.json(json_success('success', data))
 }
 
-pub fn get_user_list() ![]map[string]string {
+// 定义通用分页响应结构体
+struct Result {
+    total int   @[json: 'total']  // 总记录数
+    data  []map[string]string   @[json: 'data']   // 实际数据
+}
+
+pub fn get_user_list(page int ,page_size int)  Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
 	defer { db.close() }
-
+	// 总页数查询
 	mut count := sql db {
 		select count from schema.SysUser
 	} or {
-		log.debug('sql查询失败')
-		return err
+		log.debug('select count from schema.SysUser 查询失败')
+		panic(err)
+		// return err
 	}
 	dump(count)
-
-	page_size := 2
-
-	// // 分页数据查询
- //  offset_page := (PageInfo.page - 1) * PageInfo.page_size
-
-	mut res := sql db {
-		select  from schema.SysUser limit page_size offset 0
+	// 分页数据查询
+	offset_num := (page - 1) * page_size
+	mut result := sql db {
+		select from schema.SysUser limit page_size offset offset_num
 	} or {
-		log.debug('sql查询失败')
-		return err
+		log.debug('result 查询失败')
+		panic(err)
+		// return err
 	}
 
-	mut mapstrlist := []map[string]string{} //创建空数组
-	for row in res {
-		mut data := map[string]string{} // a map with string keys and string values
+	mut maplist := []map[string]string{} //map空数组初始化
+ 	for row in result {
+		mut data := map[string]string{} // map初始化
 		data['id'] = '${row.id}' //主键ID
-		// data['raw_data'] = '${row.deleted_at}'
-		// data['category_id'] = '${row.category_id}' //类目id
-		// data['category_name'] = '${row.category_name}' //类目名称
-		// data['subject'] = '${row.subject}' // 标题
-		// data['subject_trans'] = '${row.subject_trans}' // 外文标题
-		// data["description"] = '$row.description'// 描述
+		data['raw_data'] = '${row.deleted_at}'
 
-		mapstrlist << data //追加data到mapstrlist 数组
+		maplist << data //追加data到maplist 数组
+ 	}
+
+ 	result_data := Result{
+		total: count
+		data:  maplist
 	}
-
-	return mapstrlist
+	return result_data
 }
 
+
+
+/***************************************************************************************************/
 // 用户列表请求参数
 // swagger:model UserListReq
 pub struct UserListReq {
@@ -188,8 +199,6 @@ pub:
 	// 用户数据 | User information
 	data []UserInfo @[json: 'data']
 }
-
-
 
 // The basic response with data | 基础带数据信息
 // swagger:model BaseDataInfo
