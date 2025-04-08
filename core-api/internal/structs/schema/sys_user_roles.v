@@ -4,6 +4,6 @@ module schema
 @[table: 'sys_user_roles']
 pub struct SysUserRole {
 pub:
-	user_id string @[primary; sql_type: 'CHAR(36)'; zcomments: '用户ID']
-	role_id string @[primary; sql_type: 'CHAR(36)'; zcomments: '角色ID']
+	user_id string @[sql_type: 'CHAR(36)'; zcomments: '用户ID']
+	role_id string @[sql_type: 'CHAR(36)'; zcomments: '角色ID']
 }

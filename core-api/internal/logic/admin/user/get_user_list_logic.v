@@ -11,10 +11,11 @@ import internal.structs { Context, json_error, json_success }
 fn (app &User) index(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	mut result := get_user_list(1,2) or { return ctx.json(json_error(503, '${err}')) }
+	mut result := get_user_list(1,3) or { return ctx.json(json_error(503, '${err}')) }
 	return ctx.json(json_success('success', result))
 }
 
+type Any = string | int | bool | []string | map[string]int | []map[string]string
 
 pub fn get_user_list(page int ,page_size int)  !Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -37,21 +38,36 @@ pub fn get_user_list(page int ,page_size int)  !Result {
 		return err
 	}
 
-	mut maplist := []map[string]string{} //map空数组初始化
+	mut maplist := []map[string]Any{} //map空数组初始化
  	for row in result {
-		mut data := map[string]string{} // map初始化
+		mut data := map[string]Any{} // map初始化
 		data['id'] = '${row.id}' //主键ID
 		data['Username'] = '${row.username}'
 		data['Nickname'] = '${row.nickname}'
 		data['Mobile'] = '${row.mobile}'
-		// data['RoleIds'] = '${row.role_id}'
+		/*--------------------------------------------------------------------*/
+		mut user_role := sql db {
+		  select from schema.SysUserRole where user_id == row.id
+		} or {return err}
+		mut user_roles_ids_list := []string{} //map空数组初始化
+		for row_urs in user_role { user_roles_ids_list << row_urs.role_id }
+		data['RoleIds'] = user_roles_ids_list
+		/*--------------------------------------------------------------------*/
 		data['Email'] = '${row.email}'
 		data['Avatar'] = '${row.avatar}'
 		data['Status'] = '${row.status}'
 		data['Description'] = '${row.description}'
 		data['HomePath'] = '${row.home_path}'
 		data['DepartmentIds'] = '${row.department_id}'
-		// data['PositionIds'] = '${row.position_id}'
+		/*--------------------------------------------------------------------*/
+		mut user_position := sql db {
+		  select from schema.SysUserPosition where user_id == row.id
+		} or {return err}
+		mut user_position_ids_list := []string{} //map空数组初始化
+		for row_ups in user_position { user_position_ids_list << row_ups.position_id }
+		data['PositionIds'] = user_position_ids_list
+		/*--------------------------------------------------------------------*/
+		// data['PositionIds'] = '${row.user_position}'
 		data['CreatedAt'] = '${row.created_at}'
 		data['UpdatedAt'] = '${row.updated_at}'
 		data['DeletedAt'] = '${row.deleted_at}'
@@ -69,7 +85,7 @@ pub fn get_user_list(page int ,page_size int)  !Result {
 // 定义通用分页响应结构体
 struct Result {
     total int   @[json: 'total']  // 总记录数
-    data  []map[string]string   @[json: 'data']   // 实际数据
+    data  []map[string]Any   @[json: 'data']   // 实际数据
 }
 
 // The page request parameters | 列表请求参数
