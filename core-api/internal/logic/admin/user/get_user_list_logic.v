@@ -2,11 +2,12 @@ module user
 
 import veb
 import log
+import time
 import internal.config { db_mysql }
 import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
 
-type Any = string | int | bool | []string | map[string]int | []map[string]string | []map[string]Any
+type Any = string | []string | int | []int | bool | time.Time | map[string]int | []map[string]string | []map[string]Any
 
 
 @['/user_id'; get]
@@ -41,10 +42,10 @@ pub fn get_user_list(page int ,page_size int)  !map[string]Any {
 	mut datalist := []map[string]Any{} //map空数组初始化
  	for row in result {
 		mut data := map[string]Any{} // map初始化
-		data['id'] = '${row.id}' //主键ID
-		data['Username'] = '${row.username}'
-		data['Nickname'] = '${row.nickname}'
-		data['Mobile'] = '${row.mobile}'
+		data['id'] = row.id //主键ID
+		data['Username'] = row.username
+		data['Nickname'] = row.nickname
+		data['Mobile'] = row.mobile or {'none'}
 		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		mut user_role := sql db {
 		  select from schema.SysUserRole where user_id == row.id
@@ -53,12 +54,12 @@ pub fn get_user_list(page int ,page_size int)  !map[string]Any {
 		for row_urs in user_role { user_roles_ids_list << row_urs.role_id }
 		data['RoleIds'] = user_roles_ids_list
 		/*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
-		data['Email'] = '${row.email}'
-		data['Avatar'] = '${row.avatar}'
-		data['Status'] = '${row.status}'
-		data['Description'] = '${row.description}'
-		data['HomePath'] = '${row.home_path}'
-		data['DepartmentIds'] = '${row.department_id}'
+		data['Email'] = row.email or {'none'}
+		data['Avatar'] = row.avatar or {'none'}
+		data['Status'] = int(row.status)
+		data['Description'] = row.description or {'none'}
+		data['HomePath'] = row.home_path
+		data['DepartmentIds'] = row.department_id  or {'none'}
 		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		mut user_position := sql db {
 		  select from schema.SysUserPosition where user_id == row.id
@@ -67,9 +68,10 @@ pub fn get_user_list(page int ,page_size int)  !map[string]Any {
 		for row_ups in user_position { user_position_ids_list << row_ups.position_id }
 		data['PositionIds'] = user_position_ids_list
 		/*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
-		data['CreatedAt'] = '${row.created_at}'
-		data['UpdatedAt'] = '${row.updated_at}'
-		data['DeletedAt'] = '${row.deleted_at}'
+		data['CreatedAt'] = row.created_at.format_ss()
+		data['UpdatedAt'] = row.updated_at.format_ss()
+		data['DeletedAt'] = row.deleted_at or {time.Time{}}.format_ss()
+
 
 		datalist << data //追加data到maplist 数组
  	}
