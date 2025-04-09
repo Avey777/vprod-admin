@@ -45,7 +45,7 @@ pub fn get_user_list(page int ,page_size int)  !map[string]Any {
 		data['id'] = row.id //主键ID
 		data['Username'] = row.username
 		data['Nickname'] = row.nickname
-		data['Mobile'] = row.mobile or {'none'}
+		data['Mobile'] = row.mobile or {''}
 		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		mut user_role := sql db {
 		  select from schema.SysUserRole where user_id == row.id
@@ -54,12 +54,12 @@ pub fn get_user_list(page int ,page_size int)  !map[string]Any {
 		for row_urs in user_role { user_roles_ids_list << row_urs.role_id }
 		data['RoleIds'] = user_roles_ids_list
 		/*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
-		data['Email'] = row.email or {'none'}
-		data['Avatar'] = row.avatar or {'none'}
+		data['Email'] = row.email or {''}
+		data['Avatar'] = row.avatar or {''}
 		data['Status'] = int(row.status)
-		data['Description'] = row.description or {'none'}
+		data['Description'] = row.description or {''}
 		data['HomePath'] = row.home_path
-		data['DepartmentIds'] = row.department_id  or {'none'}
+		data['DepartmentIds'] = row.department_id  or {''}
 		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		mut user_position := sql db {
 		  select from schema.SysUserPosition where user_id == row.id
