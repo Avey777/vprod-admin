@@ -15,9 +15,9 @@ fn (app &User) index(mut ctx Context) veb.Result {
 	return ctx.json(json_success('success', result))
 }
 
-type Any = string | int | bool | []string | map[string]int | []map[string]string
+type Any = string | int | bool | []string | map[string]int | []map[string]string | []map[string]Any
 
-pub fn get_user_list(page int ,page_size int)  !Result {
+pub fn get_user_list(page int ,page_size int)  !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
@@ -38,7 +38,7 @@ pub fn get_user_list(page int ,page_size int)  !Result {
 		return err
 	}
 
-	mut maplist := []map[string]Any{} //map空数组初始化
+	mut datalist := []map[string]Any{} //map空数组初始化
  	for row in result {
 		mut data := map[string]Any{} // map初始化
 		data['id'] = '${row.id}' //主键ID
@@ -72,21 +72,16 @@ pub fn get_user_list(page int ,page_size int)  !Result {
 		data['UpdatedAt'] = '${row.updated_at}'
 		data['DeletedAt'] = '${row.deleted_at}'
 
-		maplist << data //追加data到maplist 数组
+		datalist << data //追加data到maplist 数组
  	}
 
- 	result_data := Result{
-		total: count
-		data:  maplist
-	}
+  mut result_data := map[string]Any{}
+  result_data['total'] = count
+  result_data['data'] = datalist
+
 	return result_data
 }
 
-// 定义通用分页响应结构体
-struct Result {
-    total int   @[json: 'total']  // 总记录数
-    data  []map[string]Any   @[json: 'data']   // 实际数据
-}
 
 // The page request parameters | 列表请求参数
 // swagger:model PageInfo
