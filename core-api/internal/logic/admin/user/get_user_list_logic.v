@@ -18,8 +18,10 @@ fn (app &User) index(mut ctx Context) veb.Result {
 
 	req_data := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
 	println(req_data.as_map()['username'] or {''}.str())
+	page := req_data.as_map()['page'] or {1}.int()
+	page_size := req_data.as_map()['page_size'] or {10}.int()
 
-	mut result := get_user_list(1,3) or { return ctx.json(json_error(503, '${err}')) }
+	mut result := get_user_list(page,page_size) or { return ctx.json(json_error(503, '${err}')) }
 	return ctx.json(json_success('success', result))
 }
 
@@ -35,11 +37,11 @@ pub fn get_user_list(page int ,page_size int)  !map[string]Any {
 		log.debug('select count from schema.SysUser 查询失败')
 		return err
 	}
-	 mut id_data := '1'
+
 	// 分页数据查询
 	offset_num := (page - 1) * page_size
 	mut result := sql db {
-		select from schema.SysUser where id==id_data limit page_size offset offset_num
+		select from schema.SysUser  limit page_size offset offset_num
 	} or {
 		log.debug('result 查询失败')
 		return err
@@ -88,183 +90,3 @@ pub fn get_user_list(page int ,page_size int)  !map[string]Any {
 
 	return result_data
 }
-
-
-// The page request parameters | 列表请求参数
-// swagger:model PageInfo
-struct PageInfo {
-	// Page number | 第几页,当前页码
-	// required : true
-	// min : 0
-	page u64 @[json: 'page'; validate: 'required,number,gt=0']
-	// Page size | 单页数据行数
-	// required : true
-	// max : 100000
-	page_size u64 @[json: 'pageSize'; validate: 'required,number,lt=100000']
-}
-
-/***************************************************************************************************/
-// 用户列表请求参数
-// swagger:model UserListReq
-pub struct UserListReq {
-pub:
-	// 分页信息
-	// page_info PageInfo
-	// 用户名 | User Name
-	// 最大长度: 20 | max length: 20
-	username ?string @[json: 'username,optional'; validate: 'omitempty,alphanum,max=20']
-
-	// 用户昵称 | User's nickname
-	// 最大长度: 10 | max length: 10
-	nickname ?string @[json: 'nickname,optional'; validate: 'omitempty,alphanumunicode,max=10']
-
-	// 手机号码 | User's mobile phone number
-	// 最大长度: 18 | max length: 18
-	mobile ?string @[json: 'mobile,optional'; validate: 'omitempty,eq=|numeric,max=18']
-
-	// 邮箱地址 | User's email address
-	// 最大长度: 100 | max length: 100
-	email ?string @[json: 'email,optional'; validate: 'omitempty,email,max=100']
-
-	// 角色ID列表 | User's role IDs
-	role_ids []u64 @[json: 'roleIds,optional']
-
-	// 部门ID | User's department ID
-	department_id ?u64 @[json: 'departmentId,optional']
-
-	// 职位ID | User's position ID
-	position_id ?u64 @[json: 'positionId,optional']
-
-}
-
-// // 用户信息响应
-// // swagger:model UserInfoResp
-// pub struct UserInfoResp {
-// pub:
-// 	// 基础响应信息
-// 	base_data []BaseDataInfo
-
-// 	// 用户数据 | User information
-// 	data []UserInfo @[json: 'data']
-// }
-
-// // The basic response with data | 基础带数据信息
-// // swagger:model BaseDataInfo
-// struct BaseDataInfo {
-// 	// Error code | 错误代码
-// 	code int @[json: 'code']
-// 	// Message | 提示信息
-// 	msg string @[json: 'msg']
-// 	// Data | 数据
-// 	data string @[json: 'data,omitempty']
-// }
-
-// // The response data of user information | 用户信息
-// // swagger:model UserInfo
-// struct UserInfo {
-// 	// BaseUUIDInfo
-// 	// Status | 状态
-// 	// max : 20
-// 	status &u32 @[json: 'status,optional'; validate: 'omitempty,lt=20']
-// 	// Username | 用户名
-// 	// max length : 50
-// 	username &string @[json: 'username,optional'; validate: 'omitempty,max=50']
-// 	// Nickname | 昵称
-// 	// max length : 40
-// 	nickname &string @[json: 'nickname,optional'; validate: 'omitempty,max=40']
-// 	// Password | 密码
-// 	// min length : 6
-// 	password &string @[json: 'password,optional'; validate: 'omitempty,min=6']
-// 	// Description | 描述
-// 	// max length : 100
-// 	description &string @[json: 'description,optional'; validate: 'omitempty,max=100']
-// 	// HomePath | 首页
-// 	// max length : 70
-// 	homepath &string @[json: 'homePath,optional'; validate: 'omitempty,max=70']
-// 	// RoleId | 角色ID
-// 	roleids []u64 @[json: 'roleIds,optional']
-// 	// Mobile | 手机号
-// 	// max length : 18
-// 	mobile &string @[json: 'mobile,optional'; validate: 'omitempty,max=18']
-// 	// Email | 邮箱
-// 	// max length : 80
-// 	email &string @[json: 'email,optional'; validate: 'omitempty,max=80']
-// 	// Avatar | 头像地址
-// 	// max length : 300
-// 	avatar &string @[json: 'avatar,optional'; validate: 'omitempty,max=300']
-// 	// Department ID | 部门ID
-// 	departmentid &u64 @[json: 'departmentId,optional,omitempty']
-// 	// Position ID | 职位ID
-// 	positionids []u64 @[json: 'positionId,optional,omitempty']
-// }
-
-/*****************************************************************************************/
-
-// package user
-
-// import (
-// 	"context"
-
-// 	"github.com/suyuan32/simple-admin-common/i18n"
-
-// 	"github.com/suyuan32/simple-admin-core/api/internal/svc"
-// 	"github.com/suyuan32/simple-admin-core/api/internal/types"
-// 	"github.com/suyuan32/simple-admin-core/rpc/types/core"
-
-// 	"github.com/zeromicro/go-zero/core/logx"
-// )
-
-// type GetUserListLogic struct {
-// 	logx.Logger
-// 	ctx    context.Context
-// 	svcCtx *svc.ServiceContext
-// }
-
-// func NewGetUserListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUserListLogic {
-// 	return &GetUserListLogic{
-// 		Logger: logx.WithContext(ctx),
-// 		ctx:    ctx,
-// 		svcCtx: svcCtx,
-// 	}
-// }
-
-// func (l *GetUserListLogic) GetUserList(req *types.UserListReq) (resp *types.UserListResp, err error) {
-// 	data, err := l.svcCtx.CoreRpc.GetUserList(l.ctx, &core.UserListReq{
-// 		Page:         req.Page,
-// 		PageSize:     req.PageSize,
-// 		Username:     req.Username,
-// 		Nickname:     req.Nickname,
-// 		Email:        req.Email,
-// 		Mobile:       req.Mobile,
-// 		RoleIds:      req.RoleIds,
-// 		DepartmentId: req.DepartmentId,
-// 		Description:  req.Description,
-// 	})
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	resp = &types.UserListResp{}
-// 	for _, v := range data.Data {
-// 		resp.Data.Data = append(resp.Data.Data, types.UserInfo{
-// 			BaseUUIDInfo: types.BaseUUIDInfo{
-// 				Id:        v.Id,
-// 				CreatedAt: v.CreatedAt,
-// 				UpdatedAt: v.UpdatedAt,
-// 			},
-// 			Username:     v.Username,
-// 			Nickname:     v.Nickname,
-// 			Mobile:       v.Mobile,
-// 			RoleIds:      v.RoleIds,
-// 			Email:        v.Email,
-// 			Avatar:       v.Avatar,
-// 			Status:       v.Status,
-// 			Description:  v.Description,
-// 			HomePath:     v.HomePath,
-// 			DepartmentId: v.DepartmentId,
-// 			PositionIds:  v.PositionIds,
-// 		})
-// 	}
-// 	resp.Data.Total = data.Total
-// 	resp.Msg = l.svcCtx.Trans.Trans(l.ctx, i18n.Success)
-// 	return resp, nil
-// }
