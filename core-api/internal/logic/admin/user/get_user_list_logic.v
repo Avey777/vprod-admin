@@ -3,6 +3,7 @@ module user
 import veb
 import log
 import time
+import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
@@ -10,9 +11,13 @@ import internal.structs { Context, json_error, json_success }
 type Any = string | []string | int | []int | bool | time.Time | map[string]int | []map[string]string | []map[string]Any
 
 
-@['/user_id'; get]
+@['/user_id'; post]
 fn (app &User) index(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
+
+	req_data := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
+	println(req_data.as_map()['username'] or {''}.str())
 
 	mut result := get_user_list(1,3) or { return ctx.json(json_error(503, '${err}')) }
 	return ctx.json(json_success('success', result))
@@ -30,10 +35,11 @@ pub fn get_user_list(page int ,page_size int)  !map[string]Any {
 		log.debug('select count from schema.SysUser 查询失败')
 		return err
 	}
+	 mut id_data := '1'
 	// 分页数据查询
 	offset_num := (page - 1) * page_size
 	mut result := sql db {
-		select from schema.SysUser limit page_size offset offset_num
+		select from schema.SysUser where id==id_data limit page_size offset offset_num
 	} or {
 		log.debug('result 查询失败')
 		return err
