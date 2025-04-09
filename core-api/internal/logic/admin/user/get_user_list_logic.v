@@ -45,29 +45,28 @@ pub fn get_user_list(page int ,page_size int)  !map[string]Any {
 		data['Username'] = '${row.username}'
 		data['Nickname'] = '${row.nickname}'
 		data['Mobile'] = '${row.mobile}'
-		/*--------------------------------------------------------------------*/
+		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		mut user_role := sql db {
 		  select from schema.SysUserRole where user_id == row.id
 		} or {return err}
 		mut user_roles_ids_list := []string{} //map空数组初始化
 		for row_urs in user_role { user_roles_ids_list << row_urs.role_id }
 		data['RoleIds'] = user_roles_ids_list
-		/*--------------------------------------------------------------------*/
+		/*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
 		data['Email'] = '${row.email}'
 		data['Avatar'] = '${row.avatar}'
 		data['Status'] = '${row.status}'
 		data['Description'] = '${row.description}'
 		data['HomePath'] = '${row.home_path}'
 		data['DepartmentIds'] = '${row.department_id}'
-		/*--------------------------------------------------------------------*/
+		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		mut user_position := sql db {
 		  select from schema.SysUserPosition where user_id == row.id
 		} or {return err}
 		mut user_position_ids_list := []string{} //map空数组初始化
 		for row_ups in user_position { user_position_ids_list << row_ups.position_id }
 		data['PositionIds'] = user_position_ids_list
-		/*--------------------------------------------------------------------*/
-		// data['PositionIds'] = '${row.user_position}'
+		/*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
 		data['CreatedAt'] = '${row.created_at}'
 		data['UpdatedAt'] = '${row.updated_at}'
 		data['DeletedAt'] = '${row.deleted_at}'
