@@ -8,11 +8,8 @@ import internal.config { db_mysql }
 import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
 
-type Any = string | []string | int | []int | bool | time.Time | map[string]int | []map[string]string | []map[string]Any
-
-
-@['/user_id'; post]
-fn (app &User) index(mut ctx Context) veb.Result {
+@['/list'; post]
+fn (app &User) user_list_logic(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
@@ -21,11 +18,11 @@ fn (app &User) index(mut ctx Context) veb.Result {
 	page := req_data.as_map()['page'] or {1}.int()
 	page_size := req_data.as_map()['page_size'] or {10}.int()
 
-	mut result := get_user_list(page,page_size) or { return ctx.json(json_error(503, '${err}')) }
+	mut result := user_list(page,page_size) or { return ctx.json(json_error(503, '${err}')) }
 	return ctx.json(json_success('success', result))
 }
 
-pub fn get_user_list(page int ,page_size int)  !map[string]Any {
+pub fn user_list(page int ,page_size int)  !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
@@ -49,37 +46,36 @@ pub fn get_user_list(page int ,page_size int)  !map[string]Any {
 
 	mut datalist := []map[string]Any{} //map空数组初始化
  	for row in result {
-		mut data := map[string]Any{} // map初始化
+    mut data := map[string]Any{} // map初始化
 		data['id'] = row.id //主键ID
-		data['Username'] = row.username
-		data['Nickname'] = row.nickname
-		data['Mobile'] = row.mobile or {''}
+		data['username'] = row.username
+		data['nickname'] = row.nickname
+		data['mobile'] = row.mobile or {''}
 		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		mut user_role := sql db {
 		  select from schema.SysUserRole where user_id == row.id
 		} or {return err}
 		mut user_roles_ids_list := []string{} //map空数组初始化
 		for row_urs in user_role { user_roles_ids_list << row_urs.role_id }
-		data['RoleIds'] = user_roles_ids_list
+		data['roleIds'] = user_roles_ids_list
 		/*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
-		data['Email'] = row.email or {''}
-		data['Avatar'] = row.avatar or {''}
-		data['Status'] = int(row.status)
-		data['Description'] = row.description or {''}
-		data['HomePath'] = row.home_path
-		data['DepartmentIds'] = row.department_id  or {''}
+		data['email'] = row.email or {''}
+		data['avatar'] = row.avatar or {''}
+		data['status'] = int(row.status)
+		data['description'] = row.description or {''}
+		data['homePath'] = row.home_path
+		data['departmentId'] = row.department_id  or {''}
 		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		mut user_position := sql db {
 		  select from schema.SysUserPosition where user_id == row.id
 		} or {return err}
 		mut user_position_ids_list := []string{} //map空数组初始化
 		for row_ups in user_position { user_position_ids_list << row_ups.position_id }
-		data['PositionIds'] = user_position_ids_list
+		data['positionId'] = user_position_ids_list
 		/*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
-		data['CreatedAt'] = row.created_at.format_ss()
-		data['UpdatedAt'] = row.updated_at.format_ss()
-		data['DeletedAt'] = row.deleted_at or {time.Time{}}.format_ss()
-
+		data['createdAt'] = row.created_at.format_ss()
+		data['updatedAt'] = row.updated_at.format_ss()
+		data['deletedAt'] = row.deleted_at or {time.Time{}}.format_ss()
 
 		datalist << data //追加data到maplist 数组
  	}
