@@ -7,7 +7,7 @@ import internal.config { db_mysql }
 import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
 
-@['/info'; post]
+@['/info'; get]
 fn (app &User) user_info_logic(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
@@ -20,8 +20,8 @@ fn (app &User) user_info_logic(mut ctx Context) veb.Result {
 pub fn user_info(req_data json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	page := req_data.as_map()['page'] or { 1 }.int()
-	dump(page)
+	userid := req_data.as_map()['userId'] or { 1 }.int()
+	dump(userid)
 
 	mut db := db_mysql()
 	defer { db.close() }
@@ -38,7 +38,6 @@ pub fn user_info(req_data json2.Any) !map[string]Any {
 		data['userId'] = row.id //主键ID
 		data['username'] = row.username
 		data['nickname'] = row.nickname
-
 		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		mut user_role := sql db {
 		  select from schema.SysUserRole where user_id == row.id
@@ -57,12 +56,3 @@ pub fn user_info(req_data json2.Any) !map[string]Any {
 
 	return map[string]Any{}
 }
-
-// UUID:           user.Id,
-// Username:       user.Username,
-// Nickname:       user.Nickname,
-// Avatar:         user.Avatar,
-// HomePath:       user.HomePath,
-// Description:    user.Description,
-// DepartmentName: l.svcCtx.Trans.Trans(l.ctx, *user.DepartmentName),
-// RoleName:       TransRoleName(l.svcCtx, l.ctx, user.RoleName),
