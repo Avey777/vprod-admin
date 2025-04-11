@@ -16,7 +16,7 @@ pub:
 	mobile        ?string    @[omitempty; sql_type: 'VARCHAR(255)'; zcomments: 'Mobile number | 手机号']
 	email         ?string    @[omitempty; sql_type: 'VARCHAR(255)'; zcomments: 'Email | 邮箱号']
 	avatar        ?string    @[omitempty; sql_type: 'VARCHAR(512)'; zcomments: 'Avatar | 头像路径']
-	department_id ?string    @[omitempty; optional; sql_type: 'VARCHAR(255)'; unique; zcomments: 'Department ID | 部门ID']
+	department_id ?string    @[omitempty; optional; sql_type: 'VARCHAR(255)'; zcomments: 'Department ID | 部门ID']
 	status        u8         @[default: 0; omitempty; sql_type: 'tinyint'; zcomments: '状态，0：正常，1：禁用']
 	updater_id    ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']
 	updated_at    time.Time  @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Update Time | 修改日期']

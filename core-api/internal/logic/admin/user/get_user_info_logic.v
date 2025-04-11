@@ -20,7 +20,7 @@ fn (app &User) user_info_logic(mut ctx Context) veb.Result {
 pub fn user_info(req_data json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	user_id := req_data.as_map()['userId'] or { 1 }.str()
+	user_id := req_data.as_map()['userId'] or { '' }.str()
 
 	mut db := db_mysql()
 	defer { db.close() }
@@ -39,19 +39,38 @@ pub fn user_info(req_data json2.Any) !map[string]Any {
 		data['nickname'] = row.nickname
 		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		mut user_role := sql db {
-		  select from schema.SysRole where id == user_id
+		  select from schema.SysUserRole  where user_id == user_id
 		} or {return err}
-		mut user_roles_ids_list := []string{} //map空数组初始化
-		for row_urs in user_role { user_roles_ids_list << row_urs.name }
-		data['roleName'] = user_roles_ids_list
+		mut user_role_ids := []string{}
+		for row_urs in user_role { user_role_ids << row_urs.role_id }
+
+		mut user_role_names := []string{}
+  	for raw_role_id in user_role_ids{
+      mut role := sql db {
+    		select from schema.SysRole where id == raw_role_id
+     	} or {return err}
+      for raw_name in role{ user_role_names << raw_name.name }
+  	}
+		data['roleName'] = user_role_names
 		/*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
 		data['avatar'] = row.avatar or {''}
 		data['desc'] = row.description or {''}
 		data['homePath'] = row.home_path
-		data['departmentName'] = row.department_id  or {''}
+		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
+		mut user_info := sql db {
+		  select from schema.SysUser  where id == user_id limit 1
+		} or {return err}
+
+		mut dpt_id := user_info[0].department_id or {''}
+		mut department_info := sql db {
+		  select from schema.SysDepartment  where id == dpt_id limit 1
+		} or {return err}
+
+		data['departmentName'] = department_info[0].name
+		/*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
 
 		datalist << data //追加data到maplist 数组
  	}
 
-	return map[string]Any{}
+	return datalist[0]
 }
