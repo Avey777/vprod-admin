@@ -13,11 +13,11 @@ pub:
 	price            int        @[omitempty; required; sql: 'price'; sql_type: 'int'; zcomments: '价格，单位：分']
 	pay_status       u8         @[omitempty; required; sql: 'pay_status'; sql_type: 'tinyint(1)'; zcomments: '是否支付']
 	pay_order_id     ?u64       @[omitempty; sql: 'pay_order_id'; sql_type: 'bigint unsigned'; zcomments: '支付订单编号']
-	pay_time         ?time.Time @[omitempty; sql: 'pay_time'; sql_type: 'TIMESTAMP'; zcomments: '付款时间']
+	pay_time         ?time.Time @[default: now; omitempty; sql: 'pay_time'; sql_type: 'TIMESTAMP'; zcomments: '付款时间']
 	pay_channel_code ?string    @[omitempty; sql: 'pay_channel_code'; sql_type: 'VARCHAR(255)'; zcomments: '支付渠道']
 	pay_refund_id    ?u64       @[omitempty; sql: 'pay_refund_id'; sql_type: 'bigint unsigned'; zcomments: '支付退款单号']
 	refund_price     ?int       @[omitempty; sql: 'refund_price'; sql_type: 'int'; zcomments: '退款金额，单位：分']
-	refund_time      ?time.Time @[omitempty; sql: 'refund_time'; sql_type: 'TIMESTAMP'; zcomments: '退款完成时间']
+	refund_time      ?time.Time @[default: now; omitempty; sql: 'refund_time'; sql_type: 'TIMESTAMP'; zcomments: '退款完成时间']
 
 	updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']
 	updated_at time.Time  @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Update Time | 修改日期']

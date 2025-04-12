@@ -11,7 +11,7 @@ pub:
 	username   string    @[default: '"unknown"'; omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Username | 用户名']
 	token      string    @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Token string | Token 字符串']
 	source     string    @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Log in source such as GitHub | Token 来源 （本地为core, 第三方如github等）']
-	expired_at time.Time @[omitempty; sql_type: 'TIMESTAMP'; zcomment: ' Expire time | 过期时间']
+	expired_at time.Time @[default: now; omitempty; sql_type: 'TIMESTAMP'; zcomment: ' Expire time | 过期时间']
 	status     u8        @[default: 0; omitempty; sql_type: 'tinyint'; zcomments: '状态，0：正常，1：禁用']
 
 	updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']

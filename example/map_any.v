@@ -29,8 +29,8 @@ import json
 struct Users {
 	id         string     @[immutable; primary; sql: 'id'; sql_type: 'VARCHAR(255)'; unique]
 	name       ?string    @[immutable; sql: 'name'; sql_type: 'VARCHAR(255)'; unique]
-	created_at ?time.Time @[omitempty; sql_type: 'TIMESTAMP']
-	updated_at ?time.Time @[omitempty; sql_type: 'TIMESTAMP']
+	created_at time.Time  @[omitempty; sql_type: 'TIMESTAMP']
+	updated_at ?time.Time @[default: now; omitempty; sql_type: 'TIMESTAMP']
 }
 
 type Any = string | int | []string | []int | bool | []map[string]Any | time.Time
@@ -38,6 +38,9 @@ type Any = string | int | []string | []int | bool | []map[string]Any | time.Time
 fn main() {
 	mut db := sqlite.connect(':memory:')!
 	defer { db.close() or {} }
+
+	timestamp := time.now().unix() // 获取秒级时间戳
+	println(timestamp)
 
 	sql db {
 		create table Users
