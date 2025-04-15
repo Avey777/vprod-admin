@@ -2,6 +2,7 @@ module user
 
 import veb
 import log
+import orm
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema
@@ -25,12 +26,10 @@ pub fn user_info(req_data json2.Any) !map[string]Any {
 	mut db := db_mysql()
 	defer { db.close() }
 
-	mut result := sql db {
-		select from schema.SysUser
-	} or {
-		log.debug('result 查询失败')
-		return err
-	}
+	mut qb := orm.new_query[schema.SysUser](db)
+	result := qb.select()!.query()!
+	dump(result)
+
 	mut datalist := []map[string]Any{} //map空数组初始化
  	for row in result {
 		mut data := map[string]Any{} // map初始化
@@ -60,11 +59,10 @@ pub fn user_info(req_data json2.Any) !map[string]Any {
 		mut user_info := sql db {
 		  select from schema.SysUser  where id == user_id limit 1
 		} or {return err}
-
 		mut dpt_id := user_info[0].department_id or {''}
-		mut department_info := sql db {
-		  select from schema.SysDepartment  where id == dpt_id limit 1
-		} or {return err}
+
+		mut qb_1 := orm.new_query[schema.SysDepartment](db)
+		department_info := qb_1.select('name')!.where('id = ?',dpt_id)!.query()!
 
 		data['departmentName'] = department_info[0].name
 		/*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/

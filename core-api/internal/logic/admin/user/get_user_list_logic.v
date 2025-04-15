@@ -39,17 +39,9 @@ pub fn user_list(page int ,page_size int)  !map[string]Any {
 	// 分页数据查询
 	offset_num := (page - 1) * page_size
 	dump(offset_num)
-	mut result := sql db {
-		select from schema.SysUser  limit page_size offset offset_num
-	} or {
-		log.debug('result 查询失败')
-		return err
-	}
 
-	// mut result := orm.new_query[schema.SysUser](db)
-	// result.select()
-	// result.where('username = ?','001')!
-	// result.query()!
+	mut qb := orm.new_query[schema.SysUser](db)
+	result := qb.select()!.limit(page_size)!.offset(offset_num)!.query()!
 
 	mut datalist := []map[string]Any{} //map空数组初始化
  	for row in result {

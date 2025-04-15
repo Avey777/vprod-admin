@@ -8,7 +8,7 @@ import orm
 struct User {
 pub:
 	id         string     @[immutable; primary; sql: 'id'; sql_type: 'VARCHAR(255)'; unique]
-	name       string     @[immutable; sql: 'name'; sql_type: 'VARCHAR(255)'; unique]
+	name       ?string    @[immutable; sql: 'names'; sql_type: 'VARCHAR(255)'; unique]
 	created_at time.Time  @[omitempty; sql_type: 'TIMESTAMP']
 	updated_at ?time.Time @[default: new; omitempty; sql_type: 'TIMESTAMP']
 }
@@ -18,8 +18,8 @@ fn main() {
 	defer { db.close() or {} }
 
 	user1 := User{
-		id:         '001'
-		name:       'Jengro'
+		id: '001'
+		// name:       'Jengro'
 		created_at: time.now()
 		updated_at: time.now()
 	}
@@ -46,7 +46,7 @@ fn main() {
 	// dump(result)
 
 	mut qb := orm.new_query[User](db)
-	result1 := qb.select('id', 'name')!
+	result1 := qb.select('id', 'names')!
 		.query()!
 	// qb.where('id != ?','000')!
 	dump(result1)

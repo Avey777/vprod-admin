@@ -53,14 +53,15 @@ module main
 
 import db.mysql
 import time
+import orm
 
 fn db_mysql() !mysql.DB {
 	mut mysql_config := mysql.Config{
-		host:     '127.0.0.1'
-		port:     3306
-		username: 'root'
-		password: 'mysql_123456'
-		dbname:   'vcore'
+		host:     'mysql2.sqlpub.com'
+		port:     3307
+		username: 'vcore_test'
+		password: 'wfo8wS7CylT0qIMg'
+		dbname:   'vcore_test'
 	}
 	mut conn := mysql.connect(mysql_config) or { return err }
 	return conn
@@ -70,25 +71,21 @@ fn db_mysql() !mysql.DB {
 struct User {
 pub:
 	id         string     @[immutable; primary; sql: 'id'; sql_type: 'VARCHAR(255)'; unique]
-	name       ?string    @[immutable; sql: 'name'; sql_type: 'VARCHAR(255)'; unique]
+	name       string     @[immutable; sql: 'username'; sql_type: 'VARCHAR(255)'; unique]
 	created_at ?time.Time @[omitempty; sql_type: 'TIMESTAMP']
 	updated_at time.Time  @[default: '0001-01-01T00:00:00 +00:00'; omitempty; sql_type: 'TIMESTAMP']
 }
 
 fn main() {
-	db := db_mysql() or { panic('failed to connect to database') }
-	// defer{
-	//   sql db {
-	//  	  delete table User
-	//    } or { panic(err) }
-	// }
-
-	sql db {
-		create table User
-	} or { panic(err) }
+	mut db := db_mysql() or { panic('failed to connect to database') }
+	defer { db.close() }
 
 	mut result := sql db {
 		select from User
 	} or { panic(err) }
 	dump(result)
+
+	mut qb := orm.new_query[User](db)
+	result1 := qb.select('id', 'username')!.query()!
+	dump(result1)
 }
