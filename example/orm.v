@@ -85,7 +85,9 @@ fn main() {
 	} or { panic(err) }
 	dump(result)
 
-	mut qb := orm.new_query[User](db)
-	result1 := qb.select('id', 'username')!.query()!
+	mut user := orm.new_query[User](db)
+	result1 := user.select('id', 'username')!.query()!
 	dump(result1)
+	result2 := user.where('id != ?', '001')!.count()!
+	dump(result2)
 }

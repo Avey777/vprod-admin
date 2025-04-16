@@ -15,33 +15,39 @@ fn (app &User) user_list_logic(mut ctx Context) veb.Result {
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
 	req_data := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
-	println(req_data.as_map()['username'] or {''}.str())
-	page := req_data.as_map()['page'] or {1}.int()
-	page_size := req_data.as_map()['page_size'] or {10}.int()
 
-	mut result := user_list(page,page_size) or { return ctx.json(json_error(503, '${err}')) }
+	mut result := user_list(req_data) or { return ctx.json(json_error(503, '${err}')) }
 	return ctx.json(json_success('success', result))
 }
 
-pub fn user_list(page int ,page_size int)  !map[string]Any {
+pub fn user_list(req_data json2.Any)  !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
+	page := req_data.as_map()['page'] or {1}.int()
+	page_size := req_data.as_map()['pageSize'] or {10}.int()
+	department_id := req_data.as_map()['departmentId']!.int()
+	username := req_data.as_map()['username']!.str()
+	nickname := req_data.as_map()['nickname']!.str()
+	position_id := req_data.as_map()['positionId']!.int()
+	mobile := req_data.as_map()['mobile']!.str()
+	email := req_data.as_map()['email']!.str()
 
 	mut db := db_mysql()
 	defer { db.close() }
+	mut sys_user := orm.new_query[schema.SysUser](db)
+	mut sys_user_position := orm.new_query[schema.SysUserPosition](db)
 	// 总页数查询
-	mut count := sql db {
-		select count from schema.SysUser
-	} or {
-		log.debug('select count from schema.SysUser 查询失败')
-		return err
-	}
-
+	mut count := sql db { select count from schema.SysUser }!
 	// 分页数据查询
 	offset_num := (page - 1) * page_size
-	dump(offset_num)
-
-	mut qb := orm.new_query[schema.SysUser](db)
-	result := qb.select()!.limit(page_size)!.offset(offset_num)!.query()!
+	result := sys_user.select()!
+                   	// .where('department_id = ?',department_id)!
+                   	// .where('username = ?',username)!
+                   	// .where('nickname = ?',nickname)!
+                   	// .where('position_id = ?',position_id)!
+                   	// .where('mobile = ?',mobile)!
+                   	.where('email = ?',email)!
+                   	.limit(page_size)!.offset(offset_num)!.query()!
 
 	mut datalist := []map[string]Any{} //map空数组初始化
  	for row in result {
@@ -51,9 +57,7 @@ pub fn user_list(page int ,page_size int)  !map[string]Any {
 		data['nickname'] = row.nickname
 		data['mobile'] = row.mobile or {''}
 		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
-		mut user_role := sql db {
-		  select from schema.SysUserRole where user_id == row.id
-		} or {return err}
+		mut user_role := sql db {select from schema.SysUserRole where user_id == row.id}!
 		mut user_roles_ids_list := []string{} //map空数组初始化
 		for row_urs in user_role { user_roles_ids_list << row_urs.role_id }
 		data['roleIds'] = user_roles_ids_list
@@ -65,9 +69,8 @@ pub fn user_list(page int ,page_size int)  !map[string]Any {
 		data['homePath'] = row.home_path
 		data['departmentId'] = row.department_id  or {''}
 		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
-		mut user_position := sql db {
-		  select from schema.SysUserPosition where user_id == row.id
-		} or {return err}
+		// mut user_position := sql db {select from schema.SysUserPosition where user_id == row.id}!
+		mut user_position := sys_user_position.select()!.where('user_id = ?',row.id)!.limit(1)!.query()!
 		mut user_position_ids_list := []string{} //map空数组初始化
 		for row_ups in user_position { user_position_ids_list << row_ups.position_id }
 		data['positionId'] = user_position_ids_list
