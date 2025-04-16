@@ -25,30 +25,42 @@ pub fn user_list(req_data json2.Any)  !map[string]Any {
 
 	page := req_data.as_map()['page'] or {1}.int()
 	page_size := req_data.as_map()['pageSize'] or {10}.int()
-	department_id := req_data.as_map()['departmentId']!.int()
-	username := req_data.as_map()['username']!.str()
-	nickname := req_data.as_map()['nickname']!.str()
-	position_id := req_data.as_map()['positionId']!.int()
-	mobile := req_data.as_map()['mobile']!.str()
-	email := req_data.as_map()['email']!.str()
+	department_id := req_data.as_map()['departmentId'] or {0}.int()
+	username := req_data.as_map()['username'] or {''}.str()
+	nickname := req_data.as_map()['nickname'] or {''}.str()
+	position_id := req_data.as_map()['positionId'] or {0}.int()
+	mobile := req_data.as_map()['mobile'] or {''}.str()
+	email := req_data.as_map()['email'] or {''}.str()
 
 	mut db := db_mysql()
 	defer { db.close() }
 	mut sys_user := orm.new_query[schema.SysUser](db)
 	mut sys_user_position := orm.new_query[schema.SysUserPosition](db)
-	// 总页数查询
+	// 总页数查询 - 分页偏移量构造
 	mut count := sql db { select count from schema.SysUser }!
-	// 分页数据查询
 	offset_num := (page - 1) * page_size
-	result := sys_user.select()!
-                   	// .where('department_id = ?',department_id)!
-                   	// .where('username = ?',username)!
-                   	// .where('nickname = ?',nickname)!
-                   	// .where('position_id = ?',position_id)!
-                   	// .where('mobile = ?',mobile)!
-                   	.where('email = ?',email)!
-                   	.limit(page_size)!.offset(offset_num)!.query()!
-
+	/*>>>*/
+	mut query := sys_user.select()!
+	if department_id != 0 {
+    query = query.where('department_id = ?', department_id)!
+  }
+  if username != '' {
+      query = query.where('username = ?', username)!
+  }
+  if nickname != '' {
+      query = query.where('nickname = ?', nickname)!
+  }
+  if position_id != 0 {
+      query = query.where('position_id = ?', position_id)!
+  }
+  if mobile != '' {
+      query = query.where('mobile = ?', mobile)!
+  }
+	if email != '' {
+    query = query.where('email = ?', email)!
+	}
+	result := query.limit(page_size)!.offset(offset_num)!.query()!
+	/*<<<*/
 	mut datalist := []map[string]Any{} //map空数组初始化
  	for row in result {
     mut data := map[string]Any{} // map初始化
