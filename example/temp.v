@@ -83,55 +83,21 @@
 //     return pool
 // }
 
-
-
-
 module main
 
 import time
 import orm
 import db.mysql
+import veb
 
 @[table: 'sys_users']
 struct User {
 pub:
-  id            string     @[immutable; primary; sql: 'id'; sql_type: 'VARCHAR(255)'; unique]
-  name          string     @[immutable; sql: 'username'; sql_type: 'VARCHAR(255)'; unique]
-  department_id ?string    @[omitempty; optional; sql_type: 'VARCHAR(255)']
-  created_at    time.Time  @[omitempty; sql_type: 'TIMESTAMP']
-  updated_at    time.Time  @[omitempty; sql_type: 'TIMESTAMP']
-}
-
-fn main() {
-
- 	mut db := db_mysql()!
-	defer { db.close() }
-
-	// //normal
-	// department_id := 0
-	// username := ""
-
-	// //normal
-	// department_id := 0
-	// username := "354"
-
-
-	//v panic
-	department_id := 1
-	username := "354"
-
-	mut sys_user := orm.new_query[User](db)
-
- 	mut query := sys_user.select()!
-	if department_id != 0 {
-     query = query.where('department_id = ?', department_id)!
-   }
-   if username != '' {
-       query = query.where('username = ?', username)!
-   }
-	result := query.limit(3)!.offset(0)!.query()!
-
-	dump(result)
+	id            string    @[immutable; primary; sql: 'id'; sql_type: 'VARCHAR(255)'; unique]
+	name          string    @[immutable; sql: 'username'; sql_type: 'VARCHAR(255)'; unique]
+	department_id ?string   @[omitempty; optional; sql_type: 'VARCHAR(255)']
+	created_at    time.Time @[omitempty; sql_type: 'TIMESTAMP']
+	updated_at    time.Time @[omitempty; sql_type: 'TIMESTAMP']
 }
 
 fn db_mysql() !mysql.DB {
@@ -144,4 +110,56 @@ fn db_mysql() !mysql.DB {
 	}
 	mut conn := mysql.connect(mysql_config) or { return err }
 	return conn
+}
+
+struct Context {
+	veb.Context
+}
+
+struct App {
+	veb.Middleware[Context]
+}
+
+struct Result {
+	total int
+	data  []map[string]string
+}
+
+fn (app &App) index(mut ctx Context) veb.Result {
+	mut db := db_mysql() or { return ctx.text('') }
+	defer { db.close() }
+
+	// //normal
+	// department_id := 0
+	// username := ''
+
+	// //normal
+	// department_id := 0
+	// username := "354"
+
+	// v panic
+	department_id := 1
+	username := '354'
+
+	mut sys_user := orm.new_query[User](db)
+
+	mut query := sys_user.select() or { return ctx.text('') }
+	if department_id != 0 {
+		query = query.where('department_id = ?', department_id) or { return ctx.text('') }
+	}
+	if username != '' {
+		query = query.where('username = ?', username) or { return ctx.text('') }
+	}
+	result := query.limit(3) or { return ctx.text('') }.offset(0) or { return ctx.text('') }.query() or {
+		return ctx.text('')
+	}
+
+	dump(result)
+	return ctx.json('${result}')
+}
+
+fn main() {
+	port := 28080
+	mut app := &App{}
+	veb.run[App, Context](mut app, port)
 }
