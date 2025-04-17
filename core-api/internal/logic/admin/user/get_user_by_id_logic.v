@@ -3,22 +3,23 @@ module user
 import veb
 import log
 import orm
+import time
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
 
-@['/info'; get]
-fn (app &User) user_info_logic(mut ctx Context) veb.Result {
+@['/id'; post]
+fn (app &User) user_id_logic(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req_data := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
 
-	mut result := user_info_resp(req_data) or { return ctx.json(json_error(503, '${err}')) }
+	mut result := user_id_resp(req_data) or { return ctx.json(json_error(503, '${err}')) }
 	return ctx.json(json_success('success', result))
 }
 
-pub fn user_info_resp(req_data json2.Any) !map[string]Any {
+pub fn user_id_resp(req_data json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	user_id := req_data.as_map()['userId'] or { '' }.str()
@@ -36,10 +37,12 @@ pub fn user_info_resp(req_data json2.Any) !map[string]Any {
 		data['userId'] = row.id //主键ID
 		data['username'] = row.username
 		data['nickname'] = row.nickname
+		data['status'] = int(row.status)
 		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		mut user_role := sql db {select from schema.SysUserRole  where user_id == user_id}!
 		mut user_role_ids := []string{}
 		for row_urs in user_role { user_role_ids << row_urs.role_id }
+		data['roleIds'] = user_role_ids
 
 		mut user_role_names := []string{}
   	for raw_role_id in user_role_ids{
@@ -51,6 +54,9 @@ pub fn user_info_resp(req_data json2.Any) !map[string]Any {
 		data['avatar'] = row.avatar or {''}
 		data['desc'] = row.description or {''}
 		data['homePath'] = row.home_path
+		data['mobile'] = row.mobile or {''}
+		data['email'] = row.email or {''}
+		data['departmentId'] = row.department_id or {''}
 		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		// mut user_info := sql db {select from schema.SysUser  where id == user_id limit 1}!
 		mut user_info := sys_user.select('department_id')!.where('id = ?', user_id)!.query()!
@@ -61,9 +67,32 @@ pub fn user_info_resp(req_data json2.Any) !map[string]Any {
 
 		data['departmentName'] = department_info[0].name
 		/*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
+		data['creator_id'] = row.creator_id or {''}
+		data['updater_id'] = row.updater_id or {''}
+		data['createdAt'] = row.created_at.format_ss()
+		data['updatedAt'] = row.updated_at.format_ss()
+		data['deletedAt'] = row.deleted_at or {time.Time{}}.format_ss()
 
 		datalist << data //追加data到maplist 数组
  	}
 
 	return datalist[0]
 }
+
+
+// BaseUUIDInfo: types.BaseUUIDInfo{
+// 				Id:        data.Id,
+// 				CreatedAt: data.CreatedAt,
+// 				UpdatedAt: data.UpdatedAt,
+// 			},
+// 			Status:       data.Status,
+// 			Username:     data.Username,
+// 			Nickname:     data.Nickname,
+// 			Description:  data.Description,
+// 			HomePath:     data.HomePath,
+// 			RoleIds:      data.RoleIds,
+// 			Mobile:       data.Mobile,
+// 			Email:        data.Email,
+// 			Avatar:       data.Avatar,
+// 			DepartmentId: data.DepartmentId,
+// 			PositionIds:  data.PositionIds,

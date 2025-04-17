@@ -1,6 +1,7 @@
 module structs
 
 import rand
+import time
 
 pub struct ApiErrorResponse {
 pub:
@@ -44,7 +45,7 @@ pub fn json_error(status_code int, message_error string) ApiErrorResponse {
 
 
 /*******可选参支持 - 不支持泛型*******->*/
-type SumResp = []string | string | bool | map[string]string | []int | int | map[string]int | map[string]bool
+type SumResp = []string | string | bool | map[string]string | []int | int | time.Time | map[string]int | map[string]bool
 
 @[params]
 pub struct ApiErrorResponseOptparams {

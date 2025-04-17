@@ -16,11 +16,11 @@ fn (app &User) user_list_logic(mut ctx Context) veb.Result {
 
 	req_data := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
 
-	mut result := user_list(req_data) or { return ctx.json(json_error(503, '${err}')) }
+	mut result := user_list_resp(req_data) or { return ctx.json(json_error(503, '${err}')) }
 	return ctx.json(json_success('success', result))
 }
 
-pub fn user_list(req_data json2.Any)  !map[string]Any {
+pub fn user_list_resp(req_data json2.Any)  !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	page := req_data.as_map()['page'] or {1}.int()
