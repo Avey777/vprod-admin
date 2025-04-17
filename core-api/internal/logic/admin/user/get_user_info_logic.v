@@ -33,7 +33,7 @@ pub fn user_info_resp(req_data json2.Any) !map[string]Any {
 	mut datalist := []map[string]Any{} //map空数组初始化
  	for row in result {
 		mut data := map[string]Any{} // map初始化
-		data['userId'] = row.id //主键ID
+		data['id'] = row.id //主键ID
 		data['username'] = row.username
 		data['nickname'] = row.nickname
 		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/

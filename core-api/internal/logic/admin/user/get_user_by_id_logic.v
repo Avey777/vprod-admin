@@ -34,7 +34,7 @@ pub fn user_id_resp(req_data json2.Any) !map[string]Any {
 	mut datalist := []map[string]Any{} //map空数组初始化
  	for row in result {
 		mut data := map[string]Any{} // map初始化
-		data['userId'] = row.id //主键ID
+		data['id'] = row.id //主键ID
 		data['username'] = row.username
 		data['nickname'] = row.nickname
 		data['status'] = int(row.status)
@@ -67,8 +67,8 @@ pub fn user_id_resp(req_data json2.Any) !map[string]Any {
 
 		data['departmentName'] = department_info[0].name
 		/*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
-		data['creator_id'] = row.creator_id or {''}
-		data['updater_id'] = row.updater_id or {''}
+		data['creatorId'] = row.creator_id or {''}
+		data['updaterId'] = row.updater_id or {''}
 		data['createdAt'] = row.created_at.format_ss()
 		data['updatedAt'] = row.updated_at.format_ss()
 		data['deletedAt'] = row.deleted_at or {time.Time{}}.format_ss()
@@ -78,21 +78,3 @@ pub fn user_id_resp(req_data json2.Any) !map[string]Any {
 
 	return datalist[0]
 }
-
-
-// BaseUUIDInfo: types.BaseUUIDInfo{
-// 				Id:        data.Id,
-// 				CreatedAt: data.CreatedAt,
-// 				UpdatedAt: data.UpdatedAt,
-// 			},
-// 			Status:       data.Status,
-// 			Username:     data.Username,
-// 			Nickname:     data.Nickname,
-// 			Description:  data.Description,
-// 			HomePath:     data.HomePath,
-// 			RoleIds:      data.RoleIds,
-// 			Mobile:       data.Mobile,
-// 			Email:        data.Email,
-// 			Avatar:       data.Avatar,
-// 			DepartmentId: data.DepartmentId,
-// 			PositionIds:  data.PositionIds,
