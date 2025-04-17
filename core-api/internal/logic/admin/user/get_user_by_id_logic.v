@@ -10,16 +10,16 @@ import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
 
 @['/id'; post]
-fn (app &User) user_id_logic(mut ctx Context) veb.Result {
+fn (app &User) user_by_id(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req_data := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
 
-	mut result := user_id_resp(req_data) or { return ctx.json(json_error(503, '${err}')) }
+	mut result := user_by_id_resp(req_data) or { return ctx.json(json_error(503, '${err}')) }
 	return ctx.json(json_success('success', result))
 }
 
-pub fn user_id_resp(req_data json2.Any) !map[string]Any {
+pub fn user_by_id_resp(req_data json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	user_id := req_data.as_map()['userId'] or { '' }.str()
@@ -28,7 +28,7 @@ pub fn user_id_resp(req_data json2.Any) !map[string]Any {
 	defer { db.close() }
 
 	mut sys_user := orm.new_query[schema.SysUser](db)
-	result := sys_user.select()!.query()!
+	result := sys_user.select('id = ?', user_id)!.query()!
 	dump(result)
 
 	mut datalist := []map[string]Any{} //map空数组初始化

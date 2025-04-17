@@ -85,22 +85,17 @@
 
 module main
 
-// import json
 import x.json2
 
-type Any = int | f64 | string | bool
+// type Any = int | f64 | string | bool
+// interface Any {}
 
 fn main() {
-	// mut q := json.encode(Any{
-	// 	name: 'John'
-	// 	age:  30
-	// })
-	// dump(q)
+	mut age := f64(100.00)
+	mut q1 := json2.encode(age)
+	dump(q1)
 
-	mut q2 := json2.encode(Any{
-		name:   'Jane'
-		age:    25
-		amount: 100.00
-	})
+	mut amount := f64(100.02)
+	mut q2 := json2.encode(amount)
 	dump(q2)
 }

@@ -9,7 +9,7 @@ import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
 
 @['/info'; get]
-fn (app &User) user_info_logic(mut ctx Context) veb.Result {
+fn (app &User) user_info(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req_data := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }

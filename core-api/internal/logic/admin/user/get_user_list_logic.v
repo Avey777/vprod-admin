@@ -10,7 +10,7 @@ import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
 
 @['/list'; post]
-fn (app &User) user_list_logic(mut ctx Context) veb.Result {
+fn (app &User) user_list(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
