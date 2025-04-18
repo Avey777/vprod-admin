@@ -33,19 +33,22 @@ fn create_user_resp(req_data json2.Any) !map[string]Any {
     mobile: req_data.as_map()['mobile'] or { '' }.str()
     nickname: req_data.as_map()['nickname'] or { '' }.str()
     password: req_data.as_map()['password'] or { '' }.str()
-    // position_id: req_data.as_map()['positionId'] or { []json2.Any{} }.arr()
-    // role_ids: req_data.as_map()['roleIds'] or { []json2.Any{} }.arr()
     status: req_data.as_map()['status'] or { 0 }.u8()
     username: req_data.as_map()['username'] or { '' }.str()
-    created_at: req_data.as_map()['createdAt'] or {time.Time{}}.to_time()!
-    updated_at: req_data.as_map()['updatedAt'] or {time.Time{}}.to_time()!
+    created_at: req_data.as_map()['createdAt'] or {time.now()}.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
+    updated_at: req_data.as_map()['updatedAt'] or {time.now()}.to_time()!
 	}
-	dump(users)
-	// mut db := db_mysql()
-	// defer { db.close() }
 
-	// mut sys_user := orm.new_query[schema.SysUser](db)
-	// pwd := sys_user.select('password')!.where('id = ?', user_id)!.query()!
+  // position_id := req_data.as_map()['positionId'] or { []json2.Any{} }.arr()
+  // role_ids := req_data.as_map()['roleIds'] or { []json2.Any{} }.arr()
+
+
+	dump(users)
+	mut db := db_mysql()
+	defer { db.close() }
+
+	mut sys_user := orm.new_query[schema.SysUser](db)
+	sys_user.insert(users)!
 
   return map[string]Any{}
 }
