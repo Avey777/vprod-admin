@@ -23,6 +23,13 @@ fn (app &User) create_user(mut ctx Context) veb.Result {
 fn create_user_resp(req_data json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
+	mut db := db_mysql()
+	defer { db.close() }
+
+	user_id := req_data.as_map()['id'] or { '' }.str()
+	position_ids :=req_data.as_map()['positionId'] or { []json2.Any{} }.arr()
+	rule_ids := req_data.as_map()['roleIds'] or { []json2.Any{} }.arr()
+
 	users := schema.SysUser{
    	id: req_data.as_map()['id'] or { '' }.str()
    	avatar: req_data.as_map()['avatar'] or { '' }.str()
@@ -39,28 +46,8 @@ fn create_user_resp(req_data json2.Any) !map[string]Any {
     updated_at: req_data.as_map()['updatedAt'] or {time.now()}.to_time()!
 	}
 
-	dump(users)
-	mut db := db_mysql()
-	defer { db.close() }
-
 	mut sys_user := orm.new_query[schema.SysUser](db)
 	sys_user.insert(users)!
-
-
-
- //  mut position_ids :=req_data.as_map()['positionId'] or { []json2.Any{} }.arr()
-	// mut position_id := orm.new_query[schema.SysUserPosition](db)
-	// for raw in position_ids {
- //    user_position := schema.SysUserPosition{
-	//   user_id: req_data.as_map()['id'] or { '' }.str()
-	//   position_id: raw.str()
- //    }
-	//   position_id.insert_many(user_position)!
-	// }
-
-
-	mut position_ids :=req_data.as_map()['positionId'] or { []json2.Any{} }.arr()
-	user_id := req_data.as_map()['id'] or { '' }.str()
 
 	mut user_positions := []schema.SysUserPosition{cap: position_ids.len}
   for raw in position_ids {
@@ -72,8 +59,15 @@ fn create_user_resp(req_data json2.Any) !map[string]Any {
   mut user_position := orm.new_query[schema.SysUserPosition](db)
   user_position.insert_many(user_positions)!
 
-
-  // user_role := req_data.as_map()['roleIds'] or { []json2.Any{} }.arr()
+  mut user_roles := []schema.SysUserRole{cap: rule_ids.len}
+  for raw in rule_ids {
+      user_roles << schema.SysUserRole{
+          user_id: user_id,
+          role_id: raw.str()
+      }
+  }
+  mut user_role := orm.new_query[schema.SysUserRole](db)
+  user_role.insert_many(user_roles)!
 
   return map[string]Any{}
 }
