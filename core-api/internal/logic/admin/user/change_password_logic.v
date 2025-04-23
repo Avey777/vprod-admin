@@ -37,6 +37,9 @@ fn change_password_resp(req json2.Any) !map[string]Any {
 	}
 
 	sys_user.reset()
-  sys_user.set('password = ?', new_password)!.where('id = ?', user_id)!.update()!
+  sys_user.set('password = ?', new_password)!
+          .where('id = ?', user_id)!
+          .update()!
+
   return map[string]Any{}
 }

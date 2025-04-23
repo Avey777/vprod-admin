@@ -32,11 +32,11 @@ fn update_user_profile_resp(req json2.Any) !map[string]Any {
 	defer { db.close() }
 
 	mut sys_user := orm.new_query[schema.SysUser](db)
-	sys_user.set('id = ?', user_id)!
-       	.set('avatar = ?', avatar)!
+	sys_user.set('avatar = ?', avatar)!
        	.set('email = ?', email)!
        	.set('mobile = ?', mobile)!
        	.set('nickname = ?', nickname)!
+        .where('id = ?', user_id)!
         .update()!
 
 	return  map[string]Any{}
