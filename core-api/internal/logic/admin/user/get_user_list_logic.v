@@ -15,8 +15,8 @@ fn (app &User) user_list(mut ctx Context) veb.Result {
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
-
 	mut result := user_list_resp(req) or { return ctx.json(json_error(503, '${err}')) }
+
 	return ctx.json(json_success('success', result))
 }
 

@@ -14,8 +14,8 @@ fn (app &User) change_password(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
-
 	mut result := change_password_resp(req) or { return ctx.json(json_error(503, '${err}')) }
+
 	return ctx.json(json_success('success', result))
 }
 

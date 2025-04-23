@@ -8,13 +8,14 @@ import internal.config { db_mysql }
 import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
 
+// Update User Profile ||更新用户资料
 @['/update_user_profile'; post]
 fn (app &User) update_user_profile_id(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
-
 	mut result := update_user_profile_resp(req) or { return ctx.json(json_error(503, '${err}')) }
+
 	return ctx.json(json_success('success', result))
 }
 

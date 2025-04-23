@@ -15,8 +15,8 @@ fn (app &User) token_list(mut ctx Context) veb.Result {
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
-
 	mut result := token_list_resp(req) or { return ctx.json(json_error(503, '${err}')) }
+
 	return ctx.json(json_success('success', result))
 }
 
@@ -37,23 +37,15 @@ pub fn token_list_resp(req json2.Any)  !map[string]Any {
 	// 总页数查询 - 分页偏移量构造
 	mut count := sql db { select count from schema.SysUser }!
 	offset_num := (page - 1) * page_size
-	/*>>>*/
+	//*>>>*/
 	mut query := sys_user.select()!
 
-  if username != '' {
-      query = query.where('username = ?', username)!
-  }
-  if nickname != '' {
-      query = query.where('nickname = ?', nickname)!
-  }
-  if mobile != '' {
-      query = query.where('mobile = ?', mobile)!
-  }
-	if email != '' {
-    query = query.where('email = ?', email)!
-	}
+  if username != '' {query = query.where('username = ?', username)!}
+  if nickname != '' {query = query.where('nickname = ?', nickname)!}
+  if mobile != '' {query = query.where('mobile = ?', mobile)!}
+	if email != '' {query = query.where('email = ?', email)!}
 	result := query.limit(page_size)!.offset(offset_num)!.query()!
-	/*<<<*/
+	//*<<<*/
 	mut datalist := []map[string]Any{} //map空数组初始化
  	for row in result {
     mut data := map[string]Any{} // map初始化
