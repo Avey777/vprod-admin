@@ -33,18 +33,17 @@ fn token_by_id_resp(req json2.Any)  !map[string]Any {
 	if token_id != '' {
 	 query = query.where('id = ?', token_id)!
 	}
-  result = query.query()!
+  result := query.query()!
 
 	mut datalist := []map[string]Any{} //map空数组初始化
  	for row in result {
     mut data := map[string]Any{} // map初始化
 		data['id'] = row.id //主键ID
 		data['username'] = row.username
-		data['nickname'] = row.nickname
-		data['mobile'] = row.mobile or {''}
-		data['email'] = row.email or {''}
-		data['token'] = row.token or {''}
-		data['source'] = row.source or {''}
+		// data['mobile'] = row.mobile or {''}
+		// data['email'] = row.email or {''}
+		data['token'] = row.token
+		data['source'] = row.source
 		data['expiredAt'] = row.expired_at.format_ss()
 		data['status'] = int(row.status)
 		data['createdAt'] = row.created_at.format_ss()

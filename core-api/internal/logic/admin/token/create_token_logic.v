@@ -76,7 +76,7 @@ fn create_user_resp(req json2.Any) !map[string]Any {
     status: req.as_map()['status'] or { 0 }.u8()
     username: req.as_map()['username'] or { '' }.str()
     source: req.as_map()['Source'] or { '' }.str()
-    expired_at: req.as_map()['expiredAt'].or { time.now() }.to_time()!
+    expired_at: req.as_map()['expiredAt'] or { time.now() }.to_time()!
     created_at: req.as_map()['createdAt'] or {time.now()}.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
     updated_at: req.as_map()['updatedAt'] or {time.now()}.to_time()!
 	}

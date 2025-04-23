@@ -26,9 +26,8 @@ fn token_list_resp(req json2.Any)  !map[string]Any {
 	page := req.as_map()['page'] or {1}.int()
 	page_size := req.as_map()['pageSize'] or {10}.int()
 	username := req.as_map()['username'] or {''}.str()
-	nickname := req.as_map()['nickname'] or {''}.str()
-	mobile := req.as_map()['mobile'] or {''}.str()
-	email := req.as_map()['email'] or {''}.str()
+	// mobile := req.as_map()['mobile'] or {''}.str()
+	// email := req.as_map()['email'] or {''}.str()
 
 	mut db := db_mysql()
 	defer { db.close() }
@@ -38,11 +37,8 @@ fn token_list_resp(req json2.Any)  !map[string]Any {
 	offset_num := (page - 1) * page_size
 	//*>>>*/
 	mut query := sys_token.select()!
-
-  if username != '' {query = query.where('username = ?', username)!}
-  if nickname != '' {query = query.where('nickname = ?', nickname)!}
-  if mobile != '' {query = query.where('mobile = ?', mobile)!}
-	if email != '' {query = query.where('email = ?', email)!}
+ //  if username != '' {query = query.where('username = ?', username)!}
+	// if email != '' {query = query.where('email = ?', email)!}
 	result := query.limit(page_size)!.offset(offset_num)!.query()!
 	//*<<<*/
 	mut datalist := []map[string]Any{} //map空数组初始化
@@ -50,11 +46,8 @@ fn token_list_resp(req json2.Any)  !map[string]Any {
     mut data := map[string]Any{} // map初始化
 		data['id'] = row.id //主键ID
 		data['username'] = row.username
-		data['nickname'] = row.nickname
-		data['mobile'] = row.mobile or {''}
-		data['email'] = row.email or {''}
-		data['token'] = row.token or {''}
-		data['source'] = row.source or {''}
+		data['token'] = row.token
+		data['source'] = row.source
 		data['expiredAt'] = row.expired_at.format_ss()
 		data['status'] = int(row.status)
 		data['createdAt'] = row.created_at.format_ss()
