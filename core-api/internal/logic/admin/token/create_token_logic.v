@@ -71,7 +71,7 @@ fn create_user_resp(req json2.Any) !map[string]Any {
 
 	token_id := req.as_map()['id'] or { '' }.str()
 
-	tokens := schema.SysUser{
+	tokens := schema.SysToken{
    	id: token_id
     status: req.as_map()['status'] or { 0 }.u8()
     username: req.as_map()['username'] or { '' }.str()
