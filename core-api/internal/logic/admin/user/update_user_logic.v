@@ -15,11 +15,11 @@ fn (app &User) update_user_id(mut ctx Context) veb.Result {
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
 
-	mut result := user_by_id_resp(req) or { return ctx.json(json_error(503, '${err}')) }
+	mut result := update_user_resp(req) or { return ctx.json(json_error(503, '${err}')) }
 	return ctx.json(json_success('success', result))
 }
 
-pub fn update_user_resp(req json2.Any) !map[string]Any {
+fn update_user_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	user_id := req.as_map()['userId'] or { '' }.str()
@@ -61,8 +61,7 @@ pub fn update_user_resp(req json2.Any) !map[string]Any {
   mut user_role := orm.new_query[schema.SysUserRole](db)
 
 
-	sys_user.set('id = ?', user_id)!
-         	.set('avatar = ?', avatar)!
+	sys_user.set('avatar = ?', avatar)!
          	.set('email = ?', email)!
          	.set('mobile = ?', mobile)!
          	.set('nickname = ?', nickname)!

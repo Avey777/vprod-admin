@@ -18,7 +18,7 @@ fn (app &User) user_info(mut ctx Context) veb.Result {
 	return ctx.json(json_success('success', result))
 }
 
-pub fn user_info_resp(req json2.Any) !map[string]Any {
+fn user_info_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	user_id := req.as_map()['userId'] or { '' }.str()

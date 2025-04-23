@@ -1,4 +1,4 @@
-module user
+module token
 
 import veb
 import log
@@ -10,25 +10,23 @@ import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
 
 @['/list'; post]
-fn (app &User) user_list(mut ctx Context) veb.Result {
+fn (app &User) token_list(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
 
-	mut result := user_list_resp(req) or { return ctx.json(json_error(503, '${err}')) }
+	mut result := token_list_resp(req) or { return ctx.json(json_error(503, '${err}')) }
 	return ctx.json(json_success('success', result))
 }
 
-fn user_list_resp(req json2.Any)  !map[string]Any {
+pub fn token_list_resp(req json2.Any)  !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	page := req.as_map()['page'] or {1}.int()
 	page_size := req.as_map()['pageSize'] or {10}.int()
-	department_id := req.as_map()['departmentId'] or {0}.int()
 	username := req.as_map()['username'] or {''}.str()
 	nickname := req.as_map()['nickname'] or {''}.str()
-	position_id := req.as_map()['positionId'] or {0}.int()
 	mobile := req.as_map()['mobile'] or {''}.str()
 	email := req.as_map()['email'] or {''}.str()
 
@@ -41,17 +39,12 @@ fn user_list_resp(req json2.Any)  !map[string]Any {
 	offset_num := (page - 1) * page_size
 	/*>>>*/
 	mut query := sys_user.select()!
-	if department_id != 0 {
-    query = query.where('department_id = ?', department_id)!
-  }
+
   if username != '' {
       query = query.where('username = ?', username)!
   }
   if nickname != '' {
       query = query.where('nickname = ?', nickname)!
-  }
-  if position_id != 0 {
-      query = query.where('position_id = ?', position_id)!
   }
   if mobile != '' {
       query = query.where('mobile = ?', mobile)!
@@ -68,25 +61,11 @@ fn user_list_resp(req json2.Any)  !map[string]Any {
 		data['username'] = row.username
 		data['nickname'] = row.nickname
 		data['mobile'] = row.mobile or {''}
-		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
-		mut user_role := sql db {select from schema.SysUserRole where user_id == row.id}!
-		mut user_roles_ids_list := []string{} //map空数组初始化
-		for row_urs in user_role { user_roles_ids_list << row_urs.role_id }
-		data['roleIds'] = user_roles_ids_list
-		/*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
 		data['email'] = row.email or {''}
-		data['avatar'] = row.avatar or {''}
+		data['token'] = row.token or {''}
+		data['source'] = row.source or {''}
+		data['expiredAt'] = row.expired_at or {''}
 		data['status'] = int(row.status)
-		data['description'] = row.description or {''}
-		data['homePath'] = row.home_path
-		data['departmentId'] = row.department_id  or {''}
-		/*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
-		// mut user_position := sql db {select from schema.SysUserPosition where user_id == row.id}!
-		mut user_position := sys_user_position.select()!.where('user_id = ?',row.id)!.limit(1)!.query()!
-		mut user_position_ids_list := []string{} //map空数组初始化
-		for row_ups in user_position { user_position_ids_list << row_ups.position_id }
-		data['positionId'] = user_position_ids_list
-		/*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
 		data['createdAt'] = row.created_at.format_ss()
 		data['updatedAt'] = row.updated_at.format_ss()
 		data['deletedAt'] = row.deleted_at or {time.Time{}}.format_ss()
