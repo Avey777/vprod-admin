@@ -29,7 +29,6 @@ fn user_by_id_resp(req json2.Any) !map[string]Any {
 
 	mut sys_user := orm.new_query[schema.SysUser](db)
 	result := sys_user.select('id = ?', user_id)!.query()!
-	dump(result)
 
 	mut datalist := []map[string]Any{} //map空数组初始化
  	for row in result {

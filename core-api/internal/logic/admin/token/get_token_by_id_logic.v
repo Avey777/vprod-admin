@@ -10,41 +10,31 @@ import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
 
 @['/list'; post]
-fn (app &User) token_list(mut ctx Context) veb.Result {
+fn (app &User) token_by_id(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
-	mut result := token_list_resp(req) or { return ctx.json(json_error(503, '${err}')) }
+	mut result := token_by_id_resp(req) or { return ctx.json(json_error(503, '${err}')) }
 
 	return ctx.json(json_success('success', result))
 }
 
-fn token_list_resp(req json2.Any)  !map[string]Any {
+pfn token_by_id_resp(req json2.Any)  !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	page := req.as_map()['page'] or {1}.int()
-	page_size := req.as_map()['pageSize'] or {10}.int()
-	username := req.as_map()['username'] or {''}.str()
-	nickname := req.as_map()['nickname'] or {''}.str()
-	mobile := req.as_map()['mobile'] or {''}.str()
-	email := req.as_map()['email'] or {''}.str()
+	token_id := req.as_map()['id'] or {''}.str()
 
 	mut db := db_mysql()
 	defer { db.close() }
-	mut sys_token := orm.new_query[schema.SysToken](db)
-	// 总页数查询 - 分页偏移量构造
-	mut count := sql db { select count from schema.SysUser }!
-	offset_num := (page - 1) * page_size
-	//*>>>*/
-	mut query := sys_token.select()!
 
-  if username != '' {query = query.where('username = ?', username)!}
-  if nickname != '' {query = query.where('nickname = ?', nickname)!}
-  if mobile != '' {query = query.where('mobile = ?', mobile)!}
-	if email != '' {query = query.where('email = ?', email)!}
-	result := query.limit(page_size)!.offset(offset_num)!.query()!
-	//*<<<*/
+	mut sys_token := orm.new_query[schema.SysToken](db)
+	mut query := sys_token.select()!
+	if token_id != '' {
+	 query = query.where('id = ?', token_id)!
+	}
+  result = query.query()!
+
 	mut datalist := []map[string]Any{} //map空数组初始化
  	for row in result {
     mut data := map[string]Any{} // map初始化
@@ -64,9 +54,5 @@ fn token_list_resp(req json2.Any)  !map[string]Any {
 		datalist << data //追加data到maplist 数组
  	}
 
-  mut result_data := map[string]Any{}
-  result_data['total'] = count
-  result_data['data'] = datalist
-
-	return result_data
+  return datalist[0]
 }
