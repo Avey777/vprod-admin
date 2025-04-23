@@ -31,7 +31,7 @@ fn create_user_resp(req_data json2.Any) !map[string]Any {
 	rule_ids := req_data.as_map()['roleIds'] or { []json2.Any{} }.arr()
 
 	users := schema.SysUser{
-   	id: req_data.as_map()['id'] or { '' }.str()
+   	id: user_id
    	avatar: req_data.as_map()['avatar'] or { '' }.str()
     department_id: req_data.as_map()['departmentId'] or { '' }.str()
     description: req_data.as_map()['description'] or { '' }.str()
@@ -46,9 +46,6 @@ fn create_user_resp(req_data json2.Any) !map[string]Any {
     updated_at: req_data.as_map()['updatedAt'] or {time.now()}.to_time()!
 	}
 
-	mut sys_user := orm.new_query[schema.SysUser](db)
-	sys_user.insert(users)!
-
 	mut user_positions := []schema.SysUserPosition{cap: position_ids.len}
   for raw in position_ids {
       user_positions << schema.SysUserPosition{
@@ -56,8 +53,6 @@ fn create_user_resp(req_data json2.Any) !map[string]Any {
           position_id: raw.str()
       }
   }
-  mut user_position := orm.new_query[schema.SysUserPosition](db)
-  user_position.insert_many(user_positions)!
 
   mut user_roles := []schema.SysUserRole{cap: rule_ids.len}
   for raw in rule_ids {
@@ -66,8 +61,15 @@ fn create_user_resp(req_data json2.Any) !map[string]Any {
           role_id: raw.str()
       }
   }
+
+  mut sys_user := orm.new_query[schema.SysUser](db)
+  mut user_position := orm.new_query[schema.SysUserPosition](db)
   mut user_role := orm.new_query[schema.SysUserRole](db)
+
+	sys_user.insert(users)!
+  user_position.insert_many(user_positions)!
   user_role.insert_many(user_roles)!
+
 
   return map[string]Any{}
 }
