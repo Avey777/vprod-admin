@@ -14,23 +14,23 @@ fn (app &User) user_list(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
-	req_data := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
+	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
 
-	mut result := user_list_resp(req_data) or { return ctx.json(json_error(503, '${err}')) }
+	mut result := user_list_resp(req) or { return ctx.json(json_error(503, '${err}')) }
 	return ctx.json(json_success('success', result))
 }
 
-pub fn user_list_resp(req_data json2.Any)  !map[string]Any {
+pub fn user_list_resp(req json2.Any)  !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	page := req_data.as_map()['page'] or {1}.int()
-	page_size := req_data.as_map()['pageSize'] or {10}.int()
-	department_id := req_data.as_map()['departmentId'] or {0}.int()
-	username := req_data.as_map()['username'] or {''}.str()
-	nickname := req_data.as_map()['nickname'] or {''}.str()
-	position_id := req_data.as_map()['positionId'] or {0}.int()
-	mobile := req_data.as_map()['mobile'] or {''}.str()
-	email := req_data.as_map()['email'] or {''}.str()
+	page := req.as_map()['page'] or {1}.int()
+	page_size := req.as_map()['pageSize'] or {10}.int()
+	department_id := req.as_map()['departmentId'] or {0}.int()
+	username := req.as_map()['username'] or {''}.str()
+	nickname := req.as_map()['nickname'] or {''}.str()
+	position_id := req.as_map()['positionId'] or {0}.int()
+	mobile := req.as_map()['mobile'] or {''}.str()
+	email := req.as_map()['email'] or {''}.str()
 
 	mut db := db_mysql()
 	defer { db.close() }

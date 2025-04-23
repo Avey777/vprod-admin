@@ -9,41 +9,41 @@ import internal.config { db_mysql }
 import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
 
-// Change Password | 修改密码
+// Create User | 创建用户
 @['/create_user'; post]
 fn (app &User) create_user(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req_data := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
+	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
 
-	mut result := create_user_resp(req_data) or { return ctx.json(json_error(503, '${err}')) }
+	mut result := create_user_resp(req) or { return ctx.json(json_error(503, '${err}')) }
 	return ctx.json(json_success('success', result))
 }
 
-fn create_user_resp(req_data json2.Any) !map[string]Any {
+fn create_user_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
 	defer { db.close() }
 
-	user_id := req_data.as_map()['id'] or { '' }.str()
-	position_ids :=req_data.as_map()['positionId'] or { []json2.Any{} }.arr()
-	rule_ids := req_data.as_map()['roleIds'] or { []json2.Any{} }.arr()
+	user_id := req.as_map()['id'] or { '' }.str()
+	position_ids :=req.as_map()['positionId'] or { []json2.Any{} }.arr()
+	rule_ids := req.as_map()['roleIds'] or { []json2.Any{} }.arr()
 
 	users := schema.SysUser{
    	id: user_id
-   	avatar: req_data.as_map()['avatar'] or { '' }.str()
-    department_id: req_data.as_map()['departmentId'] or { '' }.str()
-    description: req_data.as_map()['description'] or { '' }.str()
-    email: req_data.as_map()['email'] or { '' }.str()
-    home_path: req_data.as_map()['homePath'] or { '' }.str()
-    mobile: req_data.as_map()['mobile'] or { '' }.str()
-    nickname: req_data.as_map()['nickname'] or { '' }.str()
-    password: req_data.as_map()['password'] or { '' }.str()
-    status: req_data.as_map()['status'] or { 0 }.u8()
-    username: req_data.as_map()['username'] or { '' }.str()
-    created_at: req_data.as_map()['createdAt'] or {time.now()}.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
-    updated_at: req_data.as_map()['updatedAt'] or {time.now()}.to_time()!
+   	avatar: req.as_map()['avatar'] or { '' }.str()
+    department_id: req.as_map()['departmentId'] or { '' }.str()
+    description: req.as_map()['description'] or { '' }.str()
+    email: req.as_map()['email'] or { '' }.str()
+    home_path: req.as_map()['homePath'] or { '' }.str()
+    mobile: req.as_map()['mobile'] or { '' }.str()
+    nickname: req.as_map()['nickname'] or { '' }.str()
+    password: req.as_map()['password'] or { '' }.str()
+    status: req.as_map()['status'] or { 0 }.u8()
+    username: req.as_map()['username'] or { '' }.str()
+    created_at: req.as_map()['createdAt'] or {time.now()}.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
+    updated_at: req.as_map()['updatedAt'] or {time.now()}.to_time()!
 	}
 
 	mut user_positions := []schema.SysUserPosition{cap: position_ids.len}

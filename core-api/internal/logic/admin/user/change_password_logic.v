@@ -13,18 +13,18 @@ import internal.structs { Context, json_error, json_success }
 fn (app &User) change_password(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req_data := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
+	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
 
-	mut result := change_password_resp(req_data) or { return ctx.json(json_error(503, '${err}')) }
+	mut result := change_password_resp(req) or { return ctx.json(json_error(503, '${err}')) }
 	return ctx.json(json_success('success', result))
 }
 
-fn change_password_resp(req_data json2.Any) !map[string]Any {
+fn change_password_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	user_id := req_data.as_map()['userId'] or { '' }.str()
-	new_password := req_data.as_map()['newPassword'] or { '' }.str()
-	old_password := req_data.as_map()['oldPassword'] or { '' }.str()
+	user_id := req.as_map()['userId'] or { '' }.str()
+	new_password := req.as_map()['newPassword'] or { '' }.str()
+	old_password := req.as_map()['oldPassword'] or { '' }.str()
 
 	mut db := db_mysql()
 	defer { db.close() }
