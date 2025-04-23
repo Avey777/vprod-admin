@@ -10,7 +10,7 @@ import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
 
 @['/list'; post]
-fn (app &User) token_by_id(mut ctx Context) veb.Result {
+fn (app &Token) token_by_id(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
@@ -20,7 +20,7 @@ fn (app &User) token_by_id(mut ctx Context) veb.Result {
 	return ctx.json(json_success('success', result))
 }
 
-pfn token_by_id_resp(req json2.Any)  !map[string]Any {
+fn token_by_id_resp(req json2.Any)  !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	token_id := req.as_map()['id'] or {''}.str()
@@ -45,7 +45,7 @@ pfn token_by_id_resp(req json2.Any)  !map[string]Any {
 		data['email'] = row.email or {''}
 		data['token'] = row.token or {''}
 		data['source'] = row.source or {''}
-		data['expiredAt'] = row.expired_at or {''}
+		data['expiredAt'] = row.expired_at.format_ss()
 		data['status'] = int(row.status)
 		data['createdAt'] = row.created_at.format_ss()
 		data['updatedAt'] = row.updated_at.format_ss()
