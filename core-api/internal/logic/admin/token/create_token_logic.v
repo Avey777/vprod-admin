@@ -52,18 +52,18 @@ import internal.config { db_mysql }
 import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
 
-// Create User | 创建用户
-@['/create_user'; post]
-fn (app &Token) create_user(mut ctx Context) veb.Result {
+// Create Token | 创建Token
+@['/create_token'; post]
+fn (app &Token) create_token(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
-	mut result := create_user_resp(req) or { return ctx.json(json_error(503, '${err}')) }
+	mut result := create_token_resp(req) or { return ctx.json(json_error(503, '${err}')) }
 
 	return ctx.json(json_success('success', result))
 }
 
-fn create_user_resp(req json2.Any) !map[string]Any {
+fn create_token_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()

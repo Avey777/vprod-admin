@@ -9,7 +9,7 @@ import internal.config { db_mysql }
 import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
 
-@['/list'; post]
+@['/id'; post]
 fn (app &Token) token_by_id(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')

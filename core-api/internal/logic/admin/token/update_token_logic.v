@@ -40,13 +40,14 @@ module token
 import veb
 import log
 import orm
+import time
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
 
-// Update User Profile ||更新用户资料
-@['/update_user_profile'; post]
+// Update Token ||更新Token
+@['/update_token'; post]
 fn (app &Token) update_token(mut ctx Context) veb.Result {
 log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
@@ -60,21 +61,23 @@ fn update_token_resp(req json2.Any) !map[string]Any {
 log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 user_id := req.as_map()['userId'] or { '' }.str()
-avatar:= req.as_map()['avatar'] or { '' }.str()
-email:= req.as_map()['email'] or { '' }.str()
-mobile:= req.as_map()['mobile'] or { '' }.str()
-nickname:= req.as_map()['nickname'] or { '' }.str()
+status := req.as_map()['status'] or { 0 }.u8()
+username := req.as_map()['username'] or { '' }.str()
+source := req.as_map()['Source'] or { '' }.str()
+expired_at := req.as_map()['expiredAt'] or { time.now() }.to_time()!
+updated_at := req.as_map()['updatedAt'] or {time.now()}.to_time()!
 
 mut db := db_mysql()
 defer { db.close() }
 
 mut sys_token := orm.new_query[schema.SysToken](db)
-sys_token.set('avatar = ?', avatar)!
-.set('email = ?', email)!
-.set('mobile = ?', mobile)!
-.set('nickname = ?', nickname)!
-.where('id = ?', user_id)!
-.update()!
+sys_token.set('status = ?', status)!
+          .set('username = ?', username)!
+          .set('source = ?', source)!
+          .set('expired_at = ?', expired_at)!
+          .set('updated_at = ?', updated_at)!
+          .where('id = ?', user_id)!
+          .update()!
 
 return  map[string]Any{}
 }
