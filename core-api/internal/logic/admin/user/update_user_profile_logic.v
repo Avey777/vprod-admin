@@ -23,21 +23,22 @@ fn update_user_profile_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	user_id := req.as_map()['userId'] or { '' }.str()
-	avatar:= req.as_map()['avatar'] or { '' }.str()
-	email:= req.as_map()['email'] or { '' }.str()
-	mobile:= req.as_map()['mobile'] or { '' }.str()
-	nickname:= req.as_map()['nickname'] or { '' }.str()
+	avatar := req.as_map()['avatar'] or { '' }.str()
+	email := req.as_map()['email'] or { '' }.str()
+	mobile := req.as_map()['mobile'] or { '' }.str()
+	nickname := req.as_map()['nickname'] or { '' }.str()
 
 	mut db := db_mysql()
 	defer { db.close() }
 
 	mut sys_user := orm.new_query[schema.SysUser](db)
-	sys_user.set('avatar = ?', avatar)!
-       	.set('email = ?', email)!
-       	.set('mobile = ?', mobile)!
-       	.set('nickname = ?', nickname)!
-        .where('id = ?', user_id)!
-        .update()!
 
-	return  map[string]Any{}
+	sys_user.set('avatar = ?', avatar)!
+		.set('email = ?', email)!
+		.set('mobile = ?', mobile)!
+		.set('nickname = ?', nickname)!
+		.where('id = ?', user_id)!
+		.update()!
+
+	return map[string]Any{}
 }

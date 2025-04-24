@@ -28,7 +28,7 @@ fn delete_token_resp(req json2.Any) !map[string]Any {
 	token_id := req.as_map()['id'] or { '' }.str()
 
 	mut sys_token := orm.new_query[schema.SysToken](db)
-	sys_token.set('del_flag = ?', 1)!.where('id = ?',token_id)!.update()!
+	sys_token.set('del_flag = ?', 1)!.where('id = ?', token_id)!.update()!
 
-  return map[string]Any{}
+	return map[string]Any{}
 }

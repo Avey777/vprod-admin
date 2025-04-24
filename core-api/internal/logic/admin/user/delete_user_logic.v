@@ -28,7 +28,7 @@ fn delete_user_resp(req json2.Any) !map[string]Any {
 	user_id := req.as_map()['id'] or { '' }.str()
 
 	mut sys_user := orm.new_query[schema.SysUser](db)
-	sys_user.set('del_flag = ?', 1)!.where('id = ?',user_id)!.update()!
+	sys_user.set('del_flag = ?', 1)!.where('id = ?', user_id)!.update()!
 
-  return map[string]Any{}
+	return map[string]Any{}
 }

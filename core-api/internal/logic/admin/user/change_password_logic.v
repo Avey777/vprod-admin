@@ -33,13 +33,14 @@ fn change_password_resp(req json2.Any) !map[string]Any {
 	pwd := sys_user.select('password')!.where('id = ?', user_id)!.query()!
 
 	if pwd[0].password != old_password {
-	  return error("Incorrect old password | 旧密码不正确")
+		return error('Incorrect old password | 旧密码不正确')
 	}
 
 	sys_user.reset()
-  sys_user.set('password = ?', new_password)!
-          .where('id = ?', user_id)!
-          .update()!
 
-  return map[string]Any{}
+	sys_user.set('password = ?', new_password)!
+		.where('id = ?', user_id)!
+		.update()!
+
+	return map[string]Any{}
 }

@@ -20,10 +20,10 @@ fn (app &Token) token_by_id(mut ctx Context) veb.Result {
 	return ctx.json(json_success('success', result))
 }
 
-fn token_by_id_resp(req json2.Any)  !map[string]Any {
+fn token_by_id_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	token_id := req.as_map()['id'] or {''}.str()
+	token_id := req.as_map()['id'] or { '' }.str()
 
 	mut db := db_mysql()
 	defer { db.close() }
@@ -31,27 +31,25 @@ fn token_by_id_resp(req json2.Any)  !map[string]Any {
 	mut sys_token := orm.new_query[schema.SysToken](db)
 	mut query := sys_token.select()!
 	if token_id != '' {
-	 query = query.where('id = ?', token_id)!
+		query = query.where('id = ?', token_id)!
 	}
-  result := query.query()!
+	result := query.query()!
 
-	mut datalist := []map[string]Any{} //map空数组初始化
- 	for row in result {
-    mut data := map[string]Any{} // map初始化
+	mut datalist := []map[string]Any{} // map空数组初始化
+	for row in result {
+		mut data := map[string]Any{} // map初始化
 		data['id'] = row.id //主键ID
 		data['username'] = row.username
-		// data['mobile'] = row.mobile or {''}
-		// data['email'] = row.email or {''}
 		data['token'] = row.token
 		data['source'] = row.source
 		data['expiredAt'] = row.expired_at.format_ss()
 		data['status'] = int(row.status)
 		data['createdAt'] = row.created_at.format_ss()
 		data['updatedAt'] = row.updated_at.format_ss()
-		data['deletedAt'] = row.deleted_at or {time.Time{}}.format_ss()
+		data['deletedAt'] = row.deleted_at or { time.Time{} }.format_ss()
 
 		datalist << data //追加data到maplist 数组
- 	}
+	}
 
-  return datalist[0]
+	return datalist[0]
 }
