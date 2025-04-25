@@ -4,6 +4,7 @@ import veb
 import log
 import orm
 import time
+import rand
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema

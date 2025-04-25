@@ -23,7 +23,7 @@ fn (app &Token) update_token(mut ctx Context) veb.Result {
 fn update_token_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	user_id := req.as_map()['userId'] or { '' }.str()
+	id := req.as_map()['userId'] or { '' }.str()
 	status := req.as_map()['status'] or { 0 }.u8()
 	username := req.as_map()['username'] or { '' }.str()
 	source := req.as_map()['Source'] or { '' }.str()
@@ -40,7 +40,7 @@ fn update_token_resp(req json2.Any) !map[string]Any {
 		.set('source = ?', source)!
 		.set('expired_at = ?', expired_at)!
 		.set('updated_at = ?', updated_at)!
-		.where('id = ?', user_id)!
+		.where('id = ?', id)!
 		.update()!
 
 	return map[string]Any{}
