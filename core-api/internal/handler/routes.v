@@ -8,6 +8,7 @@ import internal.logic.admin { Admin } // 必须是路由模块内部声明的结
 import internal.logic.admin.user { User }
 import internal.logic.admin.token { Token }
 import internal.logic.admin.role { Role }
+import internal.logic.admin.position { Position }
 
 
 pub fn register_handlers(mut app App) {
@@ -39,6 +40,11 @@ pub fn register_handlers(mut app App) {
 	admin_role_app.use(cores_middleware())
 	admin_role_app.use(handler: logger_middleware)
 	app.register_controller[Role, Context]('/admin/role', mut admin_role_app) or { log.error('${err}') }
+
+	mut admin_position_app := &position.Position{}
+	admin_position_app.use(cores_middleware())
+	admin_position_app.use(handler: logger_middleware)
+	app.register_controller[Position, Context]('/admin/position', mut admin_position_app) or { log.error('${err}') }
 
 	// app.register_controller[Member, Context]('/member', mut &Member{}) or { log.error('${err}') }
 	// app.register_controller[Teant, Context]('/teant', mut &Teant{}) or { log.error('${err}') }
