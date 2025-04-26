@@ -28,7 +28,7 @@ fn create_role_resp(req json2.Any) !map[string]Any {
 	defer { db.close() }
 
 	roles := schema.SysRole{
-		id:              rand.uuid_v4()
+		id:              rand.uuid_v7()
 		status:          req.as_map()['status'] or { 0 }.u8()
 		name:            req.as_map()['Name'] or { '' }.str()
 		code:            req.as_map()['Code'] or { '' }.str()

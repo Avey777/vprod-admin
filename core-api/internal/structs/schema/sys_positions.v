@@ -10,7 +10,7 @@ pub:
 	name   string  @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Position Name | 职位名称']
 	code   string  @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'The code of position | 职位编码']
 	remark ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Remark | 备注']
-	sort   int     @[default: 0; omitempty; sql_type: 'int'; zcomment: 'Sort Number | 排序编号']
+	sort   u64     @[default: 0; omitempty; sql_type: 'int'; zcomment: 'Sort Number | 排序编号']
 	status u8      @[default: 0; omitempty; sql_type: 'tinyint'; zcomments: '状态，0：正常，1：禁用']
 
 	updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']

@@ -5,6 +5,7 @@ import log
 import orm
 import time
 import x.json2
+import rand
 import internal.config { db_mysql }
 import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
@@ -26,7 +27,7 @@ fn create_user_resp(req json2.Any) !map[string]Any {
 	mut db := db_mysql()
 	defer { db.close() }
 
-	user_id := req.as_map()['id'] or { '' }.str()
+	user_id := rand.uuid_v7() // req.as_map()['id'] or { '' }.str()
 	position_ids := req.as_map()['positionId'] or { []json2.Any{} }.arr()
 	rule_ids := req.as_map()['roleIds'] or { []json2.Any{} }.arr()
 
