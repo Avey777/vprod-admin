@@ -1,6 +1,6 @@
 module schema
 
-// 用户角色关联表(一个用户可以拥有多个角色)
+// 角色菜单关联表(一个角色可以拥有多个菜单)
 @[table: 'sys_role_menus']
 pub struct SysRoleMenu {
 pub:
