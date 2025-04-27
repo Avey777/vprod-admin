@@ -1,0 +1,35 @@
+module menu
+
+import veb
+import log
+import orm
+import x.json2
+import internal.config { db_mysql }
+import internal.structs.schema
+import internal.structs { Context, json_error, json_success }
+
+// Delete menu | 删除menu
+@['/delete_menu'; post]
+fn (app &Menu) delete_menu(mut ctx Context) veb.Result {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
+	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
+	mut result := delete_menu_resp(req) or { return ctx.json(json_error(503, '${err}')) }
+
+	return ctx.json(json_success('success', result))
+}
+
+fn delete_menu_resp(req json2.Any) !map[string]Any {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
+	mut db := db_mysql()
+	defer { db.close() }
+
+	menu_id := req.as_map()['id'] or { '' }.str()
+
+	mut sys_menu := orm.new_query[schema.SysMenu](db)
+	sys_menu.delete()!.where('id = ?', menu_id)!.update()!
+	// sys_menu.set('del_flag = ?', 1)!.where('id = ?', menu_id)!.update()!
+
+	return map[string]Any{}
+}

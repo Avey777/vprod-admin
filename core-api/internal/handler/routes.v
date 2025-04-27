@@ -9,7 +9,7 @@ import internal.logic.admin.user { User }
 import internal.logic.admin.token { Token }
 import internal.logic.admin.role { Role }
 import internal.logic.admin.position { Position }
-
+import internal.logic.admin.menu { Menu }
 
 pub fn register_handlers(mut app App) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -26,25 +26,40 @@ pub fn register_handlers(mut app App) {
 	admin_app.use(handler: logger_middleware)
 	app.register_controller[Admin, Context]('/admin', mut admin_app) or { log.error('${err}') }
 
-	mut admin_user_app := &user.User{}
+	mut admin_user_app := &User{}
 	admin_user_app.use(cores_middleware())
 	admin_user_app.use(handler: logger_middleware)
-	app.register_controller[User, Context]('/admin/user', mut admin_user_app) or { log.error('${err}') }
+	app.register_controller[User, Context]('/admin/user', mut admin_user_app) or {
+		log.error('${err}')
+	}
 
-	mut admin_token_app := &token.Token{}
+	mut admin_token_app := &Token{}
 	admin_token_app.use(cores_middleware())
 	admin_token_app.use(handler: logger_middleware)
-	app.register_controller[Token, Context]('/admin/token', mut admin_token_app) or { log.error('${err}') }
+	app.register_controller[Token, Context]('/admin/token', mut admin_token_app) or {
+		log.error('${err}')
+	}
 
-	mut admin_role_app := &role.Role{}
+	mut admin_role_app := &Role{}
 	admin_role_app.use(cores_middleware())
 	admin_role_app.use(handler: logger_middleware)
-	app.register_controller[Role, Context]('/admin/role', mut admin_role_app) or { log.error('${err}') }
+	app.register_controller[Role, Context]('/admin/role', mut admin_role_app) or {
+		log.error('${err}')
+	}
 
-	mut admin_position_app := &position.Position{}
+	mut admin_position_app := &Position{}
 	admin_position_app.use(cores_middleware())
 	admin_position_app.use(handler: logger_middleware)
-	app.register_controller[Position, Context]('/admin/position', mut admin_position_app) or { log.error('${err}') }
+	app.register_controller[Position, Context]('/admin/position', mut admin_position_app) or {
+		log.error('${err}')
+	}
+
+	mut admin_menu_app := &Menu{}
+	admin_menu_app.use(cores_middleware())
+	admin_menu_app.use(handler: logger_middleware)
+	app.register_controller[Menu, Context]('/admin/menu', mut admin_menu_app) or {
+		log.error('${err}')
+	}
 
 	// app.register_controller[Member, Context]('/member', mut &Member{}) or { log.error('${err}') }
 	// app.register_controller[Teant, Context]('/teant', mut &Teant{}) or { log.error('${err}') }

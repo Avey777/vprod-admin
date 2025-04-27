@@ -28,7 +28,8 @@ fn delete_position_resp(req json2.Any) !map[string]Any {
 	position_id := req.as_map()['id'] or { '' }.str()
 
 	mut sys_position := orm.new_query[schema.SysPosition](db)
-	sys_position.set('del_flag = ?', 1)!.where('id = ?', position_id)!.update()!
+	sys_position.delete()!.where('id = ?', position_id)!.update()!
+	// sys_position.set('del_flag = ?', 1)!.where('id = ?', position_id)!.update()!
 
 	return map[string]Any{}
 }
