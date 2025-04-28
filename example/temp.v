@@ -83,76 +83,83 @@
 //     return pool
 // }
 
-module main
-import time
-import db.sqlite
-import orm
+// module main
+// import time
+// import db.sqlite
+// import orm
+
+// fn main() {
+//   mut db := sqlite.connect(':memory:')!
+// 	defer { db.close() or {} }
+//   sql db{
+//     create table SysUser
+//     create table SysUserRole
+//   }!
+
+// 	users := SysUser{
+//      id: '001'
+//      username: 'name1'
+//      created_at: time.now()
+//      updated_at: time.now()
+// 	}
+
+//   mut user_roles := []SysUserRole{}
+//   user_roles << [SysUserRole{
+//       user_id: '001',
+//       role_id: '4'
+//   },
+//   SysUserRole{
+//     user_id: '001',
+//     role_id: '5',
+//   },
+//   SysUserRole{
+//     user_id: '001',
+//     role_id: '6',
+//   }]
+
+//   dump(user_roles)
+//   dump(users)
+
+//   mut sys_user := orm.new_query[SysUser](db)
+//   mut user_role := orm.new_query[SysUserRole](db)
+
+//   sys_user.insert(users)!
+//   println('users')
+//   user_role.insert_many(user_roles)!
+//   println('user_roles')
+
+//   mut user_1 := sql db{
+//     select from SysUser
+//   }!
+//   dump(user_1)
+
+//   mut user_roles_1 := sql db{
+//     select from SysUserRole
+//   }!
+//   dump(user_roles_1)
+// }
+
+// // 用户表
+// @[table: 'sys_users']
+// struct SysUser {
+// pub:
+// 	id            string     @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID rand.uuid_v4()']
+// 	username      string     @[omitempty; required; sql: 'username'; sql_type: 'VARCHAR(255)'; unique: 'username'; zcomments: 'User`s login name | 登录名']
+// 	created_at    time.Time  @[immutable; omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Create Time | 创建日期']
+// 	updated_at    ?time.Time @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Delete Time | 删除日期']
+// }
+
+// // 用户角色关联表(一个用户可以拥有多个角色)
+// @[table: 'sys_user_roles']
+// struct SysUserRole {
+// 	user_id string @[sql_type: 'CHAR(36)'; zcomments: '用户ID']
+// 	role_id string @[sql_type: 'CHAR(36)'; zcomments: '角色ID']
+// }
 
 fn main() {
-  mut db := sqlite.connect(':memory:')!
-	defer { db.close() or {} }
-  sql db{
-    create table SysUser
-    create table SysUserRole
-  }!
+  // 原始数组（假设元素为字符串）
+  arr := ['你好', '世界', '人']
+  result := arr.join(', ')
 
-
-	users := SysUser{
-     id: '001'
-     username: 'name1'
-     created_at: time.now()
-     updated_at: time.now()
-	}
-
-  mut user_roles := []SysUserRole{}
-  user_roles << [SysUserRole{
-      user_id: '001',
-      role_id: '4'
-  },
-  SysUserRole{
-    user_id: '001',
-    role_id: '5',
-  },
-  SysUserRole{
-    user_id: '001',
-    role_id: '6',
-  }]
-
-  dump(user_roles)
-  dump(users)
-
-  mut sys_user := orm.new_query[SysUser](db)
-  mut user_role := orm.new_query[SysUserRole](db)
-
-  sys_user.insert(users)!
-  println('users')
-  user_role.insert_many(user_roles)!
-  println('user_roles')
-
-  mut user_1 := sql db{
-    select from SysUser
-  }!
-  dump(user_1)
-
-  mut user_roles_1 := sql db{
-    select from SysUserRole
-  }!
-  dump(user_roles_1)
-}
-
-// 用户表
-@[table: 'sys_users']
-struct SysUser {
-pub:
-	id            string     @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID rand.uuid_v4()']
-	username      string     @[omitempty; required; sql: 'username'; sql_type: 'VARCHAR(255)'; unique: 'username'; zcomments: 'User`s login name | 登录名']
-	created_at    time.Time  @[immutable; omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Create Time | 创建日期']
-	updated_at    ?time.Time @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Delete Time | 删除日期']
-}
-
-// 用户角色关联表(一个用户可以拥有多个角色)
-@[table: 'sys_user_roles']
-struct SysUserRole {
-	user_id string @[sql_type: 'CHAR(36)'; zcomments: '用户ID']
-	role_id string @[sql_type: 'CHAR(36)'; zcomments: '角色ID']
+  println(result) // 输出：('12', '123')
 }

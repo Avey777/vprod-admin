@@ -68,7 +68,7 @@ fn menu_list_resp(req json2.Any) !map[string]Any {
 		data['affix'] = int(row.affix or { 0 })
 		data['dynamicLevel'] = int(row.dynamic_level or { 20 })
 		data['realPath'] = row.real_path or { '' }.str()
-		data['Sort'] = int(row.sort)
+		data['Sort'] = u64(row.sort)
 		data['createdAt'] = row.created_at.format_ss()
 		data['updatedAt'] = row.updated_at.format_ss()
 		data['deletedAt'] = row.deleted_at or { time.Time{} }.format_ss()

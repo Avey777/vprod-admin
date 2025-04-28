@@ -44,9 +44,9 @@ fn update_menu_resp(req json2.Any) !map[string]Any {
 	carry_param := req.as_map()['carryParam'] or { 0 }.u8()
 	hide_children_in_menu := req.as_map()['hide_children_in_menu'] or { 0 }.u8()
 	affix := req.as_map()['Affix'] or { 20 }.u8()
-	dynamic_level := req.as_map()['dynamicLevel'] or { 0 }.u8()
+	dynamic_level := req.as_map()['dynamicLevel'] or { 0 }.u64()
 	real_path := req.as_map()['real_path'] or { '' }.str()
-	sort := req.as_map()['Sort'] or { 0 }.u8()
+	sort := req.as_map()['Sort'] or { 0 }.u64()
 	updated_at := req.as_map()['updatedAt'] or { time.now() }.to_time()!
 
 	mut db := db_mysql()

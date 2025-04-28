@@ -29,7 +29,7 @@ pub:
 	affix                 ?u8     @[default: 0; omitempty; sql_type: 'tinyint(1)'; zcomment: 'Affix tab | Tab 固定']
 	dynamic_level         ?u64    @[default: 20; omitempty; sql_type: 'int'; zcomment: 'The maximum number of pages the router can open | 能打开的子TAB数']
 	real_path             ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'The real path of the route without dynamic part | 菜单路由不包含参数部分']
-	sort                  int     @[default: 0; omitempty; sql_type: 'int'; zcomment: 'Sort Number | 排序编号']
+	sort                  u64     @[default: 0; omitempty; sql_type: 'int'; zcomment: 'Sort Number | 排序编号']
 
 	updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']
 	updated_at time.Time  @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Update Time | 修改日期']
@@ -38,3 +38,4 @@ pub:
 	del_flag   u8         @[default: 0; omitempty; sql_type: 'tinyint(1)'; zcomments: '删除标记，0：未删除，1：已删除']
 	deleted_at ?time.Time @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Delete Time | 删除日期']
 }
+64

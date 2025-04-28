@@ -42,9 +42,9 @@ fn role_menu_list_resp(req json2.Any) !map[string]Any {
 	if role_id != '' {
 		query_menus = query_menus.where('role_id = ?', role_id)!
 	}
-	result_menus := query_menus.limit(page_size)!.offset(offset_num)!.query()!
+	menu_id_arr := query_menus.limit(page_size)!.offset(offset_num)!.query()!
 
-	mut query := sys_menu.select()!
+	mut query := sys_menu.select()! // .where('role_id IN ?', menu_id_arr.join(', '))!
 	result := query.limit(page_size)!.offset(offset_num)!.query()!
 	//*<<<*/
 	mut datalist := []map[string]Any{} // map空数组初始化
@@ -73,7 +73,7 @@ fn role_menu_list_resp(req json2.Any) !map[string]Any {
 		data['affix'] = int(row.affix or { 0 })
 		data['dynamicLevel'] = int(row.dynamic_level or { 20 })
 		data['realPath'] = row.real_path or { '' }.str()
-		data['Sort'] = int(row.sort)
+		data['Sort'] = u64(row.sort)
 		data['createdAt'] = row.created_at.format_ss()
 		data['updatedAt'] = row.updated_at.format_ss()
 		data['deletedAt'] = row.deleted_at or { time.Time{} }.format_ss()
