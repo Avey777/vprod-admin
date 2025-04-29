@@ -1,6 +1,7 @@
 module middleware
 
 import log
+import veb
 import internal.structs { Context }
 
 //日志中间件
@@ -29,7 +30,7 @@ pub fn logger_middleware(mut ctx Context) bool {
 	log.info('req.header: ${ctx.req.header}')
 	log.info('req.data: ${ctx.req.data}')
 
-	//响应信息
+	//响应信息,需要设置 after: true
 	log.info('res.http_version: ${ctx.res.http_version}')
 	log.info('res.header: ${ctx.res.header}')
 	log.info('res.status_code: ${ctx.res.status_code}')
@@ -37,4 +38,12 @@ pub fn logger_middleware(mut ctx Context) bool {
 	log.info('res.body: ${ctx.res.body}')
 
 	return true
+}
+
+// 初始化中间件并设置 handler ,并返回中间件选项
+pub fn logger_middleware_generic() veb.MiddlewareOptions[Context] {
+    return veb.MiddlewareOptions[Context]{
+        handler: logger_middleware // 显式初始化 handler 字段
+        after: true // 显式初始化 after 字段
+    }
 }
