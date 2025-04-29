@@ -7,10 +7,11 @@ import internal.structs { Context }
 //日志中间件
 pub fn logger_middleware(mut ctx Context) bool {
 	//请求信息
-	log.info('req.version: ${ctx.req.version}')
+	log.info('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
 	log.info('req.host: ${ctx.req.host}')
-	log.info('req.method: ${ctx.req.method}')
 	log.info('req.url: ${ctx.req.url}')
+	log.info('req.method: ${ctx.req.method}')
+	log.info('req.version: ${ctx.req.version}')
 	log.info('req.proxy: ${ctx.req.proxy}')
 	log.info('req.user_agent: ${ctx.req.user_agent}')
 	log.info('req.read_timeout: ${ctx.req.read_timeout}')
