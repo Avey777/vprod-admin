@@ -155,11 +155,13 @@
 // 	user_id string @[sql_type: 'CHAR(36)'; zcomments: '用户ID']
 // 	role_id string @[sql_type: 'CHAR(36)'; zcomments: '角色ID']
 // }
-
+import benchmark
 fn main() {
-  // 原始数组（假设元素为字符串）
+  mut b := benchmark.start()
+    // 原始数组（假设元素为字符串）
   arr := ['你好', '世界', '人']
   result := arr.join(', ')
 
   println(result) // 输出：('12', '123')
+  b.measure('')
 }
