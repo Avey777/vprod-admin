@@ -1,4 +1,4 @@
-module dapartment
+module department
 
 import veb
 import time
@@ -17,6 +17,6 @@ type Any = string
 	| []map[string]string
 	| []map[string]Any
 
-pub struct Dapartment {
+pub struct Department {
 	veb.Middleware[Context]
 }

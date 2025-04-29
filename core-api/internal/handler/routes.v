@@ -10,6 +10,7 @@ import internal.logic.admin.token { Token }
 import internal.logic.admin.role { Role }
 import internal.logic.admin.position { Position }
 import internal.logic.admin.menu { Menu }
+import internal.logic.admin.department { Department }
 
 pub fn register_handlers(mut app App) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -58,6 +59,13 @@ pub fn register_handlers(mut app App) {
 	admin_menu_app.use(cores_middleware())
 	admin_menu_app.use(handler: logger_middleware)
 	app.register_controller[Menu, Context]('/admin/menu', mut admin_menu_app) or {
+		log.error('${err}')
+	}
+
+	mut admin_department_app := &Department{}
+	admin_department_app.use(cores_middleware())
+	admin_department_app.use(handler: logger_middleware)
+	app.register_controller[Department, Context]('/admin/department', mut admin_department_app) or {
 		log.error('${err}')
 	}
 
