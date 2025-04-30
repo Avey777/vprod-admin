@@ -27,7 +27,14 @@ pub fn (mut app App)register_handlers() {
 	app.use(cores_middleware())
 	app.use(handler: logger_middleware)
 
-	// 方式一: 直接使用中间件，适合对单个控制器单独使用中间件
+	app.handler_sys_admin()
+	// app.handler_tms_admin()
+}
+
+fn (mut app App)handler_sys_admin() {
+  log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
+ 	// 方式一: 直接使用中间件，适合对单个控制器单独使用中间件
 	mut base_app := &Base{}
 	base_app.use(handler: logger_middleware)
 	app.register_controller[Base, Context]('/base', mut base_app) or { log.error('${err}') }
@@ -40,5 +47,10 @@ pub fn (mut app App)register_handlers() {
 	app.register_routes[Position, Context](mut &Position{},'/admin/position')
 	app.register_routes[Menu, Context](mut &Menu{},'/admin/menu')
 	app.register_routes[Department, Context](mut &Department{},'/admin/department')
+
+}
+
+fn (mut app App)handler_tms_admin() {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 }
