@@ -20,7 +20,7 @@ pub:
 }
 
 pub fn json_success[T](message_success string, respose_data T) ApiSuccessResponse[T] {
-	mut uuid := rand.uuid_v4()
+	mut uuid := rand.uuid_v7()
 	response := ApiSuccessResponse[T]{
 		resp_id: uuid
 		status:  true
@@ -32,7 +32,7 @@ pub fn json_success[T](message_success string, respose_data T) ApiSuccessRespons
 }
 
 pub fn json_error(status_code int, message_error string) ApiErrorResponse {
-	mut uuid := rand.uuid_v4()
+	mut uuid := rand.uuid_v7()
 	response := ApiErrorResponse{
 		resp_id: uuid
 		status:  false
