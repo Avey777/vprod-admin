@@ -67,17 +67,17 @@ fn update_menu_resp(req json2.Any) !map[string]Any {
 		.set('title = ?', title)!
 		.set('icon = ?', icon)!
 		.set('hide_menu = ?', hide_menu)!
-		// .set('hide_breadcrumb = ?', hide_breadcrumb)!
-		// .set('ignore_keep_alive = ?', ignore_keep_alive)!
-		// .set('hide_tab = ?', hide_tab)!
-		// .set('frame_src = ?', frame_src)!
-		// .set('carry_param = ?', carry_param)!
-		// .set('hide_children_in_menu = ?', hide_children_in_menu)!
-		// .set('affix = ?', affix)!
-		// .set('dynamic_level = ?', dynamic_level)!
-		// .set('real_path = ?', real_path)!
-		// .set('sort = ?', sort)!
-		// .set('updated_at = ?', updated_at)!
+		.set('hide_breadcrumb = ?', hide_breadcrumb)!
+		.set('ignore_keep_alive = ?', ignore_keep_alive)!
+		.set('hide_tab = ?', hide_tab)!
+		.set('frame_src = ?', frame_src)!
+		.set('carry_param = ?', carry_param)!
+		.set('hide_children_in_menu = ?', hide_children_in_menu)!
+		.set('affix = ?', affix)!
+		.set('dynamic_level = ?', dynamic_level)!
+		.set('real_path = ?', real_path)!
+		.set('sort = ?', sort)!
+		.set('updated_at = ?', updated_at)!
 		.where('id = ?', id)!
 		.update()!
 
