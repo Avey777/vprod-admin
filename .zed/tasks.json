@@ -7,48 +7,8 @@
     "args": ["-f", "etc/config_dev.toml"],
     // 命令的环境变量覆盖，会追加到终端设置中的环境变量
     "env": {},
-    // 运行命令的工作目录，默认为当前项目根目录
+    // // 运行命令的工作目录，默认为当前项目根目录
     "cwd": "$ZED_WORKTREE_ROOT/core-api",
-    //  是否使用新终端标签页或复用现有终端来运行进程，默认为`false`
-    "use_new_terminal": false,
-    // 是否允许同时运行同一任务的多个实例，或者等待现有实例完成，默认为`false`
-    "allow_concurrent_runs": false,
-    // 命令启动后如何处理终端面板和标签页：
-    "reveal": "always",
-    // 命令完成后如何处理终端面板和标签页：
-    "hide": "never",
-    // 在终端中运行任务时使用的shell
-    "shell": "system",
-    // 是否在生成的任务输出中显示任务摘要行，默认为`true`
-    "show_summary": true,
-    // 是否在生成的任务输出中显示命令行，默认为`true`
-    "show_output": true
-  },
-  {
-    "label": "V test .",
-    "command": "v",
-    "args": ["-stats", "test", "."],
-    "tags": ["v-test"],
-    "use_new_terminal": false,
-    "reveal": "always"
-  },
-  {
-    "label": "V test",
-    "command": "v",
-    "args": ["test", "$ZED_DIRNAME"],
-    "tags": ["v-test"],
-    "use_new_terminal": false,
-    "reveal": "always"
-  },
-  {
-    "label": "v-core",
-    "tags": ["v-core veb_livereload"],
-    "command": "v -d veb_livereload watch -d log_info run $ZED_WORKTREE_ROOT/core-api/main.v",
-    "args": ["-f", "$ZED_WORKTREE_ROOT/core-api/etc/config_dev.toml"],
-    // 命令的环境变量覆盖，会追加到终端设置中的环境变量
-    "env": {},
-    // 运行命令的工作目录，默认为当前项目根目录
-    //"cwd": "/path/to/working/directory",
     //  是否使用新终端标签页或复用现有终端来运行进程，默认为`false`
     "use_new_terminal": false,
     // 是否允许同时运行同一任务的多个实例，或者等待现有实例完成，默认为`false`
@@ -64,24 +24,45 @@
     // * `on_success` — 仅在任务成功时隐藏终端标签页，否则行为类似`always`
     "hide": "never",
     // 在终端中运行任务时使用的shell
-    // 可接受3种值：
-    // 1. (默认) 使用/etc/passwd中的系统默认终端配置
-    //      "shell": "system"
-    // 2. 指定程序：
-    //      "shell": {
-    //        "program": "sh"
-    //      }
-    // 3. 带参数的指定程序：
-    //     "shell": {
-    //         "with_arguments": {
-    //           "program": "/bin/bash",
-    //           "args": ["--login"]
-    //         }
-    //     }
     "shell": "system",
     // 是否在生成的任务输出中显示任务摘要行，默认为`true`
     "show_summary": true,
     // 是否在生成的任务输出中显示命令行，默认为`true`
     "show_output": true
+  },
+  {
+    "label": "V test .",
+    "tags": ["v-test"],
+    "command": "v",
+    "args": ["-stats", "test", "."],
+    "use_new_terminal": false,
+    "reveal": "always"
+  },
+  {
+    "label": "V test",
+    "tags": ["v-test"],
+    "command": "v",
+    "args": ["test", "$ZED_DIRNAME"],
+    "use_new_terminal": false,
+    "reveal": "always"
   }
 ]
+
+/*
+在终端中运行任务时使用的shell
+可接受3种值：
+1. (默认) 使用/etc/passwd中的系统默认终端配置
+     "shell": "system"
+2. 指定程序：
+     "shell": {
+       "program": "sh"
+     }
+3. 带参数的指定程序：
+    "shell": {
+        "with_arguments": {
+          "program": "/bin/bash",
+          "args": ["--login"]
+        }
+    }
+*/
+// "shell": "system",

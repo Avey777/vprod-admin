@@ -28,12 +28,12 @@ fn create_configuration_resp(req json2.Any) !map[string]Any {
 	defer { db.close() }
 
 	configurations := schema.SysConfiguration{
-		id:     rand.uuid_v7()
-		name:   req.as_map()['Name'] or { '' }.str()
-		status: req.as_map()['status'] or { 0 }.u8()
-		key:    req.as_map()['Key'] or { '' }.str()
-		value:  req.as_map()['Value'] or { '' }.str()
-		// sort:       req.as_map()['Sort'] or { 0 }.u64()
+		id:         rand.uuid_v7()
+		name:       req.as_map()['Name'] or { '' }.str()
+		status:     req.as_map()['status'] or { 0 }.u8()
+		key:        req.as_map()['Key'] or { '' }.str()
+		value:      req.as_map()['Value'] or { '' }.str()
+		sort:       req.as_map()['Sort'] or { 0 }.u32()
 		category:   req.as_map()['Category'] or { '' }.str()
 		remark:     req.as_map()['Remark'] or { '' }.str()
 		created_at: req.as_map()['createdAt'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
