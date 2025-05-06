@@ -23,7 +23,7 @@ pub:
 	longitude        ?f32       @[omitempty; sql_type: 'double(11,8)'; zcomment: 'Longitude coordinates | WGS84经度']
 	latitude         ?f32       @[omitempty; sql_type: 'double(10,8)'; zcomment: 'Latitude coordinates | WGS84纬度']
 	service_boundary ?string    @[omitempty; sql_type: 'TEXT'; zcomment: 'service_boundary/Electronic Fence coordinates | 服务边界/电子围栏坐标 (仅存储，不计算)'] // POLOGY 类型不兼容 TiDB
-	sort             u64        @[default: 0; omitempty; sql_type: 'int'; zcomment: 'Sort Number | 排序编号']
+	sort             u32        @[default: 0; omitempty; sql_type: 'int'; zcomment: 'Sort Number | 排序编号']
 	status           u8         @[default: 0; omitempty; sql_type: 'tinyint'; zcomments: '状态，0：正常，1：禁用']
 	updater_id       ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']
 	updated_at       time.Time  @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Update Time | 修改日期']

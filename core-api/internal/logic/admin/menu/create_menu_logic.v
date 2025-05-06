@@ -51,7 +51,7 @@ fn create_menu_resp(req json2.Any) !map[string]Any {
 		affix:                 req.as_map()['Affix'] or { 20 }.u8()
 		dynamic_level:         req.as_map()['dynamicLevel'] or { 0 }.u8()
 		real_path:             req.as_map()['real_path'] or { '' }.str()
-		sort:                  req.as_map()['Sort'] or { 0 }.u64()
+		sort:                  req.as_map()['Sort'] or { 0 }.u32()
 		created_at:            req.as_map()['createdAt'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
 		updated_at:            req.as_map()['updatedAt'] or { time.now() }.to_time()!
 	}

@@ -34,7 +34,7 @@ fn create_role_resp(req json2.Any) !map[string]Any {
 		code:            req.as_map()['Code'] or { '' }.str()
 		default_router:  req.as_map()['DefaultRouter'] or { '' }.str()
 		remark:          req.as_map()['Remark'] or { '' }.str()
-		sort:            req.as_map()['Sort'] or { 1 }.u64()
+		sort:            req.as_map()['Sort'] or { 1 }.u32()
 		data_scope:      req.as_map()['DataScope'] or { 1 }.u8()
 		custom_dept_ids: req.as_map()['CustomDeptIds'] or { '' }.str()
 		created_at:      req.as_map()['createdAt'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}

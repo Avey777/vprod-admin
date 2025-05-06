@@ -12,7 +12,7 @@ pub:
 	value    string  @[sql_type: 'VARCHAR(255)'; zcomment: 'Configuraion value | 配置的值']
 	category string  @[sql_type: 'VARCHAR(255)'; zcomment: 'Configuration category | 配置的分类']
 	remark   ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Remark | 备注']
-	sort     int     @[default: 0; omitempty; sql_type: 'int'; zcomment: 'Sort Number | 排序编号']
+	sort     u32     @[default: 0; omitempty; sql_type: 'int'; zcomment: 'Sort Number | 排序编号']
 	status   u8      @[default: 0; omitempty; sql_type: 'tinyint'; zcomments: '状态，0：正常，1：禁用']
 
 	updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']

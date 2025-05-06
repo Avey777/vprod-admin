@@ -33,7 +33,7 @@ fn create_position_resp(req json2.Any) !map[string]Any {
 		name:       req.as_map()['Name'] or { '' }.str()
 		code:       req.as_map()['Code'] or { '' }.str()
 		remark:     req.as_map()['Remark'] or { '' }.str()
-		sort:       req.as_map()['Sort'] or { 1 }.u64()
+		sort:       req.as_map()['Sort'] or { 1 }.u32()
 		created_at: req.as_map()['createdAt'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
 		updated_at: req.as_map()['updatedAt'] or { time.now() }.to_time()!
 	}

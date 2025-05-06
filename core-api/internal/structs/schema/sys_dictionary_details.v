@@ -11,7 +11,7 @@ pub:
 	key           string @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'key | 键']
 	value         string @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'value | 值']
 	dictionary_id string @[omitempty; sql_type: 'CHAR(36)'; zcomment: 'Dictionary ID | 字典ID']
-	sort          int    @[default: 0; omitempty; sql_type: 'int'; zcomment: 'Sort Number | 排序编号']
+	sort          u32    @[default: 0; omitempty; sql_type: 'int'; zcomment: 'Sort Number | 排序编号']
 	status        u8     @[default: 0; omitempty; sql_type: 'tinyint'; zcomments: '状态，0：正常，1：禁用']
 
 	updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']

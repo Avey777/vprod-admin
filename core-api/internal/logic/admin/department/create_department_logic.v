@@ -33,7 +33,7 @@ fn create_department_resp(req json2.Any) !map[string]Any {
 		name:       req.as_map()['Name'] or { '' }.str()
 		ancestors:  req.as_map()['Ancestors'] or { '' }.str()
 		leader:     req.as_map()['Leader'] or { '' }.str()
-		sort:       req.as_map()['Sort'] or { 0 }.u64()
+		sort:       req.as_map()['Sort'] or { 0 }.u32()
 		phone:      req.as_map()['Phone'] or { '' }.str()
 		remark:     req.as_map()['Remark'] or { '' }.str()
 		parent_id:  req.as_map()['ParentId'] or { '' }.str()
