@@ -29,7 +29,6 @@ fn update_configuration_resp(req json2.Any) !map[string]Any {
 	value := req.as_map()['Value'] or { '' }.str()
 	category := req.as_map()['Category'] or { '' }.str()
 	remark := req.as_map()['Remark'] or { '' }.str()
-	parent_id := req.as_map()['parentId'] or { '' }.str()
 	status := req.as_map()['Status'] or { 0 }.u8()
 	sort := req.as_map()['Sort'] or { 0 }.u64()
 	updated_at := req.as_map()['updatedAt'] or { time.now() }.to_time()!

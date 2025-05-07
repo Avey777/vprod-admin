@@ -9,32 +9,47 @@ import internal.config { db_mysql }
 import internal.structs.schema
 import internal.structs { Context, json_error, json_success }
 
-@['/id'; post]
-fn (app &Configuration) configuration_by_id(mut ctx Context) veb.Result {
+@['/list'; post]
+fn (app &Configuration) configuration_list(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
-	mut result := configuration_by_id_resp(req) or { return ctx.json(json_error(503, '${err}')) }
+	mut result := configuration_list_resp(req) or { return ctx.json(json_error(503, '${err}')) }
 
 	return ctx.json(json_success('success', result))
 }
 
-fn configuration_by_id_resp(req json2.Any) !map[string]Any {
+fn configuration_list_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	configuration_id := req.as_map()['id'] or { '' }.str()
+	page := req.as_map()['page'] or { 1 }.int()
+	page_size := req.as_map()['pageSize'] or { 10 }.int()
+	name := req.as_map()['Name'] or { '' }.str()
+	key := req.as_map()['Key'] or { '' }.str()
+	category := req.as_map()['Category'] or { 0 }.u8()
 
 	mut db := db_mysql()
 	defer { db.close() }
-
 	mut sys_configuration := orm.new_query[schema.SysConfiguration](db)
+	// 总页数查询 - 分页偏移量构造
+	mut count := sql db {
+		select count from schema.SysUser
+	}!
+	offset_num := (page - 1) * page_size
+	//*>>>*/
 	mut query := sys_configuration.select()!
-	if configuration_id != '' {
-		query = query.where('id = ?', configuration_id)!
+	if name != '' {
+		query = query.where('name = ?', name)!
 	}
-	result := query.query()!
-
+	if key != '' {
+		query = query.where('leader = ?', key)!
+	}
+	if category in [0, 1] {
+		query = query.where('status = ?', category)!
+	}
+	result := query.limit(page_size)!.offset(offset_num)!.query()!
+	//*<<<*/
 	mut datalist := []map[string]Any{} // map空数组初始化
 	for row in result {
 		mut data := map[string]Any{} // map初始化
@@ -54,5 +69,9 @@ fn configuration_by_id_resp(req json2.Any) !map[string]Any {
 		datalist << data //追加data到maplist 数组
 	}
 
-	return datalist[0]
+	mut result_data := map[string]Any{}
+	result_data['total'] = count
+	result_data['data'] = datalist
+
+	return result_data
 }
