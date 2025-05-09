@@ -29,8 +29,10 @@ fn create_token_resp(req json2.Any) !map[string]Any {
 
 	tokens := schema.SysToken{
 		id:         rand.uuid_v7()
-		status:     req.as_map()['status'] or { 0 }.u8()
-		username:   req.as_map()['username'] or { '' }.str()
+		status:     req.as_map()['Status'] or { 0 }.u8()
+		user_id:    req.as_map()['UserId'] or { '' }.str()
+		username:   req.as_map()['UserName'] or { '' }.str()
+		token:      rand.uuid_v4()
 		source:     req.as_map()['Source'] or { '' }.str()
 		expired_at: req.as_map()['expiredAt'] or { time.now() }.to_time()!
 		created_at: req.as_map()['createdAt'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}

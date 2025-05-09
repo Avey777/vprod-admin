@@ -39,6 +39,7 @@ fn token_by_id_resp(req json2.Any) !map[string]Any {
 	for row in result {
 		mut data := map[string]Any{} // map初始化
 		data['id'] = row.id //主键ID
+		data['user_id'] = row.user_id
 		data['username'] = row.username
 		data['token'] = row.token
 		data['source'] = row.source
