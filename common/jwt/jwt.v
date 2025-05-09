@@ -19,7 +19,7 @@ fn jwt_generate(secret string, payload JWT_Payload) string {
 	playload_64 := base64.url_encode_str(json.encode(payload))
 
 	message := '${header}.${playload_64}'
-	signature := hmac.new(secret.bytes(), message.bytes(), sha256.sum, 0)
+	signature := hmac.new(secret.bytes(), message.bytes(), sha256.sum, 64)
 	base64_signature := base64.url_encode_str(signature.bytestr())
 	return '${header}.${playload_64}.${base64_signature}'
 }
@@ -31,11 +31,10 @@ fn jwt_verify(secret string, token string) bool {
 	if parts.len != 3 {
 		return false
 	}
-	// 验证 Header
 
 	// 验证签名
 	message := '${parts[0]}.${parts[1]}'
-	signature := hmac.new(secret.bytes(), message.bytes(), sha256.sum, 0)
+	signature := hmac.new(secret.bytes(), message.bytes(), sha256.sum, 64)
 	expected_sig := base64.url_encode_str(signature.bytestr())
 	if parts[2] != expected_sig {
 		return false
@@ -48,5 +47,6 @@ fn jwt_verify(secret string, token string) bool {
 	if now > payload.exp || now < payload.nbf {
 		return false
 	}
+
 	return true
 }
