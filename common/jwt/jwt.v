@@ -17,7 +17,7 @@ const header = base64.url_encode_str(json.encode({
 }))
 
 //生成令牌
-fn generate(secret string,payload map[string]Any) string {
+fn jwt_generate(secret string,payload map[string]Any) string {
   playload_64 := base64.url_encode_str(json.encode(payload))
 
   message := '${header}.${playload_64}'
@@ -26,48 +26,13 @@ fn generate(secret string,payload map[string]Any) string {
   return '${header}.${playload_64}.${base64_signature}'
 }
 
-
-fn main(){
-  secret := '46546456'
-
-  payload := {
-    // 标准声明 (Standard Claims) https://datatracker.ietf.org/doc/html/rfc7519#section-4.1
-    "iss": Any("your-app-name"),         // 签发者 (Issuer)
-    "sub": "user123",               // 用户唯一标识 (Subject)
-    "aud": ["api-service", "webapp"], // 接收方 (Audience)，可以是数组或字符串
-    "exp": I64(time.now().add_days(30).unix()),  // 过期时间 (Expiration Time) 7天后
-    "nbf": I64(time.now().unix()),       // 生效时间 (Not Before)，立即生效
-    "iat": I64(time.now().unix()),       // 签发时间 (Issued At)
-    "jti": "unique-jwt-id-123",     // JWT唯一标识 (JWT ID)，防重放攻击
-
-    // 自定义业务字段 (Custom Claims)
-    "name": "Jengro",               // 用户姓名
-    "roles": ["admin", "editor"],   // 用户角色
-    "status": "active",             // 用户状态
-    "meta": {                       // 嵌套对象
-       "login_ip": "192.168.1.100",
-       "device_id": "device-xyz"
-     }
-  }
-
-  token := generate(secret,payload)
-  // println(token)
-
-  // verify(secret,token)
-  bj := verify(secret,token)
-  println(bj)
-}
-
-
 // 验证令牌
-fn verify(secret string, token string) bool {
-
+fn jwt_verify(secret string, token string) bool {
   // 验证 token 长度
   parts := token.split('.')
   if parts.len != 3 {
       return false
   }
-
   // 验证 Header
 
   // 验证签名
@@ -77,9 +42,7 @@ fn verify(secret string, token string) bool {
   if parts[2] != expected_sig{
     return false
   }
-
   // 验证时间有效性
-  // dump(parts[1])
   payload_json := base64.url_decode_str(parts[1])
   payload := json2.decode[Payload](payload_json.str()) or {return false}
   dump(payload)
@@ -87,9 +50,39 @@ fn verify(secret string, token string) bool {
   if now > payload.exp || now < payload.nbf {
       return false
   }
-
   return true
 }
+
+fn main(){
+  secret := '46546456'
+
+  payload := {
+    // 标准声明 (Standard Claims) https://datatracker.ietf.org/doc/html/rfc7519#section-4.1
+    "iss": Any("vprod-workspase"),
+    "sub": "user123",
+    "aud": ["api-service", "webapp"],
+    "exp": I64(time.now().add_days(30).unix()),
+    "nbf": I64(time.now().unix()),
+    "iat": I64(time.now().unix()),
+    "jti": "unique-jwt-id-123",
+
+    // 自定义业务字段 (Custom Claims)
+    "name": "Jengro",
+    "roles": ["admin", "editor"],
+    "status": "active",
+    "login_ip": "192.168.1.100",
+    "device_id": "device-xyz"
+
+  }
+
+  token := jwt_generate(secret,payload)
+  println(token)
+  bj := jwt_verify(secret,token)
+  println(bj)
+}
+
+
+
 
 struct Header {
     alg string
@@ -98,18 +91,20 @@ struct Header {
 
 struct Payload {
     // 标准声明
-    iss string
-    sub string
-    aud []string
-    exp i64
-    nbf i64
-    iat i64
-    jti string
+    iss string // 签发者 (Issuer) your-app-name
+    sub string // 用户唯一标识 (Subject)
+    aud []string // 接收方 (Audience)，可以是数组或字符串
+    exp i64 // 过期时间 (Expiration Time) 7天后
+    nbf i64 // 生效时间 (Not Before)，立即生效
+    iat i64 // 签发时间 (Issued At)
+    jti string // JWT唯一标识 (JWT ID)，防重放攻击
+
     // 自定义声明
-    name   string
-    roles  []string
-    status string
-    meta   map[string]string
+    name   string // 用户姓名
+    roles  []string // 用户角色
+    status string  // 用户状态
+    login_ip   string // ip地址
+    device_id string // 设备id
 }
 
 type F64 = f64
