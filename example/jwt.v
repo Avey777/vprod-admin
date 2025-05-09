@@ -49,18 +49,23 @@ fn main(){
 
   token := generate(secret,payload)
   println(token)
+
+  bj := verify(secret,token)
+  println(bj)
 }
 
 
-//验证令牌
-// fn verify(secret string,token string) bool {
-//   parts := token.split('.')
-//   if parts.len != 3 {return false}
-
-//   sig := base64.url_encode_str(parts[2])
-//   expected_sig := hmac.new(secret.bytes(),'${parts[0]}.${parts[1]}'.bytes(), sha256.sum)
-//   return sig == expected_sig
-// }
+// 验证令牌
+fn verify(secret string, token string) bool {
+    parts := token.split('.')
+    if parts.len != 3 {
+        return false
+    }
+    message := '${parts[0]}.${parts[1]}'
+    signature := hmac.new(secret.bytes(), message.bytes(), sha256.sum, 0)
+    expected_sig := base64.url_encode_str(signature.bytestr())
+    return parts[2] == expected_sig
+}
 
 
 
