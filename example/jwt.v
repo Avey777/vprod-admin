@@ -14,7 +14,7 @@ const header = base64.url_encode_str(json.encode({
 }))
 
 //生成令牌
-fn generate(secret string,payload map[string]string) string {
+fn generate(secret string,payload map[string]Any) string {
   playload_64 := base64.url_encode_str(json.encode(payload))
   message := '${header}.${playload_64}'
   signature := hmac.new(secret.bytes(),message.bytes(),sha256.sum,0)
@@ -24,12 +24,27 @@ fn generate(secret string,payload map[string]string) string {
 
 fn main(){
   secret := '46546456'
+
   payload := {
-    "sub": "user123",
-    "name": "Jengro",
-    // "admin": true,
-    "iat": time.now().format_ss()
-    "exp": time.now().add_days(1).format_ss()
+    // 标准声明 (Standard Claims) https://datatracker.ietf.org/doc/html/rfc7519#section-4.1
+    "iss": Any("your-app-name"),         // 签发者 (Issuer)
+    "sub": "user123",               // 用户唯一标识 (Subject)
+    "aud": ["api-service", "webapp"], // 接收方 (Audience)，可以是数组或字符串
+    "exp": I64(time.now().add_days(30).unix()),  // 过期时间 (Expiration Time) 7天后
+    "nbf": I64(time.now().unix()),       // 生效时间 (Not Before)，立即生效
+    "iat": I64(time.now().unix()),       // 签发时间 (Issued At)
+    "jti": "unique-jwt-id-123",     // JWT唯一标识 (JWT ID)，防重放攻击
+
+    // 自定义业务字段 (Custom Claims)
+    "name": "Jengro",               // 用户姓名
+    "roles": ["admin", "editor"],   // 用户角色
+    "email": "user@example.com",    // 用户邮箱
+    "avatar": "https://example.com/avatar.png", // 头像地址
+    "status": "active",             // 用户状态
+    "meta": {                       // 嵌套对象
+       "login_ip": "192.168.1.100",
+       "device_id": "device-xyz"
+     }
   }
 
   token := generate(secret,payload)
@@ -46,3 +61,21 @@ fn main(){
 //   expected_sig := hmac.new(secret.bytes(),'${parts[0]}.${parts[1]}'.bytes(), sha256.sum)
 //   return sig == expected_sig
 // }
+
+
+
+type F64 = f64
+type I64 = i64
+type Any = string
+	| []string
+	| int
+	| []int
+	| I64
+	| []f64
+	| F64
+	| bool
+	| time.Time
+	| map[string]int
+	| map[string]string
+	| []map[string]string
+	| []map[string]Any

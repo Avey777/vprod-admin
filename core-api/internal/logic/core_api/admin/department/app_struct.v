@@ -14,6 +14,7 @@ type Any = string
 	| bool
 	| time.Time
 	| map[string]int
+	| map[string]string
 	| []map[string]string
 	| []map[string]Any
 
