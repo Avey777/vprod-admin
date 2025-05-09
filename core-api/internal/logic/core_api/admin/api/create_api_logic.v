@@ -27,7 +27,7 @@ fn create_api_resp(req json2.Any) !map[string]Any {
 	mut db := db_mysql()
 	defer { db.close() }
 
-	apis := schema.Sysapi{
+	apis := schema.SysApi{
 		id:           rand.uuid_v7()
 		path:         req.as_map()['Path'] or { '' }.str()
 		description:  req.as_map()['Description'] or { '' }.str()
