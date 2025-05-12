@@ -33,7 +33,7 @@ fn create_token_resp(req json2.Any) !map[string]Any {
 		status:     req.as_map()['Status'] or { 0 }.u8()
 		user_id:    req.as_map()['UserId'] or { '' }.str()
 		username:   req.as_map()['UserName'] or { '' }.str()
-		token:      token_jwt_generate()
+		token:      token_jwt_generate(req)
 		source:     req.as_map()['Source'] or { '' }.str()
 		expired_at: req.as_map()['expiredAt'] or { time.now() }.to_time()!
 		created_at: req.as_map()['createdAt'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
@@ -45,23 +45,23 @@ fn create_token_resp(req json2.Any) !map[string]Any {
 	return map[string]Any{}
 }
 
-fn token_jwt_generate() string {
+fn token_jwt_generate(req json2.Any) string {
 	mut secret := 'b17989d7-57d2-4ffa-88ab-f6987feb3eec' // uuid_v4
 
 	mut payload := jwt.JWTpayload{
-		iss: 'vprod-workspase'
-		sub: '0196b736-f807-73f0-8731-7a08c0ed75ea' // uuid_v7
-		aud: ['api-service', 'webapp']
-		exp: time.now().add_days(30).unix()
-		nbf: time.now().unix()
-		iat: time.now().unix()
-		jti: '5907af3a-3f5a-4086-aaeb-68eca283d8d2' // unique-jwt-id-123
+		iss: 'v-admin' // 签发者 (Issuer) your-app-name
+		sub: req.as_map()['UserId'] or { '' }.str() // 用户唯一标识 (Subject)
+		aud: ['api-service', 'webapp'] // 接收方 (Audience)，可以是数组或字符串
+		exp: time.now().add_days(30).unix() // 过期时间 (Expiration Time) 7天后
+		nbf: time.now().unix() // 生效时间 (Not Before)，立即生效
+		iat: time.now().unix() // 签发时间 (Issued At)
+		jti: rand.uuid_v4() // JWT唯一标识 (JWT ID)，防重防攻击
 		// 自定义业务字段 (Custom Claims)
-		name:      'Jengro'
-		roles:     ['admin', 'editor']
-		status:    'active'
-		login_ip:  '192.168.1.100'
-		device_id: 'device-xyz'
+		name:      req.as_map()['UserName'] or { '' }.str() // 用户姓名
+		roles:     ['admin', 'editor'] // 用户角色
+		status:    req.as_map()['Status'] or { '0' }.str() // 用户状态
+		login_ip:  '192.168.1.100' // ip地址
+		device_id: 'device-xyz'    // 设备id
 	}
 
 	token := jwt.jwt_generate(secret, payload)
