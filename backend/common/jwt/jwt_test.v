@@ -4,7 +4,7 @@ import time
 
 const secret = 'b17989d7-57d2-4ffa-88ab-f6987feb3eec' // uuid_v4
 
-const payload = JWT_Payload{
+const payload = JWTpayload{
 	iss: 'vprod-workspase'
 	sub: '0196b736-f807-73f0-8731-7a08c0ed75ea' // uuid_v7
 	aud: ['api-service', 'webapp']
@@ -25,8 +25,7 @@ fn test_jwt_generate() {
 	dump(token)
 }
 
-
-fn test_jjwt_verify() {
+fn test_jwt_verify() {
 	token := jwt_generate(secret, payload)
 	verify := jwt_verify(secret, token)
 	dump(verify)

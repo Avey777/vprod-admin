@@ -9,13 +9,13 @@ import x.json2
 import time
 
 // JWT 头部固定使用HS256算法
-const header = base64.url_encode_str(json.encode(JWT_Header{
+const header = base64.url_encode_str(json.encode(JWTheader{
 	alg: 'HS256'
 	typ: 'JWT'
 }))
 
 //生成令牌
-fn jwt_generate(secret string, payload JWT_Payload) string {
+pub fn jwt_generate(secret string, payload JWTpayload) string {
 	playload_64 := base64.url_encode_str(json.encode(payload))
 
 	message := '${header}.${playload_64}'
@@ -25,7 +25,7 @@ fn jwt_generate(secret string, payload JWT_Payload) string {
 }
 
 // 验证令牌
-fn jwt_verify(secret string, token string) bool {
+pub fn jwt_verify(secret string, token string) bool {
 	// 验证 token 长度
 	parts := token.split('.')
 	if parts.len != 3 {
@@ -40,7 +40,7 @@ fn jwt_verify(secret string, token string) bool {
 	}
 	// 验证时间有效性
 	payload_base64 := base64.url_decode_str(parts[1])
-	payload_json := json2.decode[JWT_Payload](payload_base64.str()) or { return false }
+	payload_json := json2.decode[JWTpayload](payload_base64.str()) or { return false }
 	now := time.now().unix()
 	if now > payload_json.exp || now < payload_json.nbf {
 		return false

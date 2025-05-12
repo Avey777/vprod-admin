@@ -1,12 +1,14 @@
 module jwt
 
-pub struct JWT_Header {
+pub struct JWTheader {
+pub:
 	alg string // 加密(algorithm)：'HS256'，"none"
 	typ string // (Type) Header Parameter
 	cty string // (Content Type) Header Parameter
 }
 
-pub struct JWT_Payload {
+pub struct JWTpayload {
+pub:
 	// 标准声明
 	iss string   // 签发者 (Issuer) your-app-name
 	sub string   // 用户唯一标识 (Subject)
