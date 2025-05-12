@@ -46,7 +46,7 @@ fn create_token_resp(req json2.Any) !map[string]Any {
 }
 
 fn token_jwt_generate(req json2.Any) string {
-	mut secret := 'b17989d7-57d2-4ffa-88ab-f6987feb3eec' // uuid_v4
+	secret := req.as_map()['Secret'] or { '' }.str()
 
 	mut payload := jwt.JWTpayload{
 		iss: 'v-admin' // 签发者 (Issuer) your-app-name
@@ -60,8 +60,8 @@ fn token_jwt_generate(req json2.Any) string {
 		name:      req.as_map()['UserName'] or { '' }.str() // 用户姓名
 		roles:     ['admin', 'editor'] // 用户角色
 		status:    req.as_map()['Status'] or { '0' }.str() // 用户状态
-		login_ip:  '192.168.1.100' // ip地址
-		device_id: 'device-xyz'    // 设备id
+		login_ip:  req.as_map()['LoginIp'] or { '' }.str() // ip地址
+		device_id: req.as_map()['DeviceId'] or { '' }.str() // 设备id
 	}
 
 	token := jwt.jwt_generate(secret, payload)

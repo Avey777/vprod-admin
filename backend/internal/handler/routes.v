@@ -2,7 +2,7 @@ module handler
 
 import log
 import internal.structs { Context }
-import internal.middleware { cores_middleware, logger_middleware, logger_middleware_generic }
+import internal.middleware { authority_middleware, cores_middleware, logger_middleware, logger_middleware_generic }
 import internal.logic.base { Base }
 import internal.logic.core_api.admin { Admin } // 必须是路由模块内部声明的结构体
 import internal.logic.core_api.admin.user { User }
@@ -17,6 +17,7 @@ fn (mut app App) register_routes[T, U](mut ctrl T, url_path string) {
 	// mut ctrl := &Base{}
 	ctrl.use(cores_middleware())
 	ctrl.use(logger_middleware_generic())
+	ctrl.use(authority_middleware())
 	app.register_controller[T, U](url_path, mut ctrl) or { log.error('${err}') }
 	// app.register_controller[T,Context](url_path, mut ctrl) or { log.error('${err}') }
 }
