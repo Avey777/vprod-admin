@@ -16,8 +16,15 @@ pub fn authority_jwt_verify(mut ctx Context) bool {
 
 	verify := jwt.jwt_verify(secret, token)
 	if verify == false {
+		ctx.res.set_status(.unauthorized)
+		ctx.res.header.set(.content_type, 'application/json')
+		// ctx.send_response_to_client('application/json', 'send_response_to_client')
+		// ctx.request_error('request_error')
+		// ctx.server_error('server_error')
+		ctx.error('Bad credentials')
 		return false
 	}
+
 	return true
 }
 
@@ -25,6 +32,6 @@ pub fn authority_jwt_verify(mut ctx Context) bool {
 pub fn authority_middleware() veb.MiddlewareOptions[Context] {
 	return veb.MiddlewareOptions[Context]{
 		handler: authority_jwt_verify // 显式初始化 handler 字段
-		after:   true                 // 显式初始化 after 字段
+		after:   false                // 显式初始化 after 字段
 	}
 }

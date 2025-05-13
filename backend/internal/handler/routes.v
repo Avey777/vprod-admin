@@ -27,6 +27,7 @@ pub fn (mut app App) register_handlers() {
 
 	app.use(cores_middleware())
 	app.use(handler: logger_middleware)
+	app.use(authority_middleware())
 
 	app.handler_sys_admin()
 	// app.handler_tms_admin()

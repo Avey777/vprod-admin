@@ -15,6 +15,7 @@ pub fn cores_middleware() veb.MiddlewareOptions[Context] {
 		origins: cors_origin // origins: ['*', 'xx.com']
 		// 允许跨域请求的方法 ｜ allow CORS requests from methods:
 		allowed_methods: [.get, .head, .patch, .put, .post, .delete, .options]
+		allowed_headers:['Authorization','Content-Type','WWW-Authorization']
 	})
 	log.debug('${cors_middleware_context}')
 
