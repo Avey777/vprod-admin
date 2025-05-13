@@ -48,7 +48,7 @@ fn create_token_resp(req json2.Any) !map[string]Any {
 fn token_jwt_generate(req json2.Any) string {
 	secret := req.as_map()['Secret'] or { '' }.str()
 
-	mut payload := jwt.JWTpayload{
+	mut payload := jwt.JwtPayload{
 		iss: 'v-admin' // 签发者 (Issuer) your-app-name
 		sub: req.as_map()['UserId'] or { '' }.str() // 用户唯一标识 (Subject)
 		aud: ['api-service', 'webapp'] // 接收方 (Audience)，可以是数组或字符串
