@@ -4,11 +4,13 @@ import veb
 import x.json2
 import internal.structs { Context }
 import common.jwt
+import log
 
 //认证中间件
 pub fn authority_jwt_verify(mut ctx Context) bool {
-	req := json2.raw_decode(ctx.req.data) or { return false }
+	log.info('authority_jwt_verify authority_jwt_verify authority_jwt_verify')
 
+	req := json2.raw_decode(ctx.req.data) or { return false }
 	secret := req.as_map()['Secret'] or { '' }.str()
 	auth_header := ctx.req.header.get(.authorization) or { '' }
 	token := auth_header.all_after('Bearer').trim_space()
@@ -16,9 +18,9 @@ pub fn authority_jwt_verify(mut ctx Context) bool {
 
 	verify := jwt.jwt_verify(secret, token)
 	if verify == false {
-		ctx.res.set_status(.unauthorized)
-		ctx.res.header.set(.content_type, 'application/json')
-		// ctx.send_response_to_client('application/json', 'send_response_to_client')
+		// ctx.res.set_status(.unauthorized)
+		// ctx.res.header.set(.content_type, 'application/json')
+		ctx.send_response_to_client('application/json', 'send_response_to_client')
 		// ctx.request_error('request_error')
 		// ctx.server_error('server_error')
 		ctx.error('Bad credentials')
@@ -35,3 +37,14 @@ pub fn authority_middleware() veb.MiddlewareOptions[Context] {
 		after:   false                // 显式初始化 after 字段
 	}
 }
+
+// pub fn authority_jwt_verify(mut ctx Context) bool {
+// 	log.debug('authority_jwt_verify')
+
+// 	ctx.res.set_status(.unauthorized)
+// 	ctx.res.header.set(.content_type, 'application/json')
+// 	ctx.send_response_to_client('application/json', 'send_response_to_client unauthorized')
+// 	ctx.error('Bad credentials')
+
+// 	return false
+// }

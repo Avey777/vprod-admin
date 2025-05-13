@@ -2,7 +2,7 @@ module handler
 
 import log
 import internal.structs { Context }
-import internal.middleware { authority_middleware, cores_middleware, logger_middleware, logger_middleware_generic }
+import internal.middleware
 import internal.logic.base { Base }
 import internal.logic.core_api.admin { Admin } // 必须是路由模块内部声明的结构体
 import internal.logic.core_api.admin.user { User }
@@ -15,9 +15,9 @@ import internal.logic.core_api.admin.department { Department }
 // 封装泛型全局中间件
 fn (mut app App) register_routes[T, U](mut ctrl T, url_path string) {
 	// mut ctrl := &Base{}
-	ctrl.use(cores_middleware())
-	ctrl.use(logger_middleware_generic())
-	ctrl.use(authority_middleware())
+	ctrl.use(middleware.cores_middleware())
+	ctrl.use(middleware.logger_middleware_generic())
+	ctrl.use(middleware.authority_middleware())
 	app.register_controller[T, U](url_path, mut ctrl) or { log.error('${err}') }
 	// app.register_controller[T,Context](url_path, mut ctrl) or { log.error('${err}') }
 }
@@ -25,9 +25,8 @@ fn (mut app App) register_routes[T, U](mut ctrl T, url_path string) {
 pub fn (mut app App) register_handlers() {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	app.use(cores_middleware())
-	app.use(handler: logger_middleware)
-	app.use(authority_middleware())
+	// app.use(cores_middleware())
+	// app.use(handler: logger_middleware)
 
 	app.handler_sys_admin()
 	// app.handler_tms_admin()
@@ -38,7 +37,7 @@ fn (mut app App) handler_sys_admin() {
 
 	// 方式一: 直接使用中间件，适合对单个控制器单独使用中间件
 	mut base_app := &Base{}
-	base_app.use(handler: logger_middleware)
+	base_app.use(handler: middleware.logger_middleware)
 	app.register_controller[Base, Context]('/base', mut base_app) or { log.error('${err}') }
 
 	// 方式二：通过泛型的方式使用全局中间件，适合对多个控制器使用相同的中间件

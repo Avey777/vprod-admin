@@ -43,8 +43,8 @@ pub fn logger_middleware(mut ctx Context) bool {
 
 // 初始化中间件并设置 handler ,并返回中间件选项
 pub fn logger_middleware_generic() veb.MiddlewareOptions[Context] {
-    return veb.MiddlewareOptions[Context]{
-        handler: logger_middleware // 显式初始化 handler 字段
-        after: true // 显式初始化 after 字段
-    }
+	return veb.MiddlewareOptions[Context]{
+		handler: logger_middleware // 显式初始化 handler 字段
+		after:   true              // 显式初始化 after 字段
+	}
 }
