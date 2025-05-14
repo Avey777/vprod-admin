@@ -10,7 +10,11 @@ import internal.logic.core_api.admin.token { Token }
 import internal.logic.core_api.admin.role { Role }
 import internal.logic.core_api.admin.position { Position }
 import internal.logic.core_api.admin.menu { Menu }
+import internal.logic.core_api.admin.dictionary { Dictionary }
+import internal.logic.core_api.admin.dictionarydetail { DictionaryDetail }
 import internal.logic.core_api.admin.department { Department }
+import internal.logic.core_api.admin.configuration { Configuration }
+import internal.logic.core_api.admin.api { Api }
 
 // 封装泛型全局中间件
 fn (mut app App) register_routes[T, U](mut ctrl T, url_path string) {
@@ -47,7 +51,11 @@ fn (mut app App) handler_sys_admin() {
 	app.register_routes[Role, Context](mut &Role{}, '/admin/role')
 	app.register_routes[Position, Context](mut &Position{}, '/admin/position')
 	app.register_routes[Menu, Context](mut &Menu{}, '/admin/menu')
+	app.register_routes[Dictionary, Context](mut &Dictionary{}, '/admin/dictionary')
+	app.register_routes[DictionaryDetail, Context](mut &DictionaryDetail{}, '/admin/dictionarydetail')
 	app.register_routes[Department, Context](mut &Department{}, '/admin/department')
+	app.register_routes[Configuration, Context](mut &Configuration{}, '/admin/configuration')
+	app.register_routes[Api, Context](mut &Api{}, '/admin/api')
 }
 
 fn (mut app App) handler_tms_admin() {

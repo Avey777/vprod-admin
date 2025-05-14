@@ -7,11 +7,11 @@ import orm
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema
-import common.api { json_success, json_error }
+import common.api { json_error, json_success }
 import internal.structs { Context }
 
 @['/id'; post]
-fn (app &DictionaryDetail) dictionarydetail_by_id(mut ctx Context) veb.Result {
+fn (app &DictionaryDetail) dictionarydetail_by_dictionary_name(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
@@ -21,7 +21,7 @@ fn (app &DictionaryDetail) dictionarydetail_by_id(mut ctx Context) veb.Result {
 	return ctx.json(json_success('success', result))
 }
 
-fn dictionarydetail_by_id_resp(req json2.Any) !map[string]Any {
+fn dictionarydetail_by_dictionary_name_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	dictionary_name := req.as_map()['id'] or { '' }.str()

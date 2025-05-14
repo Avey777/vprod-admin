@@ -4,7 +4,7 @@ import time
 
 // API表
 @[table: 'sys_apis']
-pub struct SysAPI {
+pub struct SysApi {
 pub:
 	id           string  @[immutable; primary; sql: 'id'; sql_type: 'VARCHAR(36)'; zcomments: 'UUID']
 	path         string  @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'API path | API 路径']

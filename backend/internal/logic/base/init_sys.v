@@ -31,7 +31,7 @@ fn (app &Base) index(mut ctx Context) veb.Result {
 		create table schema.SysDepartment
 		create table schema.SysConfiguration
 		create table schema.SysCasbinRule
-		create table schema.SysAPI
+		create table schema.SysApi
 		create table schema.PayRefund
 		create table schema.PayOrderExtension
 		create table schema.PayOrder
