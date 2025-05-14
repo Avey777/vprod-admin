@@ -1,7 +1,7 @@
 module middleware
 
 import veb
-import internal.structs { Context, json_error }
+import internal.structs { Context }
 import common.jwt
 import log
 
@@ -17,11 +17,8 @@ pub fn authority_jwt_verify(mut ctx Context) bool {
 
 	verify := jwt.jwt_verify(secret, token)
 	if verify == false {
-		ctx.res.set_status(.unauthorized)
-		ctx.res.header.set(.content_type, 'application/json')
-		ctx.send_response_to_client('application/json', json_error(401, 'send_response_to_client').str())
-
-		ctx.error('Authorization error')
+		ctx.request_error('Authorization error')
+		log.info('Authorization error')
 		return false
 	}
 	return true

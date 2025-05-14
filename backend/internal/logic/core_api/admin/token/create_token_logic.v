@@ -46,7 +46,8 @@ fn create_token_resp(req json2.Any) !map[string]Any {
 }
 
 fn token_jwt_generate(req json2.Any) string {
-	secret := req.as_map()['Secret'] or { '' }.str()
+	// secret := req.as_map()['Secret'] or { '' }.str()
+	secret := Context{}.get_custom_header('secret') or { '' }
 
 	mut payload := jwt.JwtPayload{
 		iss: 'v-admin' // 签发者 (Issuer) your-app-name

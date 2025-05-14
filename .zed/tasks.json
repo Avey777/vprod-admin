@@ -3,7 +3,7 @@
   {
     "label": "core-api",
     "tags": ["v-main"],
-    "command": "v wipe-cache && v -show-c-output -d veb_livereload watch -d log_debug run main.v",
+    "command": "v wipe-cache && v -no-parallel -show-c-output -d veb_livereload watch -d log_debug run main.v",
     "args": ["-f", "etc/config_dev.toml"],
     // 命令的环境变量覆盖，会追加到终端设置中的环境变量
     "env": {},
