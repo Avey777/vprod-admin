@@ -1,20 +1,19 @@
 module middleware
 
 import veb
-import x.json2
 import internal.structs { Context, json_error }
 import common.jwt
 import log
 
 //认证中间件
 pub fn authority_jwt_verify(mut ctx Context) bool {
-	log.info('authority_jwt_verify authority_jwt_verify authority_jwt_verify')
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json2.raw_decode(ctx.req.data) or { return false }
-	secret := req.as_map()['Secret'] or { '' }.str()
-	auth_header := ctx.req.header.get(.authorization) or { '' }
+	secret := ctx.get_custom_header('secret') or { '' }
+	log.debug(secret)
+	auth_header := ctx.get_header(.authorization) or { '' }
 	token := auth_header.all_after('Bearer').trim_space()
-	log.info(token)
+	log.debug(token)
 
 	verify := jwt.jwt_verify(secret, token)
 	if verify == false {
