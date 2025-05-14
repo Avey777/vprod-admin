@@ -30,7 +30,7 @@ fn api_list_resp(req json2.Any) !map[string]Any {
 	api_group := req.as_map()['Group'] or { '' }.str()
 	service_name := req.as_map()['ServiceName'] or { '' }.str()
 	method := req.as_map()['Method'] or { '' }.str()
-	is_required := req.as_map()['IsRequired'] or { 'Null' }.u8()
+	is_required := req.as_map()['IsRequired'] or { 100 }.u8()
 
 	mut db := db_mysql()
 	defer { db.close() }
