@@ -7,7 +7,8 @@ import orm
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema
-import internal.structs { Context, json_error, json_success }
+import common.api { json_success, json_error }
+import internal.structs { Context }
 
 //根据role获取menu
 @['/role/list'; post]

@@ -2,7 +2,8 @@ module handler
 
 import veb
 import log
-import internal.structs { Context, json_success }
+import common.api { json_success }
+import internal.structs { Context }
 
 // 此方法将仅处理对 index 页面的GET请求 ｜ This method will only handle GET requests to the index page
 @['/'; get]

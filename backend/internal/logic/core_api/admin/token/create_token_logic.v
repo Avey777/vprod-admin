@@ -8,7 +8,8 @@ import rand
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema
-import internal.structs { Context, json_error, json_success }
+import common.api { json_success, json_error }
+import internal.structs { Context }
 import common.jwt
 
 // Create Token | 创建Token

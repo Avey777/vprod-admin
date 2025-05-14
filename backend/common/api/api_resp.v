@@ -1,4 +1,4 @@
-module structs
+module api
 
 import rand
 

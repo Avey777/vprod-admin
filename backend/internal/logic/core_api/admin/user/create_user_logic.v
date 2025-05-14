@@ -8,7 +8,8 @@ import x.json2
 import rand
 import internal.config { db_mysql }
 import internal.structs.schema
-import internal.structs { Context, json_error, json_success }
+import common.api { json_success, json_error }
+import internal.structs { Context }
 
 // Create User | 创建用户
 @['/create_user'; post]

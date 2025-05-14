@@ -2,7 +2,8 @@ module admin
 
 import veb
 import log
-import internal.structs { Context, json_success }
+import common.api { json_success }
+import internal.structs { Context }
 // import internal.config
 // import internal.structs.schema
 

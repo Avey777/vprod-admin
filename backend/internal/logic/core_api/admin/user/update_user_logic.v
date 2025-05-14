@@ -7,7 +7,8 @@ import time
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema
-import internal.structs { Context, json_error, json_success }
+import common.api { json_error, json_success }
+import internal.structs { Context }
 
 @['/update_user'; post]
 fn (app &User) update_user_id(mut ctx Context) veb.Result {

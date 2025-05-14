@@ -2,7 +2,8 @@ module base
 
 import veb
 import log
-import internal.structs { Context, json_success_optparams }
+import common.api { json_success_optparams }
+import internal.structs { Context }
 import internal.config { db_mysql }
 import internal.structs.schema
 

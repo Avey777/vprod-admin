@@ -6,7 +6,8 @@ import orm
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema
-import internal.structs { Context, json_error, json_success }
+import common.api { json_error, json_success }
+import internal.structs { Context }
 
 // Update User Profile ||更新用户资料
 @['/update_user_profile'; post]
