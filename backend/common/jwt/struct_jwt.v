@@ -20,7 +20,7 @@ pub:
 	// 自定义声明
 	name      string   // 用户姓名
 	roles     []string // 用户角色
-	status    string   // 用户状态
+	status    string   // 用户账号状态
 	login_ip  string   // ip地址
 	device_id string   // 设备id
 }
