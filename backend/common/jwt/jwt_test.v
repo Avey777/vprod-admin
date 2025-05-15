@@ -13,10 +13,8 @@ const payload = JwtPayload{
 	iat: time.now().unix()
 	jti: '5907af3a-3f5a-4086-aaeb-68eca283d8d2' // JWT唯一标识 (JWT ID)，防重防攻击
 	// 自定义业务字段 (Custom Claims)
-	name:      'Jengro'
 	roles:     ['admin', 'editor']
-	status:    'active' // 用户账号状态
-	login_ip:  '192.168.1.100'
+	client_ip: '192.168.1.100'
 	device_id: 'device-xyz'
 }
 

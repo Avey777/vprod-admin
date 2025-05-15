@@ -8,7 +8,7 @@ import rand
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema
-import common.api { json_success, json_error }
+import common.api { json_error, json_success }
 import internal.structs { Context }
 import common.jwt
 
@@ -53,16 +53,14 @@ fn token_jwt_generate(req json2.Any) string {
 	mut payload := jwt.JwtPayload{
 		iss: 'v-admin' // 签发者 (Issuer) your-app-name
 		sub: req.as_map()['UserId'] or { '' }.str() // 用户唯一标识 (Subject)
-		aud: ['api-service', 'webapp'] // 接收方 (Audience)，可以是数组或字符串
+		// aud: ['api-service', 'webapp'] // 接收方 (Audience)，可以是数组或字符串
 		exp: time.now().add_days(30).unix() // 过期时间 (Expiration Time) 7天后
 		nbf: time.now().unix() // 生效时间 (Not Before)，立即生效
 		iat: time.now().unix() // 签发时间 (Issued At)
 		jti: rand.uuid_v4() // JWT唯一标识 (JWT ID)，防重防攻击
 		// 自定义业务字段 (Custom Claims)
-		name:      req.as_map()['UserName'] or { '' }.str() // 用户姓名
 		roles:     ['admin', 'editor'] // 用户角色
-		status:    req.as_map()['Status'] or { '0' }.str() // 用户状态
-		login_ip:  req.as_map()['LoginIp'] or { '' }.str() // ip地址
+		client_ip: req.as_map()['LoginIp'] or { '' }.str() // ip地址
 		device_id: req.as_map()['DeviceId'] or { '' }.str() // 设备id
 	}
 

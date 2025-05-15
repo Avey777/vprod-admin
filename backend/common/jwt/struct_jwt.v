@@ -10,20 +10,20 @@ pub:
 pub struct JwtPayload {
 pub:
 	// 标准声明
-	iss string   // 签发者 (Issuer) App名称
-	sub string   // 接收方-用户/租户唯一标识 (Subject)  用户id
-	aud []string // 接收方 (Audience)，可以是数组或字符串 ["团队id"，"应用系统id","应用-门户id"]
-	exp i64      // 过期时间 (Expiration Time) 7天后
-	nbf i64      // 生效时间 (Not Before)，立即生效
-	iat i64      // 签发时间 (Issued At)
-	jti string   // JWT唯一标识 (JWT ID)，防重防攻击
+	iss string   @[default: 'v-admin'; required] // 签发者 (Issuer) App名称
+	sub string   @[required]                     // 接收方-用户/租户唯一标识 (Subject)  用户/租户id
+	aud []string @[omitempty]                    // ['app.mall.com'] 接收方 (Audience)，可以是数组或字符串. 该令牌预期被哪些服务或应用使用
+	nbf i64      @[required]                     // 生效时间 (Not Before)，立即生效
+	exp i64      @[required]                     // 过期时间 (Expiration Time) 7天后
+	iat i64      @[required]                     // 签发时间 (Issued At)
+	jti string   @[required]                     // JWT唯一标识 (JWT ID)，防重防攻击
 	// 自定义声明
-	name      string   // 用户/租户姓名
-	roles     []string // 用户/租户角色
-	status    string   // 用户/租户账号状态
-	login_ip  string   // ip地址
-	device_id string   // 设备id
-	// 团队id
-	// 应用系统id
-	// 应用-门户id
+	roles []string // 角色数组
+	//>>>>>>正常登陆鉴权不使用>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	team_id   string // 团队id
+	app_id    string // 应用系统 ID (商城系统)
+	portal_id string // 应用门户 ID (运营门户，商家门户，会员门户)
+	//^^^^^^API开放平台独立鉴权必须^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+	client_ip string // 客户端 IP
+	device_id string // 设备 ID
 }
