@@ -1,7 +1,7 @@
 // Static tasks configuration.
 [
   {
-    "label": "core-api",
+    "label": "v run backend .",
     "tags": ["v-main"],
     "command": "v wipe-cache && v -no-parallel -show-c-output -d veb_livereload watch -d log_debug run main.v",
     "args": ["-f", "etc/config_dev.toml"],
@@ -31,18 +31,29 @@
     "show_output": true
   },
   {
-    "label": "V test .",
+    "label": "v test .",
     "tags": ["v-test"],
     "command": "v",
     "args": ["-stats", "test", "."],
+    "cwd": "$ZED_WORKTREE_ROOT/backend",
     "use_new_terminal": false,
     "reveal": "always"
   },
   {
-    "label": "V test",
-    "tags": ["v-test"],
-    "command": "v",
-    "args": ["test", "$ZED_DIRNAME"],
+    "label": "v build .",
+    "tags": ["v-main"],
+    "command": "v -no-parallel -show-c-output -o main .",
+    "args": [],
+    "cwd": "$ZED_WORKTREE_ROOT/backend",
+    "use_new_terminal": false,
+    "reveal": "always"
+  },
+  {
+    "label": "v build -prod .",
+    "tags": ["v-main"],
+    "command": "v -prod -no-parallel -show-c-output -o main .",
+    "args": [],
+    "cwd": "$ZED_WORKTREE_ROOT/backend",
     "use_new_terminal": false,
     "reveal": "always"
   }
