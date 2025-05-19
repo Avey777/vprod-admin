@@ -8,14 +8,20 @@ import json
 import x.json2
 import time
 
-// JWT 头部固定使用HS256算法
-const header = base64.url_encode_str(json.encode(JwtHeader{
-	alg: 'HS256'
-	typ: 'JWT'
-}))
+// JWT 头部固定使用HS256算法 [使用这种方式，编译器会产生c错误]
+// const header = base64.url_encode_str(json.encode(JwtHeader{
+// 	alg: 'HS256'
+// 	typ: 'JWT'
+// }))
 
 //生成令牌
 pub fn jwt_generate(secret string, payload JwtPayload) string {
+	// JWT 头部固定使用HS256算法
+	header := base64.url_encode_str(json.encode(JwtHeader{
+		alg: 'HS256'
+		typ: 'JWT'
+	}))
+
 	playload_64 := base64.url_encode_str(json.encode(payload))
 
 	message := '${header}.${playload_64}'
