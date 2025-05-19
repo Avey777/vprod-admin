@@ -17,7 +17,7 @@ fn db_mysql() !mysql.DB {
 }
 
 @[table: 'sys_users']
-struct User {
+struct User_3 {
 pub:
 	id         string     @[immutable; primary; sql: 'id'; sql_type: 'VARCHAR(255)'; unique]
 	name       string     @[immutable; sql: 'username'; sql_type: 'VARCHAR(255)'; unique]
@@ -30,11 +30,11 @@ fn main() {
 	defer { db.close() }
 
 	mut result := sql db {
-		select from User
+		select from User_3
 	} or { panic(err) }
 	dump(result)
 
-	mut user := orm.new_query[User](db)
+	mut user := orm.new_query[User_3](db)
 	result1 := user.select('id', 'username')!.query()!
 	dump(result1)
 	result2 := user.where('id != ?', '001')!.count()!
