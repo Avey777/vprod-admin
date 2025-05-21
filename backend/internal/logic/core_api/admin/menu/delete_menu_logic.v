@@ -5,7 +5,7 @@ import log
 import orm
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_success, json_error }
 import internal.structs { Context }
 
@@ -28,7 +28,7 @@ fn delete_menu_resp(req json2.Any) !map[string]Any {
 
 	menu_id := req.as_map()['id'] or { '' }.str()
 
-	mut sys_menu := orm.new_query[schema.SysMenu](db)
+	mut sys_menu := orm.new_query[schema_sys.SysMenu](db)
 	sys_menu.delete()!.where('id = ?', menu_id)!.update()!
 	// sys_menu.set('del_flag = ?', 1)!.where('id = ?', menu_id)!.update()!
 

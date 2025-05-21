@@ -5,7 +5,7 @@ import log
 import common.api { json_success }
 import internal.structs { Context }
 // import internal.config
-// import internal.structs.schema
+// import internal.structs.schema_sys
 
 @['/router'; get]
 fn (app &Admin) index(mut ctx Context) veb.Result {

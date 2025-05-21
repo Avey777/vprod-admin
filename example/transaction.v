@@ -5,7 +5,7 @@ import time
 import orm
 
 @[table: 'sys_users']
-struct User {
+struct User1 {
 pub:
 	id         string     @[immutable; primary; sql: 'id'; sql_type: 'VARCHAR(255)'; unique]
 	name       ?string    @[immutable; sql: 'names'; sql_type: 'VARCHAR(255)'; unique]
@@ -17,14 +17,14 @@ fn main() {
 	mut db := sqlite.connect(':memory:')!
 	defer { db.close() or {} }
 
-	user1 := User{
+	user1 := User1{
 		id: '001'
 		// name:       'Jengro'
 		created_at: time.now()
 		updated_at: time.now()
 	}
 
-	user2 := User{
+	user2 := User1{
 		id:         '002'
 		name:       'Dev'
 		created_at: time.now()
@@ -45,9 +45,7 @@ fn main() {
 	// } or { panic(err) }
 	// dump(result)
 
-
-
-	mut qb := orm.new_query[User](db)
+	mut qb := orm.new_query[User1](db)
 
 	db.begin()!
 	qb.insert(user1)!

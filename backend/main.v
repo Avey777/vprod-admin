@@ -6,9 +6,8 @@ import log
 // import time
 // import sync
 
-
 fn main() {
-  log_sevel()
+	log_sevel()
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	check_all() //启动前配置检查
 
@@ -30,5 +29,6 @@ fn main() {
 
 	new_app()
 }
+
 // lsof -i :9009
 // sudo kill -9 $(lsof -t -i :9009)

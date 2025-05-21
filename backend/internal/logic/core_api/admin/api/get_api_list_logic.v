@@ -6,7 +6,7 @@ import time
 import orm
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_error, json_success }
 import internal.structs { Context }
 
@@ -34,10 +34,10 @@ fn api_list_resp(req json2.Any) !map[string]Any {
 
 	mut db := db_mysql()
 	defer { db.close() }
-	mut sys_api := orm.new_query[schema.SysApi](db)
+	mut sys_api := orm.new_query[schema_sys.SysApi](db)
 	// 总页数查询 - 分页偏移量构造
 	mut count := sql db {
-		select count from schema.SysUser
+		select count from schema_sys.SysUser
 	}!
 	offset_num := (page - 1) * page_size
 	//*>>>*/

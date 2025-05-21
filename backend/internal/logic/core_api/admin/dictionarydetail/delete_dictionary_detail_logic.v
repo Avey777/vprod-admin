@@ -5,7 +5,7 @@ import log
 import orm
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_success, json_error }
 import internal.structs { Context }
 
@@ -30,7 +30,7 @@ fn delete_dictionarydetail_resp(req json2.Any) !map[string]Any {
 
 	dictionarydetail_id := req.as_map()['id'] or { '' }.str()
 
-	mut sys_dictionarydetail := orm.new_query[schema.SysDictionaryDetail](db)
+	mut sys_dictionarydetail := orm.new_query[schema_sys.SysDictionaryDetail](db)
 	sys_dictionarydetail.delete()!.where('id = ?', dictionarydetail_id)!.update()!
 	// sys_dictionarydetail.set('del_flag = ?', 1)!.where('id = ?', dictionarydetail_id)!.update()!
 

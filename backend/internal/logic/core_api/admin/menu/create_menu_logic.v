@@ -7,7 +7,7 @@ import time
 import x.json2
 import rand
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_success, json_error }
 import internal.structs { Context }
 
@@ -28,7 +28,7 @@ fn create_menu_resp(req json2.Any) !map[string]Any {
 	mut db := db_mysql()
 	defer { db.close() }
 
-	menu := schema.SysMenu{
+	menu := schema_sys.SysMenu{
 		id:                    rand.uuid_v7()
 		parent_id:             req.as_map()['parentId'] or { '' }.str()
 		menu_level:            req.as_map()['menuLevel'] or { 0 }.u64()
@@ -56,7 +56,7 @@ fn create_menu_resp(req json2.Any) !map[string]Any {
 		created_at:            req.as_map()['createdAt'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
 		updated_at:            req.as_map()['updatedAt'] or { time.now() }.to_time()!
 	}
-	mut sys_menu := orm.new_query[schema.SysMenu](db)
+	mut sys_menu := orm.new_query[schema_sys.SysMenu](db)
 	sys_menu.insert(menu)!
 
 	return map[string]Any{}

@@ -33,7 +33,7 @@ struct Users {
 	updated_at ?time.Time @[default: now; omitempty; sql_type: 'TIMESTAMP']
 }
 
-type Any = string | int | []string | []int | bool | []map[string]Any | time.Time
+type Anny = string | int | []string | []int | bool | []map[string]Anny | time.Time
 
 fn main() {
 	mut db := sqlite.connect(':memory:')!
@@ -68,9 +68,9 @@ fn main() {
 	}!
 	// dump(data_all)
 
-	mut result := []map[string]Any{}
+	mut result := []map[string]Anny{}
 	for raw in data_all {
-		mut data := map[string]Any{}
+		mut data := map[string]Anny{}
 		data['id'] = raw.id
 		data['name'] = raw.name or { '' }
 		data['updatedAt'] = raw.updated_at or { time.Time{} }.format_ss()

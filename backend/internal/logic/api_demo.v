@@ -5,7 +5,7 @@ module logic
 // import time
 // import x.json2
 // import internal.config { db_mysql }
-// import internal.structs.schema
+// import internal.structs.schema_sys
 // import internal.structs { Context, json_error, json_success }
 
 // type Any = string

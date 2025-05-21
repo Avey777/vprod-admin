@@ -7,7 +7,7 @@ import time
 import x.json2
 import rand
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_success, json_error }
 import internal.structs { Context }
 
@@ -28,7 +28,7 @@ fn create_dictionary_resp(req json2.Any) !map[string]Any {
 	mut db := db_mysql()
 	defer { db.close() }
 
-	dictionarys := schema.SysDictionary{
+	dictionarys := schema_sys.SysDictionary{
 		id:         rand.uuid_v7()
 		title:      req.as_map()['Title'] or { '' }.str()
 		name:       req.as_map()['Name'] or { '' }.str()
@@ -37,7 +37,7 @@ fn create_dictionary_resp(req json2.Any) !map[string]Any {
 		created_at: req.as_map()['createdAt'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
 		updated_at: req.as_map()['updatedAt'] or { time.now() }.to_time()!
 	}
-	mut sys_dictionary := orm.new_query[schema.SysDictionary](db)
+	mut sys_dictionary := orm.new_query[schema_sys.SysDictionary](db)
 	sys_dictionary.insert(dictionarys)!
 
 	return map[string]Any{}

@@ -5,7 +5,11 @@ import log
 import common.api { json_success_optparams }
 import internal.structs { Context }
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
+import internal.structs.schema_pay
+import internal.structs.schema_mcms
+import internal.structs.schema_job
+import internal.structs.schema_fms
 
 @['/init/database'; get]
 fn (app &Base) index(mut ctx Context) veb.Result {
@@ -17,41 +21,41 @@ fn (app &Base) index(mut ctx Context) veb.Result {
 	}
 
 	sql db {
-		create table schema.SysUser
-		create table schema.SysUserRole
-		create table schema.SysUserPosition
-		create table schema.SysToken
-		create table schema.SysRole
-		create table schema.SysRoleMenu
-		create table schema.SysPosition
-		create table schema.SysOauthProvider
-		create table schema.SysMenu
-		create table schema.SysDictionaryDetail
-		create table schema.SysDictionary
-		create table schema.SysDepartment
-		create table schema.SysConfiguration
-		create table schema.SysCasbinRule
-		create table schema.SysApi
-		create table schema.PayRefund
-		create table schema.PayOrderExtension
-		create table schema.PayOrder
-		create table schema.PayDemoOrder
-		create table schema.McmsSmsProvider
-		create table schema.McmsSmsLog
-		create table schema.McmsSiteNotification
-		create table schema.McmsSiteInnerMsg
-		create table schema.McmsSiteInnerCategory
-		create table schema.McmsEmailProvider
-		create table schema.McmsEmailLog
-		create table schema.JobTask
-		create table schema.JobTaskLog
-		create table schema.FmsStorageProvider
-		create table schema.FmsFileJoinTag
-		create table schema.FmsFile
-		create table schema.FmsFileTag
-		create table schema.FmsCloudFileCloudFileTag
-		create table schema.FmsCloudFile
-		create table schema.FmsCloudFileTag
+		create table schema_sys.SysUser
+		create table schema_sys.SysUserRole
+		create table schema_sys.SysUserPosition
+		create table schema_sys.SysToken
+		create table schema_sys.SysRole
+		create table schema_sys.SysRoleMenu
+		create table schema_sys.SysPosition
+		create table schema_sys.SysOauthProvider
+		create table schema_sys.SysMenu
+		create table schema_sys.SysDictionaryDetail
+		create table schema_sys.SysDictionary
+		create table schema_sys.SysDepartment
+		create table schema_sys.SysConfiguration
+		create table schema_sys.SysCasbinRule
+		create table schema_sys.SysApi
+		create table schema_pay.PayRefund
+		create table schema_pay.PayOrderExtension
+		create table schema_pay.PayOrder
+		create table schema_pay.PayDemoOrder
+		create table schema_mcms.McmsSmsProvider
+		create table schema_mcms.McmsSmsLog
+		create table schema_mcms.McmsSiteNotification
+		create table schema_mcms.McmsSiteInnerMsg
+		create table schema_mcms.McmsSiteInnerCategory
+		create table schema_mcms.McmsEmailProvider
+		create table schema_mcms.McmsEmailLog
+		create table schema_job.JobTask
+		create table schema_job.JobTaskLog
+		create table schema_fms.FmsStorageProvider
+		create table schema_fms.FmsFileJoinTag
+		create table schema_fms.FmsFile
+		create table schema_fms.FmsFileTag
+		create table schema_fms.FmsCloudFileCloudFileTag
+		create table schema_fms.FmsCloudFile
+		create table schema_fms.FmsCloudFileTag
 	} or { return ctx.text('error creating table:  ${err}') }
 	log.debug('数据库 init success')
 

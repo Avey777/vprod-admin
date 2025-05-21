@@ -6,7 +6,7 @@ import time
 import orm
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_error, json_success }
 import internal.structs { Context }
 
@@ -29,14 +29,14 @@ fn dictionarydetail_by_dictionary_name_resp(req json2.Any) !map[string]Any {
 	mut db := db_mysql()
 	defer { db.close() }
 
-	mut sys_dictionary := orm.new_query[schema.SysDictionary](db)
+	mut sys_dictionary := orm.new_query[schema_sys.SysDictionary](db)
 	mut query_dictionary := sys_dictionary.select('id')!
 	if dictionary_name != '' {
 		query_dictionary = query_dictionary.where('name = ?', dictionary_name)!
 	}
 	dictionary_id := query_dictionary.query()!
 
-	mut sys_dictionarydetail := orm.new_query[schema.SysDictionaryDetail](db)
+	mut sys_dictionarydetail := orm.new_query[schema_sys.SysDictionaryDetail](db)
 	mut query := sys_dictionarydetail.select()!
 	if dictionary_id.str() != '' {
 		query = query.where('dictionary_id = ?', dictionary_id.str())!

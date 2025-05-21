@@ -6,7 +6,7 @@ import time
 import orm
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_success, json_error }
 import internal.structs { Context }
 
@@ -31,11 +31,11 @@ fn role_menu_list_resp(req json2.Any) !map[string]Any {
 
 	mut db := db_mysql()
 	defer { db.close() }
-	mut sys_role_menu := orm.new_query[schema.SysRoleMenu](db)
-	mut sys_menu := orm.new_query[schema.SysMenu](db)
+	mut sys_role_menu := orm.new_query[schema_sys.SysRoleMenu](db)
+	mut sys_menu := orm.new_query[schema_sys.SysMenu](db)
 	// 总页数查询 - 分页偏移量构造
 	mut count := sql db {
-		select count from schema.SysUser
+		select count from schema_sys.SysUser
 	}!
 	offset_num := (page - 1) * page_size
 	//*>>>*/

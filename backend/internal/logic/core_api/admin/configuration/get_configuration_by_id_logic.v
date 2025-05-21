@@ -6,7 +6,7 @@ import time
 import orm
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_success, json_error }
 import internal.structs { Context }
 
@@ -29,7 +29,7 @@ fn configuration_by_id_resp(req json2.Any) !map[string]Any {
 	mut db := db_mysql()
 	defer { db.close() }
 
-	mut sys_configuration := orm.new_query[schema.SysConfiguration](db)
+	mut sys_configuration := orm.new_query[schema_sys.SysConfiguration](db)
 	mut query := sys_configuration.select()!
 	if configuration_id != '' {
 		query = query.where('id = ?', configuration_id)!

@@ -5,7 +5,7 @@ import log
 import orm
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_error, json_success }
 import internal.structs { Context }
 
@@ -32,7 +32,7 @@ fn update_user_profile_resp(req json2.Any) !map[string]Any {
 	mut db := db_mysql()
 	defer { db.close() }
 
-	mut sys_user := orm.new_query[schema.SysUser](db)
+	mut sys_user := orm.new_query[schema_sys.SysUser](db)
 
 	sys_user.set('avatar = ?', avatar)!
 		.set('email = ?', email)!

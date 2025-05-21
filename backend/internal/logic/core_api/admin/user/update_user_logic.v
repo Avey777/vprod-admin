@@ -6,7 +6,7 @@ import orm
 import time
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_error, json_success }
 import internal.structs { Context }
 
@@ -38,17 +38,17 @@ fn update_user_resp(req json2.Any) !map[string]Any {
 	username := req.as_map()['username'] or { '' }.str()
 	updated_at := req.as_map()['updatedAt'] or { time.now() }.to_time()!
 
-	mut user_positions := []schema.SysUserPosition{cap: position_ids.len}
+	mut user_positions := []schema_sys.SysUserPosition{cap: position_ids.len}
 	for raw in position_ids {
-		user_positions << schema.SysUserPosition{
+		user_positions << schema_sys.SysUserPosition{
 			user_id:     user_id
 			position_id: raw.str()
 		}
 	}
 
-	mut user_roles := []schema.SysUserRole{cap: rule_ids.len}
+	mut user_roles := []schema_sys.SysUserRole{cap: rule_ids.len}
 	for raw in rule_ids {
-		user_roles << schema.SysUserRole{
+		user_roles << schema_sys.SysUserRole{
 			user_id: user_id
 			role_id: raw.str()
 		}
@@ -57,9 +57,9 @@ fn update_user_resp(req json2.Any) !map[string]Any {
 	mut db := db_mysql()
 	defer { db.close() }
 
-	mut sys_user := orm.new_query[schema.SysUser](db)
-	mut user_position := orm.new_query[schema.SysUserPosition](db)
-	mut user_role := orm.new_query[schema.SysUserRole](db)
+	mut sys_user := orm.new_query[schema_sys.SysUser](db)
+	mut user_position := orm.new_query[schema_sys.SysUserPosition](db)
+	mut user_role := orm.new_query[schema_sys.SysUserRole](db)
 
 	sys_user.set('avatar = ?', avatar)!
 		.set('email = ?', email)!
