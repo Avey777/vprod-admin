@@ -6,7 +6,7 @@ import time
 import orm
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_success, json_error }
 import internal.structs { Context }
 
@@ -29,7 +29,7 @@ fn api_by_id_resp(req json2.Any) !map[string]Any {
 				mut db := db_mysql()
 				defer { db.close() }
 
-				mut sys_api := orm.new_query[schema.SysApi](db)
+				mut sys_api := orm.new_query[schema_sys.SysApi](db)
 				mut query := sys_api.select()!
 				if api_id != '' {
 					query = query.where('id = ?', api_id)!

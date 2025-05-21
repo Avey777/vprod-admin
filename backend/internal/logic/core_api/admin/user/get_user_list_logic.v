@@ -6,7 +6,7 @@ import time
 import orm
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_success, json_error }
 import internal.structs { Context }
 
@@ -35,11 +35,11 @@ fn user_list_resp(req json2.Any) !map[string]Any {
 
 	mut db := db_mysql()
 	defer { db.close() }
-	mut sys_user := orm.new_query[schema.SysUser](db)
-	mut sys_user_position := orm.new_query[schema.SysUserPosition](db)
+	mut sys_user := orm.new_query[schema_sys.SysUser](db)
+	mut sys_user_position := orm.new_query[schema_sys.SysUserPosition](db)
 	// 总页数查询 - 分页偏移量构造
 	mut count := sql db {
-		select count from schema.SysUser
+		select count from schema_sys.SysUser
 	}!
 	offset_num := (page - 1) * page_size
 	//*>>>*/
@@ -73,7 +73,7 @@ fn user_list_resp(req json2.Any) !map[string]Any {
 		data['mobile'] = row.mobile or { '' }
 		//*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		mut user_role := sql db {
-			select from schema.SysUserRole where user_id == row.id
+			select from schema_sys.SysUserRole where user_id == row.id
 		}!
 		mut user_roles_ids_list := []string{} // map空数组初始化
 		for row_urs in user_role {
@@ -88,7 +88,7 @@ fn user_list_resp(req json2.Any) !map[string]Any {
 		data['homePath'] = row.home_path
 		data['departmentId'] = row.department_id or { '' }
 		//*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
-		// mut user_position := sql db {select from schema.SysUserPosition where user_id == row.id}!
+		// mut user_position := sql db {select from schema_sys.SysUserPosition where user_id == row.id}!
 		mut user_position := sys_user_position.select()!.where('user_id = ?', row.id)!.limit(1)!.query()!
 		mut user_position_ids_list := []string{} // map空数组初始化
 		for row_ups in user_position {

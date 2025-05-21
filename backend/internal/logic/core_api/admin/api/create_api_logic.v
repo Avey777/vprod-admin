@@ -7,7 +7,7 @@ import time
 import x.json2
 import rand
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_error, json_success }
 import internal.structs { Context }
 
@@ -28,7 +28,7 @@ fn create_api_resp(req json2.Any) !map[string]Any {
 	mut db := db_mysql()
 	defer { db.close() }
 
-	apis := schema.SysApi{
+	apis := schema_sys.SysApi{
 		id:           rand.uuid_v7()
 		path:         req.as_map()['Path'] or { '' }.str()
 		description:  req.as_map()['Description'] or { '' }.str()
@@ -39,7 +39,7 @@ fn create_api_resp(req json2.Any) !map[string]Any {
 		created_at:   req.as_map()['createdAt'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
 		updated_at:   req.as_map()['updatedAt'] or { time.now() }.to_time()!
 	}
-	mut sys_api := orm.new_query[schema.SysApi](db)
+	mut sys_api := orm.new_query[schema_sys.SysApi](db)
 	sys_api.insert(apis)!
 
 	return map[string]Any{}

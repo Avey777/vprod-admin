@@ -5,7 +5,7 @@ import log
 import orm
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_success, json_error }
 import internal.structs { Context }
 
@@ -30,7 +30,7 @@ fn change_password_resp(req json2.Any) !map[string]Any {
 	mut db := db_mysql()
 	defer { db.close() }
 
-	mut sys_user := orm.new_query[schema.SysUser](db)
+	mut sys_user := orm.new_query[schema_sys.SysUser](db)
 	pwd := sys_user.select('password')!.where('id = ?', user_id)!.query()!
 
 	if pwd[0].password != old_password {

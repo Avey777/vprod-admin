@@ -6,7 +6,7 @@ import orm
 import time
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_success, json_error }
 import internal.structs { Context }
 
@@ -39,7 +39,7 @@ fn update_dictionarydetail_resp(req json2.Any) !map[string]Any {
 	mut db := db_mysql()
 	defer { db.close() }
 
-	mut sys_dictionarydetail := orm.new_query[schema.SysDictionaryDetail](db)
+	mut sys_dictionarydetail := orm.new_query[schema_sys.SysDictionaryDetail](db)
 
 	sys_dictionarydetail.set('title = ?', title)!
 		.set('name = ?', name)!

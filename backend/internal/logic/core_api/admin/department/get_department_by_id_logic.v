@@ -6,7 +6,7 @@ import time
 import orm
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_success, json_error }
 import internal.structs { Context }
 
@@ -29,7 +29,7 @@ fn department_by_id_resp(req json2.Any) !map[string]Any {
 	mut db := db_mysql()
 	defer { db.close() }
 
-	mut sys_department := orm.new_query[schema.SysDepartment](db)
+	mut sys_department := orm.new_query[schema_sys.SysDepartment](db)
 	mut query := sys_department.select()!
 	if department_id != '' {
 		query = query.where('id = ?', department_id)!

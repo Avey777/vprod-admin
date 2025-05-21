@@ -5,7 +5,7 @@ import log
 import orm
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_success, json_error }
 import internal.structs { Context }
 
@@ -28,7 +28,7 @@ fn delete_department_resp(req json2.Any) !map[string]Any {
 
 	department_id := req.as_map()['id'] or { '' }.str()
 
-	mut sys_department := orm.new_query[schema.SysDepartment](db)
+	mut sys_department := orm.new_query[schema_sys.SysDepartment](db)
 	sys_department.delete()!.where('id = ?', department_id)!.update()!
 	// sys_department.set('del_flag = ?', 1)!.where('id = ?', department_id)!.update()!
 

@@ -7,7 +7,7 @@ import time
 import rand
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_error, json_success }
 import internal.structs { Context }
 import common.jwt
@@ -34,7 +34,7 @@ fn access_token_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	expired_at := time_now.add_days(30).unix()
 	req_user_id := req.as_map()['UserId'] or { '' }.str()
 
-	mut sys_user := orm.new_query[schema.SysUser](db)
+	mut sys_user := orm.new_query[schema_sys.SysUser](db)
 	mut username := sys_user.select('username')!.where('id = ?', req_user_id)!.limit(1)!.query()!
 
 	// 生成 token
@@ -54,7 +54,7 @@ fn access_token_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	token := jwt.jwt_generate(secret, payload)
 
 	// token 写入数据库
-	new_token := schema.SysToken{
+	new_token := schema_sys.SysToken{
 		id:         rand.uuid_v7()
 		status:     u8(0)
 		user_id:    req_user_id
@@ -65,7 +65,7 @@ fn access_token_resp(mut ctx Context, req json2.Any) !map[string]Any {
 		created_at: req.as_map()['createdAt'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
 		updated_at: req.as_map()['updatedAt'] or { time.now() }.to_time()!
 	}
-	mut sys_token := orm.new_query[schema.SysToken](db)
+	mut sys_token := orm.new_query[schema_sys.SysToken](db)
 	sys_token.insert(new_token)!
 
 	mut data := map[string]Any{}

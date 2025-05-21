@@ -6,7 +6,7 @@ import orm
 import time
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_success, json_error }
 import internal.structs { Context }
 
@@ -37,7 +37,7 @@ fn update_configuration_resp(req json2.Any) !map[string]Any {
 	mut db := db_mysql()
 	defer { db.close() }
 
-	mut sys_configuration := orm.new_query[schema.SysConfiguration](db)
+	mut sys_configuration := orm.new_query[schema_sys.SysConfiguration](db)
 
 	sys_configuration.set('name = ?', name)!
 		.set('key = ?', key)!

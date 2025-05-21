@@ -7,7 +7,7 @@ import time
 import x.json2
 import rand
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_success, json_error }
 import internal.structs { Context }
 
@@ -32,7 +32,7 @@ fn create_user_resp(req json2.Any) !map[string]Any {
 	position_ids := req.as_map()['positionId'] or { []json2.Any{} }.arr()
 	rule_ids := req.as_map()['roleIds'] or { []json2.Any{} }.arr()
 
-	users := schema.SysUser{
+	users := schema_sys.SysUser{
 		id:            user_id
 		avatar:        req.as_map()['avatar'] or { '' }.str()
 		department_id: req.as_map()['departmentId'] or { '' }.str()
@@ -48,25 +48,25 @@ fn create_user_resp(req json2.Any) !map[string]Any {
 		updated_at:    req.as_map()['updatedAt'] or { time.now() }.to_time()!
 	}
 
-	mut user_positions := []schema.SysUserPosition{cap: position_ids.len}
+	mut user_positions := []schema_sys.SysUserPosition{cap: position_ids.len}
 	for raw in position_ids {
-		user_positions << schema.SysUserPosition{
+		user_positions << schema_sys.SysUserPosition{
 			user_id:     user_id
 			position_id: raw.str()
 		}
 	}
 
-	mut user_roles := []schema.SysUserRole{cap: rule_ids.len}
+	mut user_roles := []schema_sys.SysUserRole{cap: rule_ids.len}
 	for raw in rule_ids {
-		user_roles << schema.SysUserRole{
+		user_roles << schema_sys.SysUserRole{
 			user_id: user_id
 			role_id: raw.str()
 		}
 	}
 
-	mut sys_user := orm.new_query[schema.SysUser](db)
-	mut user_position := orm.new_query[schema.SysUserPosition](db)
-	mut user_role := orm.new_query[schema.SysUserRole](db)
+	mut sys_user := orm.new_query[schema_sys.SysUser](db)
+	mut user_position := orm.new_query[schema_sys.SysUserPosition](db)
+	mut user_role := orm.new_query[schema_sys.SysUserRole](db)
 
 	sys_user.insert(users)!
 	user_position.insert_many(user_positions)!

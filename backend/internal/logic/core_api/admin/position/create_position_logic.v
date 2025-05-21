@@ -7,7 +7,7 @@ import time
 import x.json2
 import rand
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_success, json_error }
 import internal.structs { Context }
 
@@ -28,7 +28,7 @@ fn create_position_resp(req json2.Any) !map[string]Any {
 	mut db := db_mysql()
 	defer { db.close() }
 
-	position := schema.SysPosition{
+	position := schema_sys.SysPosition{
 		id:         rand.uuid_v7()
 		status:     req.as_map()['status'] or { 0 }.u8()
 		name:       req.as_map()['Name'] or { '' }.str()
@@ -38,7 +38,7 @@ fn create_position_resp(req json2.Any) !map[string]Any {
 		created_at: req.as_map()['createdAt'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
 		updated_at: req.as_map()['updatedAt'] or { time.now() }.to_time()!
 	}
-	mut sys_position := orm.new_query[schema.SysPosition](db)
+	mut sys_position := orm.new_query[schema_sys.SysPosition](db)
 	sys_position.insert(position)!
 
 	return map[string]Any{}

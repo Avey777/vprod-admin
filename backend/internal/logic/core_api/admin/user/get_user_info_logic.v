@@ -5,7 +5,7 @@ import log
 import orm
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_success, json_error }
 import internal.structs { Context }
 
@@ -27,7 +27,7 @@ fn user_info_resp(req json2.Any) !map[string]Any {
 	mut db := db_mysql()
 	defer { db.close() }
 
-	mut sys_user := orm.new_query[schema.SysUser](db)
+	mut sys_user := orm.new_query[schema_sys.SysUser](db)
 	result := sys_user.select()!.query()!
 	dump(result)
 
@@ -39,7 +39,7 @@ fn user_info_resp(req json2.Any) !map[string]Any {
 		data['nickname'] = row.nickname
 		//*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		mut user_role := sql db {
-			select from schema.SysUserRole where user_id == user_id
+			select from schema_sys.SysUserRole where user_id == user_id
 		}!
 		mut user_role_ids := []string{}
 		for row_urs in user_role {
@@ -49,7 +49,7 @@ fn user_info_resp(req json2.Any) !map[string]Any {
 		mut user_role_names := []string{}
 		for raw_role_id in user_role_ids {
 			mut role := sql db {
-				select from schema.SysRole where id == raw_role_id
+				select from schema_sys.SysRole where id == raw_role_id
 			}!
 			for raw_name in role {
 				user_role_names << raw_name.name
@@ -61,11 +61,11 @@ fn user_info_resp(req json2.Any) !map[string]Any {
 		data['desc'] = row.description or { '' }
 		data['homePath'] = row.home_path
 		//*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
-		// mut user_info := sql db {select from schema.SysUser  where id == user_id limit 1}!
+		// mut user_info := sql db {select from schema_sys.SysUser  where id == user_id limit 1}!
 		mut user_info := sys_user.select('department_id')!.where('id = ?', user_id)!.query()!
 		mut dpt_id := user_info[0].department_id or { '' }
 
-		mut sys_department := orm.new_query[schema.SysDepartment](db)
+		mut sys_department := orm.new_query[schema_sys.SysDepartment](db)
 		department_info := sys_department.select('name')!.where('id = ?', dpt_id)!.query()!
 
 		data['departmentName'] = department_info[0].name

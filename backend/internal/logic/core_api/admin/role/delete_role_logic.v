@@ -5,7 +5,7 @@ import log
 import orm
 import x.json2
 import internal.config { db_mysql }
-import internal.structs.schema
+import internal.structs.schema_sys
 import common.api { json_success, json_error }
 import internal.structs { Context }
 
@@ -28,7 +28,7 @@ fn delete_role_resp(req json2.Any) !map[string]Any {
 
 	role_id := req.as_map()['id'] or { '' }.str()
 
-	mut sys_role := orm.new_query[schema.SysRole](db)
+	mut sys_role := orm.new_query[schema_sys.SysRole](db)
 	sys_role.set('del_flag = ?', 1)!.where('id = ?', role_id)!.update()!
 
 	return map[string]Any{}
