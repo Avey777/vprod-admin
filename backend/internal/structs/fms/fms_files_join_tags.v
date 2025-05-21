@@ -1,4 +1,4 @@
-module schema
+module fms
 
 // 文件与标签关联表
 @[table: 'fms_file_join_tags']

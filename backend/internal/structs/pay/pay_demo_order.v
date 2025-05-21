@@ -1,4 +1,4 @@
-module schema
+module pay
 
 import time
 

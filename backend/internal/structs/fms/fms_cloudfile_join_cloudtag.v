@@ -1,4 +1,4 @@
-module schema
+module fms
 
 // 云文件与标签关联表
 @[table: 'fms_cloudfile_join_cloudtag']

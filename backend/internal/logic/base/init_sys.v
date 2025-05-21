@@ -6,6 +6,10 @@ import common.api { json_success_optparams }
 import internal.structs { Context }
 import internal.config { db_mysql }
 import internal.structs.schema
+import internal.structs.pay
+import internal.structs.mcms
+import internal.structs.job
+import internal.structs.fms
 
 @['/init/database'; get]
 fn (app &Base) index(mut ctx Context) veb.Result {
@@ -32,26 +36,26 @@ fn (app &Base) index(mut ctx Context) veb.Result {
 		create table schema.SysConfiguration
 		create table schema.SysCasbinRule
 		create table schema.SysApi
-		create table schema.PayRefund
-		create table schema.PayOrderExtension
-		create table schema.PayOrder
-		create table schema.PayDemoOrder
-		create table schema.McmsSmsProvider
-		create table schema.McmsSmsLog
-		create table schema.McmsSiteNotification
-		create table schema.McmsSiteInnerMsg
-		create table schema.McmsSiteInnerCategory
-		create table schema.McmsEmailProvider
-		create table schema.McmsEmailLog
-		create table schema.JobTask
-		create table schema.JobTaskLog
-		create table schema.FmsStorageProvider
-		create table schema.FmsFileJoinTag
-		create table schema.FmsFile
-		create table schema.FmsFileTag
-		create table schema.FmsCloudFileCloudFileTag
-		create table schema.FmsCloudFile
-		create table schema.FmsCloudFileTag
+		create table pay.PayRefund
+		create table pay.PayOrderExtension
+		create table pay.PayOrder
+		create table pay.PayDemoOrder
+		create table mcms.McmsSmsProvider
+		create table mcms.McmsSmsLog
+		create table mcms.McmsSiteNotification
+		create table mcms.McmsSiteInnerMsg
+		create table mcms.McmsSiteInnerCategory
+		create table mcms.McmsEmailProvider
+		create table mcms.McmsEmailLog
+		create table job.JobTask
+		create table job.JobTaskLog
+		create table fms.FmsStorageProvider
+		create table fms.FmsFileJoinTag
+		create table fms.FmsFile
+		create table fms.FmsFileTag
+		create table fms.FmsCloudFileCloudFileTag
+		create table fms.FmsCloudFile
+		create table fms.FmsCloudFileTag
 	} or { return ctx.text('error creating table:  ${err}') }
 	log.debug('数据库 init success')
 

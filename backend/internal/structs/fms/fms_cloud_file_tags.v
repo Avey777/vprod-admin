@@ -1,13 +1,13 @@
-module schema
+module fms
 
 import time
 
-// 文件标签表
-@[table: 'fms_file_tags']
-pub struct FmsFileTag {
+// 云文件标签表
+@[table: 'fms_cloud_file_tags']
+pub struct FmsCloudFileTag {
 pub:
-	id     u64     @[primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID']
-	name   string  @[index: 'filetag_name'; omitempty; required; sql: 'name'; sql_type: 'VARCHAR(255)'; zcomments: 'FileTag`s name | 标签名称']
+	id     string  @[primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID']
+	name   string  @[index: 'cloudfiletag_name'; omitempty; required; sql: 'name'; sql_type: 'VARCHAR(255)'; zcomments: 'CloudFileTag`s name | 标签名称']
 	remark ?string @[omitempty; sql: 'remark'; sql_type: 'VARCHAR(255)'; zcomments: 'The remark of tag | 标签的备注']
 	status u8      @[default: 1; omitempty; sql: 'status'; sql_type: 'tinyint unsigned'; zcomments: 'Status 1: normal 2: ban | 状态 1 正常 2 禁用']
 

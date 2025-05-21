@@ -1,4 +1,4 @@
-module main
+module config
 
 // import log
 // import db.mysql
@@ -38,12 +38,12 @@ module main
 // 	log.debug(doc.value('dbconf.type').string() + '数据库连接成功')
 // 	return conn
 // }
-import common.dbpool
+// import common.dbpool
 
-fn main() {
-	mut pool := dbpool.new_conn_pool('mysql') or { panic('Failed to create mysql pool: ${err}') }
-	db, _ := pool.acquire() or { panic(err) }
-	db.exec('select 1') or { panic(err) }
-	pool.release(db)
-	pool.close()
-}
+// fn main() {
+// 	mut pool := dbpool.new_conn_pool('mysql') or { panic('Failed to create mysql pool: ${err}') }
+// 	db, _ := pool.acquire() or { panic(err) }
+// 	db.exec('select 1') or { panic(err) }
+// 	pool.release(db)
+// 	pool.close()
+// }
