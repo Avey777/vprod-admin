@@ -60,8 +60,8 @@ fn main() {
 	dump(pool)
 	db := pool.acquire() or { panic(err) }
 	dump(db)
-	// dbb := db as mysql.DB
-	a := db.exec('select 1')!
+	dbb := db as mysql.DB
+	a := dbb.exec('select 1')!
 	dump(a)
 }
 

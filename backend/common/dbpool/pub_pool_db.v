@@ -1,4 +1,4 @@
-module dbpool
+module main
 
 import db.mysql
 import db.pg
@@ -12,35 +12,31 @@ mut:
 }
 
 pub fn new_conn_pool[T](conf DBconfig, size int) !&ConnectionPoolGeneric[T] {
-	for _ in 0 .. size {
-		if conf is mysql.Config {
-			mysql_conf := conf as mysql.Config
-			mut pool_mysql := &ConnectionPoolGeneric[mysql.DB]{
-				connections: chan mysql.DB{cap: size}
-				config:      mysql_conf
-			}
-			for _ in 0 .. size {
-				conn := mysql.connect(mysql_conf)!
-				pool_mysql.connections <- conn
-			}
-			return pool_mysql
-			//>>>>>>>>>>v error >>>>>>>>>>>>
-			// } else if conf is pg.Config {
-			// 	pg_conf := conf as pg.Config
-			// 	mut pool_pg := &ConnectionPoolGeneric[pg.DB]{
-			// 		connections: chan pg.DB{cap: size}
-			// 		config:      pg_conf
-			// 	}
-			// 	for _ in 0 .. size {
-			// 		conn := pg.connect(pg_conf)!
-			// 		pool_pg.connections <- conn
-			// 	}
-			// 	return pool_pg
-			//<<<<<<<<<<<v error <<<<<<<<<<<<
+	$if conf is mysql.Config {
+		mysql_conf := conf as mysql.Config
+		mut pool := &ConnectionPoolGeneric[mysql.DB]{
+			connections: chan mysql.DB{cap: size}
+			config:      mysql_conf
 		}
+		for _ in 0 .. size {
+			conn := mysql.connect(mysql_conf)!
+			poo.connections <- conn
+		}
+		return pool
+	} $else $if conf is pg.Config {
+		pg_conf := conf as pg.Config
+		mut pool := &ConnectionPoolGeneric[pg.DB]{
+			connections: chan pg.DB{cap: size}
+			config:      pg_conf
+		}
+		for _ in 0 .. size {
+			conn := pg.connect(pg_conf)!
+			pool.connections <- conn
+		}
+		return pool
+	}$else{
+	  return error('')
 	}
-
-	return error('Unsupported databases')
 }
 
 // acquire gets a connection from the pool | 从池中获取连接
@@ -60,4 +56,29 @@ pub fn (mut pool ConnectionPoolGeneric[T]) close() {
 		mut conn := <-pool.connections or { break }
 		conn.close()
 	}
+}
+
+
+const config = mysql.Config{
+	host:     '127.0.0.1'
+	port:     3306
+	username: 'root'
+	password: 'mysql_123456'
+	dbname:   'vcore'
+}
+
+fn main() {
+	mut pool := new_conn_pool[mysql.DB](config, 5) or {
+		panic('Failed to create mysql pool: ${err}')
+	}
+	dump(pool)
+	db := pool.acquire() or { panic(err) }
+	dump(db)
+	data := db.exec('select 1')!
+	dump(data)
+	assert data[0] == mysql.Row{
+		vals: ['1']
+	}
+	pool.release(db)
+	pool.close()
 }
