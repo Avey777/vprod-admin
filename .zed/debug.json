@@ -1,0 +1,15 @@
+[
+  {
+    "label": "Run V backend",
+    "adapter": "v",
+    "request": "launch",
+    // "command": "v wipe-cache && v -g -keepc -cg -showcc -show-c-output -no-parallel -d veb_livereload watch -d log_debug run main.v",
+    "program": "v wipe-cache && v -g -no-parallel -d veb_livereload watch -d log_debug run main.v",
+    "args": ["-f", "etc/config_dev.toml"],
+    "cwd": "$ZED_WORKTREE_ROOT/backend",
+    "stop_on_entry": false,
+    "initialize_args": {
+      "console": "integratedTerminal"
+    }
+  }
+]

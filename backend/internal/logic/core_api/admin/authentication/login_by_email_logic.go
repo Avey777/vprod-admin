@@ -1,4 +1,5 @@
-package publicuser
+// 用户认证模块 auth: authentication
+package authentication
 
 import (
 	"context"

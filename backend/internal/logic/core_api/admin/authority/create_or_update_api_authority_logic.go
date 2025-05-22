@@ -1,3 +1,4 @@
+// 用户授权模块 authority
 package authority
 
 import (

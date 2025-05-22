@@ -1,3 +1,7 @@
+// 获取用户权限码
+module user
+
+/*
 package user
 
 import (
@@ -41,3 +45,4 @@ func (l *GetUserPermCodeLogic) GetUserPermCode() (resp *types.PermCodeResp, err 
 		Data:         strings.Split(roleId, ","),
 	}, nil
 }
+*/
