@@ -51,7 +51,8 @@ vprod-service
 - [x] Logging Middleware
 - [x] Autherity Middleware(JWT)
 - [x] Cores Middleware
-- [ ] Dataperm Middleware
+- [ ] Data permission middleware
+- [ ] Database connections pool
 - [ ] i18n
 - [ ] Multitenancy (tenant resolution) [多租户、多团队、多应用]
 - [ ] Support OpenAPI, generate OpenAPI data automatic (go-swagger)
