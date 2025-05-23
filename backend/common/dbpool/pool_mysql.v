@@ -2,11 +2,11 @@ module dbpool
 
 import db.mysql
 
-// pub struct ConnectionPoolMysql {
-// mut:
-// 	connections chan mysql.DB
-// 	config      mysql.Config
-// }
+pub struct ConnectionPoolMysql {
+mut:
+	connections chan mysql.DB
+	config      mysql.Config
+}
 
 // new_connection_pool creates a new connection pool with the given size and configuration.
 pub fn new_conn_pool_mysql(config mysql.Config, size int) !ConnectionPool {

@@ -1,11 +1,12 @@
 module dbpool
 
 import db.pg
-// pub struct ConnectionPoolPg {
-// mut:
-// 	connections chan pg.DB
-// 	config      pg.Config
-// }
+
+pub struct ConnectionPoolPg {
+mut:
+	connections chan pg.DB
+	config      pg.Config
+}
 
 // new_connection_pool creates a new connection pool with the given size and configuration.
 pub fn new_conn_pool_pg(config pg.Config, size int) !ConnectionPool {
