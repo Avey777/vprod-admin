@@ -62,7 +62,7 @@ vprod-service
 
 - web框架：使用v标准库的 veb
 - ORM：使用v标准库的 orm
-
+- Database Connection Pool：数据库线程池，支持mysql和pgsql
 
 -------------
 ## Git 贡献提交规范
