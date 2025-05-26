@@ -4,6 +4,9 @@ const data = "[web]
 port = 9009
 timeout = 30
 
+[logging]
+log_level = 'debug' # 默认info [debug info warn error fatal]
+
 [i18nconf]
 Dir = './internal/i18n'
 
@@ -17,7 +20,7 @@ Dir = './internal/i18n'
 # ssl_verify = false #设置为false 时，不验证ssl证书
 
 
-[dbconf]
+[dbconf_sys]
 type = 'tidb'
 host = 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com'
 port = '4000'

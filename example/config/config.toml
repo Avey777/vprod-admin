@@ -1,22 +1,7 @@
 [web]
 port = 9009
 timeout = 30
-
-[logging]
-log_level = 'debug' # 默认info [debug info warn error fatal]
-
-[i18nconf]
-Dir = './internal/i18n'
-
-# [dbconf]
-# type = 'mysql'            # mysql  tidb
-# host = '127.0.0.1'
-# port = '3306'
-# username = 'root'
-# password = 'mysql_123456'
-# dbname = 'vcore'
-# ssl_verify = false #设置为false 时，不验证ssl证书
-
+database_url = '127.0.0.1'
 
 [dbconf]
 type = 'tidb'
