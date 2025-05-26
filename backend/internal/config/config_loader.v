@@ -87,7 +87,11 @@ pub fn (mut cl ConfigLoader) load_config() {
 		port:    doc.value('web.port').int()
 		timeout: doc.value('web.timeout').int()
 	}
-	// 解析dbconf配置节
+	//解析logging配置节
+	log_config := LogConf{
+		log_level: doc.value('logging.log_level').string()
+	}
+	// // 解析dbconf配置节
 	db_config := DBConf{
 		type:       doc.value('dbconf.type').string()
 		host:       doc.value('dbconf.host').string()
@@ -99,6 +103,7 @@ pub fn (mut cl ConfigLoader) load_config() {
 	// 构建完整配置对象
 	cl.config = &Config{
 		web:        web_config
+		logging:    log_config
 		dbconf_sys: db_config
 	}
 }

@@ -4,6 +4,9 @@ const data = "[web]
 port = 9009
 timeout = 30
 
+[logging]
+log_level = 'debug' # 默认info [debug info warn error fatal]
+
 [i18nconf]
 Dir = './internal/i18n'
 

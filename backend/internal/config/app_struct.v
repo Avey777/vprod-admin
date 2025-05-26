@@ -6,6 +6,7 @@ import time
 pub struct Config {
 pub:
 	web        WebConf
+	logging    LogConf
 	dbconf_sys DBConf
 	dbconf_pay DBConf
 }
@@ -15,6 +16,11 @@ pub struct WebConf {
 pub:
 	port    int
 	timeout int
+}
+
+//[logging]
+pub struct LogConf {
+	log_level string
 }
 
 //[dbconf]
