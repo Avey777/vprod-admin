@@ -1,6 +1,6 @@
 module main
 
-import internal.config { check_all, log_sevel }
+import internal.config { check_all, log_sevel, new_config_loader }
 import internal.handler { new_app }
 import log
 // import time
@@ -10,6 +10,7 @@ fn main() {
 	log_sevel()
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	check_all() //启动前配置检查
+	new_config_loader() //初始化toml配置
 
 	// // 定义全局互斥锁
 	// mut mx := sync.Mutex{}
