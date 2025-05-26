@@ -1,10 +1,10 @@
 // Static tasks configuration.
 [
   {
-    "label": "v run backend .",
+    "label": "v run",
     "tags": ["v-main"],
     // "command": "v wipe-cache && v -g -keepc -cg -showcc -show-c-output -no-parallel -d veb_livereload watch -d log_debug run main.v",
-    "command": "v wipe-cache && v -g -no-parallel -d veb_livereload watch -d log_debug run main.v",
+    "command": "v wipe-cache && v -g -no-parallel -enable-globals -d veb_livereload watch -d log_debug run main.v",
     "args": ["-f", "etc/config_dev.toml"],
     // 命令的环境变量覆盖，会追加到终端设置中的环境变量
     "env": {},
@@ -32,27 +32,27 @@
     "show_output": true
   },
   {
-    "label": "v test .",
+    "label": "v test",
     "tags": ["v-test"],
-    "command": "v",
-    "args": ["-stats", "test", "."],
-    "cwd": "$ZED_WORKTREE_ROOT/backend",
-    "use_new_terminal": false,
-    "reveal": "always"
-  },
-  {
-    "label": "v build .",
-    "tags": ["v-main"],
-    "command": "v -g -no-parallel -show-c-output -o target/debug/main .",
+    "command": "v -stats -enable-globals test .",
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
     "use_new_terminal": false,
     "reveal": "always"
   },
   {
-    "label": "v build -prod .",
+    "label": "v build",
     "tags": ["v-main"],
-    "command": "v -prod -no-parallel -show-c-output -o main .",
+    "command": "v -g -no-parallel -enable-globals -show-c-output -o main .",
+    "args": [],
+    "cwd": "$ZED_WORKTREE_ROOT/backend",
+    "use_new_terminal": false,
+    "reveal": "always"
+  },
+  {
+    "label": "v build -prod",
+    "tags": ["v-main"],
+    "command": "v -prod -no-parallel -enable-globals -show-c-output -o main .",
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
     "use_new_terminal": false,

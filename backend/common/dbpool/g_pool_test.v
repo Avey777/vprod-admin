@@ -21,6 +21,6 @@ fn test_init_pool() {
 	defer { release(conn) }
 
 	// 执行查询
-	rows := conn.exec('SELECT * FROM sys_users limit 1')!
+	rows := conn.exec('SELECT  1')!
 	dump(rows)
 }
