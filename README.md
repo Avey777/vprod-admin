@@ -51,7 +51,8 @@ vprod-service
 - [x] Logging Middleware
 - [x] Autherity Middleware(JWT)
 - [x] Cores Middleware
-- [ ] Dataperm Middleware
+- [ ] Data permission middleware
+- [ ] Database connections pool
 - [ ] i18n
 - [ ] Multitenancy (tenant resolution) [多租户、多团队、多应用]
 - [ ] Support OpenAPI, generate OpenAPI data automatic (go-swagger)
@@ -61,7 +62,7 @@ vprod-service
 
 - web框架：使用v标准库的 veb
 - ORM：使用v标准库的 orm
-
+- Database Connection Pool：数据库线程池，支持mysql和pgsql
 
 -------------
 ## Git 贡献提交规范

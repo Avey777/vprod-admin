@@ -3,85 +3,57 @@ module dbpool
 import db.mysql
 import db.pg
 
-const mysql_config = mysql.Config{
-	host:     '127.0.0.1'
-	port:     3306
-	username: 'root'
-	password: 'mysql_123456'
-	dbname:   'vcore'
+type DBconfig = mysql.Config | pg.Config
+
+struct ConnectionPoolGeneric[T] {
+mut:
+	connections chan T   // mysql.DB, pg.DB
+	config      DBconfig // mysql.Config, pg.Config
 }
 
-const pg_config = pg.Config{
-	host:     'localhost'
-	port:     5432
-	user:     'postgres'
-	password: '123456'
-	dbname:   'redash'
-}
+pub fn new_conn_pool[T](conf DBconfig, size int) !&ConnectionPoolGeneric[T] {
 
-// pub fn (db mysql.DB) DBConnection{}
-
-pub fn new_conn_pool(type_db string) !ConnectionPool {
-	if type_db == 'mysql' {
-		mut pool := new_conn_pool_mysql(mysql_config, 5) or {
-			panic('Failed to create mysql pool: ${err}')
+	$if T is mysql.DB {
+		mysql_conf := conf as mysql.Config
+		mut pool := &ConnectionPoolGeneric[mysql.DB]{
+			connections: chan mysql.DB{cap: size}
+			config:      mysql_conf
+		}
+		for _ in 0 .. size {
+			conn := mysql.connect(mysql_conf)!
+			pool.connections <- conn
+		}
+		return pool
+	} $else $if T is pg.DB {
+		pg_conf := conf as pg.Config
+		mut pool := &ConnectionPoolGeneric[pg.DB]{
+			connections: chan pg.DB{cap: size}
+			config:      pg_conf
+		}
+		for _ in 0 .. size {
+			conn := pg.connect(pg_conf)!
+			pool.connections <- conn
 		}
 		return pool
 	}
-	if type_db == 'pgsql' {
-		mut pool := new_conn_pool_pg(pg_config, 5) or {
-			panic('Failed to create mysql pool: ${err}')
-		}
-		return pool
-	}
-	return ConnectionPool{}
+	return error('')
 }
 
-const type_db = 'mysql'
-
-pub fn (mut pool ConnectionPool) acquire() !(mysql.DB, pg.DB) {
-	match type_db {
-		'mysql' {
-			conn := <-pool.connections_mysql or { return error('Failed mysql') }
-			return conn, pg.DB{}
-		}
-		'pgsql' {
-			conn := <-pool.connections_pg or { return error('Failed pgsql') }
-			return mysql.DB{}, conn
-		}
-		else {
-			return mysql.DB{}, pg.DB{}
-		}
-	}
+// acquire gets a connection from the pool | 从池中获取连接
+pub fn (mut pool ConnectionPoolGeneric[T]) acquire() !T {
+	conn := <-pool.connections or { return error('Failed mysql') }
+	return conn
 }
 
-type DBType = pg.DB | mysql.DB
-
-pub fn (mut pool ConnectionPool) release(conn DBType) {
-	match conn {
-		mysql.DB {
-			pool.connections_mysql <- conn
-		}
-		pg.DB {
-			pool.connections_pg <- conn
-		}
-	}
+// release returns a connection back to the pool. | 释放将连接返回到池中
+pub fn (mut pool ConnectionPoolGeneric[T]) release(conn T) {
+	pool.connections <- conn
 }
 
-pub fn (mut pool ConnectionPool) close() {
-	match type_db {
-		'mysql' {
-			for _ in 0 .. pool.connections_mysql.len {
-				mut conn := <-pool.connections_mysql or { break }
-				conn.close()
-			}
-		}
-		'pgsql' {
-			for _ in 0 .. pool.connections_pg.len {
-				mut conn := <-pool.connections_pg or { break }
-				conn.close()
-			}
-		}
-		else {}
+// close closes all connections in the pool | 关闭池中的所有连接
+pub fn (mut pool ConnectionPoolGeneric[T]) close() {
+	for _ in 0 .. pool.connections.len {
+		mut conn := <-pool.connections or { break }
+		conn.close()
 	}
 }
