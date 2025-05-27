@@ -99,6 +99,11 @@ pub fn (mut cl ConfigLoader) load_config() {
 		username:   doc.value('dbconf.username').string()
 		password:   doc.value('dbconf.password').string()
 		ssl_verify: doc.value('dbconf.ssl_verify').bool()
+		ssl_key:    doc.value('dbconf.ssl_key').string()
+		ssl_cert:   doc.value('dbconf.ssl_cert').string()
+		ssl_ca:     doc.value('dbconf.ssl_ca').string()
+		ssl_capath: doc.value('dbconf.ssl_capath').string()
+		ssl_cipher: doc.value('dbconf.ssl_cipher').string()
 	}
 	// 构建完整配置对象
 	cl.config = &Config{
