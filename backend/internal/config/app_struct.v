@@ -5,10 +5,9 @@ import time
 // 嵌套配置结构体
 pub struct Config {
 pub:
-	web        WebConf
-	logging    LogConf
-	dbconf_sys DBConf
-	dbconf_pay DBConf
+	web     WebConf
+	logging LogConf
+	dbconf  DBConf
 }
 
 //[veb]

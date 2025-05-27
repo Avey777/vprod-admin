@@ -51,7 +51,7 @@ mut:
 	once     &sync.Once // 保证线程安全的单次加载
 }
 
-// 全局配置加载器实例
+// 全局配置加载器实例config_toml
 __global g_conf ConfigLoader
 
 // 创建配置加载器实例（单例模式）
@@ -109,7 +109,7 @@ pub fn (mut cl ConfigLoader) load_config() {
 	cl.config = &Config{
 		web:        web_config
 		logging:    log_config
-		dbconf_sys: db_config
+		dbconf: db_config
 	}
 }
 

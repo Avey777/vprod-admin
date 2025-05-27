@@ -16,6 +16,21 @@ import internal.logic.core_api.admin.department { Department }
 import internal.logic.core_api.admin.configuration { Configuration }
 import internal.logic.core_api.admin.api { Api }
 
+// 根据条件编译，选择运行的服务
+pub fn (mut app App) register_handlers() {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
+	$if pay ? {
+	  log.warn('pay')
+	  // app.handler_sys_admin()
+	}
+	$else{
+	  log.warn('run sys_admin')
+	  app.handler_sys_admin()
+	}
+	// app.handler_tms_admin()
+}
+
 // 封装泛型全局中间件
 fn (mut app App) register_routes[T, U](mut ctrl T, url_path string) {
 	// mut ctrl := &Base{}
@@ -24,16 +39,6 @@ fn (mut app App) register_routes[T, U](mut ctrl T, url_path string) {
 	ctrl.use(middleware.authority_middleware())
 	app.register_controller[T, U](url_path, mut ctrl) or { log.error('${err}') }
 	// app.register_controller[T,Context](url_path, mut ctrl) or { log.error('${err}') }
-}
-
-pub fn (mut app App) register_handlers() {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-
-	// app.use(cores_middleware())
-	// app.use(handler: logger_middleware)
-
-	app.handler_sys_admin()
-	// app.handler_tms_admin()
 }
 
 fn (mut app App) handler_sys_admin() {
