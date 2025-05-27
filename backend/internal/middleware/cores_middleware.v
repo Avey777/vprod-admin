@@ -6,31 +6,42 @@ import internal.structs { Context }
 
 const cors_origin = ['*', 'xx.com']
 
-pub fn cores_middleware() veb.MiddlewareOptions[Context] {
+// 跨域中间件
+pub fn cores_middleware(mut ctx Context) bool {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	// 使用cors中间件行跨域处理 ｜ use veb's cors middleware to handle CORS requests
-	mut cors_middleware_context := veb.cors[Context](veb.CorsOptions{
+	veb.cors[Context](veb.CorsOptions{
 		// 允许跨域请求的域名 ｜ allow CORS requests from every domain
 		origins: cors_origin // origins: ['*', 'xx.com']
 		// 允许跨域请求的方法 ｜ allow CORS requests from methods:
 		allowed_methods: [.get, .head, .patch, .put, .post, .delete, .options]
 		allowed_headers: ['Authorization', 'Content-Type', 'WWW-Authorization']
 	})
-	log.debug('${cors_middleware_context}')
-
-	return cors_middleware_context
+	return true
 }
 
-//备份跨域中间件使用方式
-// pub fn cores_middleware(mut app App) {
+// 初始化中间件并设置 handler ,并返回中间件选项
+pub fn cores_middleware_generic() veb.MiddlewareOptions[Context] {
+	return veb.MiddlewareOptions[Context]{
+		handler: cores_middleware // 显式初始化 handler 字段
+		after:   false                // 显式初始化 after 字段
+	}
+}
+
+// //备份跨域中间件使用方式,泛型方式。 只能单独使用
+// pub fn cores_middleware_generic2() veb.MiddlewareOptions[Context] {
 // 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 // 	// 使用cors中间件行跨域处理 ｜ use veb's cors middleware to handle CORS requests
-// 	app.use(veb.cors[Context](veb.CorsOptions{
+// 	mut cors_middleware_context := veb.cors[Context](veb.CorsOptions{
 // 		// 允许跨域请求的域名 ｜ allow CORS requests from every domain
 // 		origins: cors_origin // origins: ['*', 'xx.com']
 // 		// 允许跨域请求的方法 ｜ allow CORS requests from methods:
 // 		allowed_methods: [.get, .head, .patch, .put, .post, .delete, .options]
-// 	}))
+// 		allowed_headers: ['Authorization', 'Content-Type', 'WWW-Authorization']
+// 	})
+// 	log.debug('${cors_middleware_context}')
+
+// 	return cors_middleware_context
 // }
