@@ -35,6 +35,7 @@ pub fn (mut app App) register_handlers() {
 	}
 	$if sys ? {
 		log.warn('register_handlers - Sys')
+		app.handler_sys_admin()
 	} $else {
 		log.warn('register_handlers - All')
 		app.handler_sys_admin()
