@@ -22,23 +22,22 @@ pub fn (mut app App) register_handlers() {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	$if fms ? {
-	  log.warn('fms')
+		log.warn('register_handlers - Fms')
 	}
 	$if job ? {
-	  log.warn('job')
+		log.warn('register_handlers - Job')
 	}
 	$if mcms ? {
-	  log.warn('mcms')
+		log.warn('register_handlers - Mcms')
 	}
 	$if pay ? {
-	  log.warn('pay')
+		log.warn('register_handlers - Pay')
 	}
 	$if sys ? {
-	  log.warn('sys')
-	}
-	$else{
-	  log.warn('All')
-	  app.handler_sys_admin()
+		log.warn('register_handlers - Sys')
+	} $else {
+		log.warn('register_handlers - All')
+		app.handler_sys_admin()
 	}
 }
 
@@ -64,7 +63,9 @@ fn (mut app App) handler_sys_admin() {
 	mut authentication_app := &Authentication{}
 	authentication_app.use(handler: middleware.cores_middleware)
 	authentication_app.use(handler: middleware.logger_middleware)
-	app.register_controller[Authentication,Context]('/authentication', mut authentication_app) or { log.error('${err}') }
+	app.register_controller[Authentication, Context]('/authentication', mut authentication_app) or {
+		log.error('${err}')
+	}
 
 	// 方式二：通过泛型的方式使用全局中间件，适合对多个控制器使用相同的中间件
 	app.register_routes[Admin, Context](mut &Admin{}, '/admin')
