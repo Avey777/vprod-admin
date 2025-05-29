@@ -2,14 +2,18 @@
   {
     "label": "Debug backend（GDB）",
     "adapter": "GDB",
+    "mode": "debug",
     "request": "launch",
     "program": "backend/main",
     "args": ["-f", "etc/config_dev.toml"],
     "cwd": "$ZED_WORKTREE_ROOT",
+    "subProcess": true,
+    "redirectOutpot": true,
     "stop_on_entry": false,
     "initialize_args": {
-      "console": "integratedTerminal",
-      "stopAtBeginningOfMainSubprogram": true
-    }
+      "console": "integratedTerminal"
+      // "stopAtBeginningOfMainSubprogram": true
+    },
+    "preLaunchTask": "v build" // 添加构建任务
   }
 ]
