@@ -2,15 +2,15 @@ module schema_sys
 
 import time
 
-// MFA | 多因素认证表: SMS/Email/TOTP/FIDO2/人脸识别/指纹验证
-@[table: 'sys_captcha']
-pub struct SysCaptcha {
+// 认证发送日志: SMS/Email
+@[table: 'sys_mfa_logs']
+pub struct SysMFAlog {
 pub:
-	id           string @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID']
-	attempt_name string @[sql_type: 'VARCHAR(255)'; zcomment: 'Verification Credentials | 验证凭证:手机号/邮箱']
-	method_name  string @[sql_type: 'VARCHAR(255)'; zcomment: 'Configuration method |  验证方法: SMS/Email']
-	attempt_code string @[sql_type: 'VARCHAR(255)'; zcomment: 'Attempt code |  用户输入的验证码']
-	status       u8     @[default: 0; omitempty; sql_type: 'tinyint'; zcomments: '状态，0：正常，1：禁用']
+	id            string @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID']
+	verify_source string @[sql_type: 'VARCHAR(255)'; zcomment: 'Verify source | 验证源:手机号/邮箱号/']
+	method        string @[sql_type: 'VARCHAR(255)'; zcomment: 'Configuration method |  方法: SMS/Email']
+	code          string @[sql_type: 'VARCHAR(255)'; zcomment: 'Attempt code |  验证码']
+	status        u8     @[default: 0; omitempty; sql_type: 'tinyint'; zcomments: '状态，0：正常，1：禁用']
 
 	// updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']
 	// updated_at time.Time  @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Update Time | 修改日期']
