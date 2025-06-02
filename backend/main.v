@@ -8,7 +8,6 @@ import log
 
 fn main() {
 	new_config_loader() //初始化toml配置
-	// log_sevel()
 	log_set_sevel()!
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	check_all() //启动前配置检查

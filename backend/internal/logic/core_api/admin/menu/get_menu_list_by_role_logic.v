@@ -7,7 +7,7 @@ import orm
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema_sys
-import common.api { json_success, json_error }
+import common.api { json_error, json_success }
 import internal.structs { Context }
 
 //根据role获取menu
