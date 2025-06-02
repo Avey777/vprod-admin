@@ -30,6 +30,7 @@ fn (app &Base) index(mut ctx Context) veb.Result {
 		create table schema_sys.SysPosition
 		create table schema_sys.SysOauthProvider
 		create table schema_sys.SysMenu
+		create table schema_sys.SysMFAlog
 		create table schema_sys.SysDictionaryDetail
 		create table schema_sys.SysDictionary
 		create table schema_sys.SysDepartment
@@ -57,7 +58,7 @@ fn (app &Base) index(mut ctx Context) veb.Result {
 		create table schema_fms.FmsCloudFile
 		create table schema_fms.FmsCloudFileTag
 	} or { return ctx.text('error creating table:  ${err}') }
-	log.debug('数据库 init success')
+	log.debug('数据库 init all success')
 
-	return ctx.json(json_success_optparams(msg: 'sys database init Successfull'))
+	return ctx.json(json_success_optparams(msg: 'all database init Successfull'))
 }
