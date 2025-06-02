@@ -1,4 +1,4 @@
-module base
+module db_api
 
 import veb
 import log
@@ -7,7 +7,7 @@ import internal.structs { Context }
 import internal.config { db_mysql }
 import internal.structs.schema_mcms
 
-@['/init/mcms/database'; get]
+@['/init/mcms_database'; get]
 fn (app &Base) init_mcms(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
