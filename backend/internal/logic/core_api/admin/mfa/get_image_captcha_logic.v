@@ -11,23 +11,11 @@
 //使用JWT生成无状态图片验证码
 module mfa
 
-// fn main() {
-// 	// 设置随机数生成器
-// 	mut rng := rand.new_default()
-
-// 	// 生成 10000 - 99999 范围内的随机整数
-// 	random_num := rng.int_in_range(10000, 100000) or { 0 }
-
-// 	println('随机数字: ${random_num}')
-// }
 import veb
 import log
-import orm
 import time
 import rand
 import x.json2
-import internal.config { db_mysql }
-import internal.structs.schema_sys
 import common.api { json_error, json_success }
 import internal.structs { Context }
 import common.jwt
@@ -45,42 +33,28 @@ fn (app &MFA) captcha_list(mut ctx Context) veb.Result {
 fn captcha_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	mut db := db_mysql()
-	defer { db.close() }
+	random_num := fn () int {
+		mut r := rand.new_default()
+		return r.int_in_range(10000, 100000) or { 0 }
+	}()
 
-	tokens := schema_sys.SysToken{
-		id:         rand.uuid_v7()
-		status:     req.as_map()['Status'] or { 0 }.u8()
-		user_id:    req.as_map()['UserId'] or { '' }.str()
-		username:   req.as_map()['UserName'] or { '' }.str()
-		token:      token_jwt_generate(req)
-		source:     req.as_map()['Source'] or { '' }.str()
-		expired_at: req.as_map()['expiredAt'] or { time.now() }.to_time()!
-		created_at: req.as_map()['createdAt'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
-		updated_at: req.as_map()['updatedAt'] or { time.now() }.to_time()!
-	}
-	mut sys_token := orm.new_query[schema_sys.SysToken](db)
-	sys_token.insert(tokens)!
-
-	return map[string]Any{}
+	mut data := map[string]Any{}
+	data['code'] = random_num
+	data['captcha_jwt'] = captcha_jwt_generate(req)
+	return data
 }
 
-fn token_jwt_generate(req json2.Any) string {
-	// secret := req.as_map()['Secret'] or { '' }.str()
-	secret := Context{}.get_custom_header('secret') or { '' }
+const secret = 'd8a3b1f0-6e7b-4c9a-9f2d-1c3e5f7a8b4c' //固定值，JWT有效性验证时使用
 
+fn captcha_jwt_generate(req json2.Any) string {
 	mut payload := jwt.JwtPayload{
-		iss: 'v-admin' // 签发者 (Issuer) your-app-name
-		sub: req.as_map()['UserId'] or { '' }.str() // 用户唯一标识 (Subject)
-		// aud: ['api-service', 'webapp'] // 接收方 (Audience)，可以是数组或字符串
-		exp: time.now().add_days(30).unix() // 过期时间 (Expiration Time) 7天后
+		iss: 'v-admin'   // 签发者 (Issuer) your-app-name
+		sub: 'captcha'   // 用户唯一标识 (Subject)
+		aud: ['sys-api'] // 接收方 (Audience)，可以是数组或字符串
+		exp: time.now().add_seconds(120).unix() // 过期时间 (Expiration Time) 60秒后
 		nbf: time.now().unix() // 生效时间 (Not Before)，立即生效
 		iat: time.now().unix() // 签发时间 (Issued At)
 		jti: rand.uuid_v4() // JWT唯一标识 (JWT ID)，防重防攻击
-		// 自定义业务字段 (Custom Claims)
-		roles:     ['admin', 'editor'] // 用户角色
-		client_ip: req.as_map()['LoginIp'] or { '' }.str() // ip地址
-		device_id: req.as_map()['DeviceId'] or { '' }.str() // 设备id
 	}
 
 	token := jwt.jwt_generate(secret, payload)
