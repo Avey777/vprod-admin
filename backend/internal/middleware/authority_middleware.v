@@ -18,7 +18,7 @@ pub fn authority_jwt_verify(mut ctx Context) bool {
 	verify := jwt.jwt_verify(secret, token)
 	if verify == false {
 		ctx.request_error('Authorization error')
-		log.info('Authorization error')
+		log.warn('Authorization error')
 		return false
 	}
 	return true
