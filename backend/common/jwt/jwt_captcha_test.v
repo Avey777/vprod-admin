@@ -1,7 +1,9 @@
 module jwt
 
 fn test_jwt_opt_generate() {
-	token, _ := jwt_opt_generate()
+	token, captcha_opt_num := jwt_opt_generate()
+	dump(token)
+	dump(captcha_opt_num)
 	assert token != ''
 	assert typeof(token).name == 'string'
 	assert typeof(token).name.len > 0
