@@ -21,6 +21,7 @@ const payload = JwtPayload{
 fn test_jwt_generate() {
 	token := jwt_generate(secret, payload)
 	dump(token)
+	assert typeof(token).name == 'string'
 }
 
 fn test_jwt_verify() {
