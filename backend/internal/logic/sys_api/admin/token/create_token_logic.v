@@ -18,12 +18,12 @@ fn (app &Token) create_token(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
-	mut result := create_token_resp(req) or { return ctx.json(json_error(503, '${err}')) }
+	mut result := create_token_resp(mut ctx, req) or { return ctx.json(json_error(503, '${err}')) }
 
 	return ctx.json(json_success('success', result))
 }
 
-fn create_token_resp(req json2.Any) !map[string]Any {
+fn create_token_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
@@ -34,9 +34,9 @@ fn create_token_resp(req json2.Any) !map[string]Any {
 		status:     req.as_map()['Status'] or { 0 }.u8()
 		user_id:    req.as_map()['UserId'] or { '' }.str()
 		username:   req.as_map()['UserName'] or { '' }.str()
-		token:      token_jwt_generate(req)
-		source:     req.as_map()['Source'] or { '' }.str()
-		expired_at: req.as_map()['expiredAt'] or { time.now() }.to_time()!
+		token:      token_jwt_generate(mut ctx, req)
+		source:     req.as_map()['Source'] or { 'Core' }.str()
+		expired_at: req.as_map()['expiredAt'] or { time.now().add_days(30).unix() }.to_time()!
 		created_at: req.as_map()['createdAt'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
 		updated_at: req.as_map()['updatedAt'] or { time.now() }.to_time()!
 	}
@@ -46,9 +46,9 @@ fn create_token_resp(req json2.Any) !map[string]Any {
 	return map[string]Any{}
 }
 
-fn token_jwt_generate(req json2.Any) string {
+fn token_jwt_generate(mut ctx Context, req json2.Any) string {
 	// secret := req.as_map()['Secret'] or { '' }.str()
-	secret := Context{}.get_custom_header('secret') or { '' }
+	secret := ctx.get_custom_header('secret') or { '' }
 
 	mut payload := jwt.JwtPayload{
 		iss: 'v-admin' // 签发者 (Issuer) your-app-name

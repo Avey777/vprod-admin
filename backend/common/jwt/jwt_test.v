@@ -27,4 +27,5 @@ fn test_jwt_verify() {
 	token := jwt_generate(secret, payload)
 	verify := jwt_verify(secret, token)
 	dump(verify)
+	assert verify == true
 }
