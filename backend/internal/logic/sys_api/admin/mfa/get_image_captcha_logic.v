@@ -40,21 +40,22 @@ fn captcha_resp(req json2.Any) !map[string]Any {
 
 	mut data := map[string]Any{}
 	data['code'] = random_num
-	data['captcha_jwt'] = captcha_jwt_generate(req)
+	data['captcha_jwt'] = captcha_jwt_generate(random_num, req)
 	return data
 }
 
 const secret = 'd8a3b1f0-6e7b-4c9a-9f2d-1c3e5f7a8b4c' //固定值，JWT有效性验证时使用
 
-fn captcha_jwt_generate(req json2.Any) string {
+fn captcha_jwt_generate(random_num json2.Any, req json2.Any) string {
 	mut payload := jwt.JwtPayload{
-		iss: 'v-admin'   // 签发者 (Issuer) your-app-name
-		sub: 'captcha'   // 用户唯一标识 (Subject)
-		aud: ['sys-api'] // 接收方 (Audience)，可以是数组或字符串
-		exp: time.now().add_seconds(120).unix() // 过期时间 (Expiration Time) 60秒后
-		nbf: time.now().unix() // 生效时间 (Not Before)，立即生效
-		iat: time.now().unix() // 签发时间 (Issued At)
-		jti: rand.uuid_v4() // JWT唯一标识 (JWT ID)，防重防攻击
+		iss:         'v-admin'   // 签发者 (Issuer) your-app-name
+		sub:         'captcha'   // 用户唯一标识 (Subject)
+		aud:         ['sys-api'] // 接收方 (Audience)，可以是数组或字符串
+		exp:         time.now().add_seconds(120).unix() // 过期时间 (Expiration Time) 60秒后
+		nbf:         time.now().unix() // 生效时间 (Not Before)，立即生效
+		iat:         time.now().unix() // 签发时间 (Issued At)
+		jti:         rand.uuid_v4() // JWT唯一标识 (JWT ID)，防重防攻击
+		captcha_opt: random_num.str()
 	}
 
 	token := jwt.jwt_generate(secret, payload)

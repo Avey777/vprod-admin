@@ -1,4 +1,4 @@
-module base
+module db_api
 
 import veb
 import log

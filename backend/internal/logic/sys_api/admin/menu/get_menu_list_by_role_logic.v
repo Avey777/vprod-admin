@@ -11,12 +11,13 @@ import common.api { json_error, json_success }
 import internal.structs { Context }
 
 //根据role获取menu
-@['/role/list'; post]
+@['/role/list'; get]
 fn (app &Menu) role_menu_list(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
+	dump('4646466')
 	mut result := role_menu_list_resp(req) or { return ctx.json(json_error(503, '${err}')) }
 
 	return ctx.json(json_success('success', result))
@@ -26,26 +27,34 @@ fn role_menu_list_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	page := req.as_map()['page'] or { 1 }.int()
-	page_size := req.as_map()['pageSize'] or { 10 }.int()
+	page_size := req.as_map()['pageSize'] or { 10000 }.int()
 	role_id := req.as_map()['roleId'] or { '' }.str()
 
 	mut db := db_mysql()
 	defer { db.close() }
 	mut sys_role_menu := orm.new_query[schema_sys.SysRoleMenu](db)
 	mut sys_menu := orm.new_query[schema_sys.SysMenu](db)
-	// 总页数查询 - 分页偏移量构造
-	mut count := sql db {
-		select count from schema_sys.SysUser
-	}!
+	// 分页偏移量构造
 	offset_num := (page - 1) * page_size
 	//*>>>*/
 	mut query_menus := sys_role_menu.select('menu_id')!
 	if role_id != '' {
 		query_menus = query_menus.where('role_id = ?', role_id)!
 	}
-	// menu_id_arr := query_menus.limit(page_size)!.offset(offset_num)!.query()!
+	menu_id_arr := query_menus.limit(page_size)!.offset(offset_num)!.query()!
 
-	mut query := sys_menu.select()! // .where('role_id IN ?', menu_id_arr.join(', '))!
+	// 2. 提取所需的 ID 值到基础类型切片
+	mut menu_ids := []orm.Primitive{}
+	for item in menu_id_arr {
+		menu_ids << item.menu_id
+	}
+	// 3. 检查空数组避免 SQL 错误
+	if menu_ids.len == 0 {
+		return map[string]Any{}
+	}
+
+	mut query := sys_menu.select()!.where('id IN ?', menu_ids)!
+	mut count := query.count()! // 数据总数量
 	result := query.limit(page_size)!.offset(offset_num)!.query()!
 	//*<<<*/
 	mut datalist := []map[string]Any{} // map空数组初始化

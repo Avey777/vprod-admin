@@ -1,4 +1,4 @@
-module base
+module db_api
 
 import veb
 import log
@@ -11,7 +11,7 @@ import internal.structs.schema_mcms
 import internal.structs.schema_job
 import internal.structs.schema_fms
 
-@['/init/database'; get]
+@['/init/all_database'; get]
 fn (app &Base) index(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 

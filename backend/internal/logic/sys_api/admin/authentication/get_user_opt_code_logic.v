@@ -1,5 +1,5 @@
 // 获取用户权限码
-module user
+module authentication
 
 /*
 package user
