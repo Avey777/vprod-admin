@@ -77,11 +77,6 @@ mut:
 	image string // Base64编码的SVG图像
 }
 
-// Base64编码
-fn base64_encode(s string) string {
-	return 'data:image/svg+xml;base64,' + base64.encode_str(s)
-}
-
 // 生成图形验证码
 pub fn generate_captcha() Captcha {
 	width := 120
@@ -150,6 +145,6 @@ pub fn generate_captcha() Captcha {
 	// 3. 返回Base64编码的SVG
 	return Captcha{
 		text:  text
-		image: base64_encode(svg)
+		image: 'data:image/svg+xml;base64,' + base64.encode_str(svg)
 	}
 }
