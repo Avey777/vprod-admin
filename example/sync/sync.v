@@ -1,9 +1,9 @@
-module test
+module main
 
 import sync
 import time
 
-fn sync_go() {
+fn main() {
 	mut wg := sync.new_waitgroup()
 	for i := 0; i < 10; i++ {
 		wg.add(1) //递增计数
