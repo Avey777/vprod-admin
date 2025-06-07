@@ -1,4 +1,4 @@
-module jwt
+module opt
 
 pub struct JwtHeader {
 pub:
@@ -26,4 +26,5 @@ pub:
 	//^^^^^^API开放平台独立鉴权必须^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 	client_ip string // 客户端 IP
 	device_id string // 设备 ID
+	opt_text  string // 一次性验证码
 }

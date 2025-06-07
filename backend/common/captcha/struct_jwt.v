@@ -1,4 +1,4 @@
-module jwt
+module captcha
 
 pub struct JwtHeader {
 pub:
@@ -24,6 +24,8 @@ pub:
 	app_id    string // 应用系统 ID (商城系统)
 	portal_id string // 应用门户 ID (运营门户，商家门户，会员门户)
 	//^^^^^^API开放平台独立鉴权必须^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-	client_ip string // 客户端 IP
-	device_id string // 设备 ID
+	client_ip     string // 客户端 IP
+	device_id     string // 设备 ID
+	captcha_text  string // 验证码文本
+	captcha_image string // 验证码图片
 }

@@ -1,5 +1,5 @@
 // JWT标准声明 (Standard Claims) https://datatracker.ietf.org/doc/html/rfc7519#section-4.1
-module jwt
+module opt
 
 import crypto.hmac
 import crypto.sha256
@@ -10,13 +10,13 @@ import time
 import rand
 
 // JWT 头部固定使用HS256算法 [使用这种方式，编译器会产生c错误]
-const header_captcha = base64.url_encode_str(json.encode(JwtHeader{
+const header_opt = base64.url_encode_str(json.encode(JwtHeader{
 	alg: 'HS256'
 	typ: 'JWT'
 }))
 
 /*>>>>>>>>>>>>>captcha_jwt>>>>>>>>>>>>>*/
-const captcha_secret = 'd8a3b1f0-6e7b-4c9a-9f2d-1c3e5f7a8b4c' //固定值，JWT有效性验证时使用
+const opt_secret = 'd8a3b1f0-6e7b-4c9a-9f2d-1c3e5f7a8b4c' //固定值，JWT有效性验证时使用
 
 fn random_num() string {
 	random_num := fn () int {
@@ -27,8 +27,8 @@ fn random_num() string {
 }
 
 //生成captcha_opt令牌
-pub fn jwt_opt_generate() (string,string) {
-  captcha_opt_num := random_num().str()
+pub fn opt_generate() (string,string) {
+  opt_num := random_num().str()
 
   payload_captcha := JwtPayload{
 	iss: 'v-admin'      // 签发者 (Issuer) your-app-name
@@ -39,21 +39,21 @@ pub fn jwt_opt_generate() (string,string) {
 	iat: time.now().unix() // 签发时间 (Issued At)
 	jti: rand.uuid_v4() // JWT唯一标识 (JWT ID)，防重防攻击
 	// 自定义业务字段 (Custom Claims)
-	captcha_opt: captcha_opt_num // 验证码
+	opt_text: opt_num // 验证码
   }
 
 	playload_64 := base64.url_encode_str(json.encode(payload_captcha))
 
-	message := '${header_captcha}.${playload_64}'
-	signature := hmac.new(captcha_secret.bytes(), message.bytes(), sha256.sum, 64)
+	message := '${header_opt}.${playload_64}'
+	signature := hmac.new(opt_secret.bytes(), message.bytes(), sha256.sum, 64)
 	base64_signature := base64.url_encode_str(signature.bytestr())
 
-	return '${header_captcha}.${playload_64}.${base64_signature}',captcha_opt_num
+	return '${header_opt}.${playload_64}.${base64_signature}',opt_num
 }
 
 
 // 验证captcha_opt令牌
-pub fn jwt_opt_verify(token string, captcha_num string) bool {
+pub fn opt_verify(token string, opt_num string) bool {
 	// 验证 token 长度
 	parts := token.split('.')
 	if parts.len != 3 {
@@ -61,7 +61,7 @@ pub fn jwt_opt_verify(token string, captcha_num string) bool {
 	}
 	// 验证签名
 	message := '${parts[0]}.${parts[1]}'
-	signature := hmac.new(captcha_secret.bytes(), message.bytes(), sha256.sum, 64)
+	signature := hmac.new(opt_secret.bytes(), message.bytes(), sha256.sum, 64)
 	expected_sig := base64.url_encode_str(signature.bytestr())
 	if parts[2] != expected_sig {
 		return false
@@ -74,7 +74,7 @@ pub fn jwt_opt_verify(token string, captcha_num string) bool {
 		return false
 	}
 	// 验证 captcha
-	if captcha_num != payload_json.captcha_opt {
+	if opt_num != payload_json.opt_text {
 		return false
 	}
 	return true

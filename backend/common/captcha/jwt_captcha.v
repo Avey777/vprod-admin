@@ -1,27 +1,44 @@
 // JWT标准声明 (Standard Claims) https://datatracker.ietf.org/doc/html/rfc7519#section-4.1
-module jwt
+module captcha
 
 import crypto.hmac
 import crypto.sha256
 import encoding.base64
 import json
-import x.json2
 import time
+import rand
 
 // JWT 头部固定使用HS256算法 [使用这种方式，编译器会产生c错误]
-const header = base64.url_encode_str(json.encode(JwtHeader{
+const header_captcha = base64.url_encode_str(json.encode(JwtHeader{
 	alg: 'HS256'
 	typ: 'JWT'
 }))
 
-//生成令牌
-pub fn jwt_generate(secret string, payload JwtPayload) string {
-	playload_64 := base64.url_encode_str(json.encode(payload))
+const captcha_secret = 'd8a3b1f0-6e7b-4c9a-9f2d-1c3e5f7a8b4c' //固定值，JWT有效性验证时使用
 
-	message := '${header}.${playload_64}'
-	signature := hmac.new(secret.bytes(), message.bytes(), sha256.sum, 64)
+//生成captcha令牌
+pub fn jwt_opt_generate() (string, string) {
+	captch_obj := generate_captcha()
+
+	payload_captcha := JwtPayload{
+		iss: 'v-admin' // 签发者 (Issuer) your-app-name
+		sub: 'captcha' // captcha唯一标识 (Subject)
+		// aud: ['api-service', 'client'] // 接收方 (Audience)，可以是数组或字符串
+		exp: time.now().add_seconds(120).unix() // 过期时间 (Expiration Time) 120秒后
+		nbf: time.now().unix() // 生效时间 (Not Before)，立即生效
+		iat: time.now().unix() // 签发时间 (Issued At)
+		jti: rand.uuid_v4() // JWT唯一标识 (JWT ID)，防重防攻击
+		// 自定义业务字段 (Custom Claims)
+		captcha_text: captch_obj.text // 验证码
+	}
+
+	playload_64 := base64.url_encode_str(json.encode(payload_captcha))
+
+	message := '${header_captcha}.${playload_64}'
+	signature := hmac.new(captcha_secret.bytes(), message.bytes(), sha256.sum, 64)
 	base64_signature := base64.url_encode_str(signature.bytestr())
-	return '${header}.${playload_64}.${base64_signature}'
+
+	return '${header_captcha}.${playload_64}.${base64_signature}', captch_obj.image
 }
 
 // 验证令牌
@@ -34,7 +51,7 @@ pub fn jwt_verify(secret string, token string) bool {
 
 	// 2. 验证头部
 	// header_str := base64.url_decode_str(parts[0]) // or { return false }
-	headers := json2.decode[JwtHeader](base64.url_decode_str(parts[0])) or { return false }
+	headers := json.decode(JwtHeader, base64.url_decode_str(parts[0])) or { return false }
 	if headers.alg != 'HS256' || headers.typ != 'JWT' {
 		return false
 	}
@@ -49,7 +66,7 @@ pub fn jwt_verify(secret string, token string) bool {
 
 	// 解码payload
 	// payload_str := base64.url_decode_str(parts[1]) // or { return false }
-	payload := json2.decode[JwtPayload](base64.url_decode_str(parts[1])) or { return false }
+	payload := json.decode(JwtPayload, base64.url_decode_str(parts[1])) or { return false }
 
 	// 4. 时间验证
 	now := time.now().unix()

@@ -12,6 +12,7 @@ import internal.structs.schema_sys
 import common.api { json_error, json_success }
 import internal.structs { Context }
 import common.jwt
+import common.opt
 
 // Create Token | 创建Token
 @['/login_by_account'; post]
@@ -37,7 +38,7 @@ fn login_by_account_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	captcha_num := req.as_map()['captchaNum'] or { return error('Please input captcha_num') }.str()
 	captcha_jwt := req.as_map()['captchaJWT'] or { return error('Please return captcha_jwt') }.str()
 
-	if jwt.jwt_opt_verify(captcha_jwt, captcha_num) == false {
+	if opt.opt_verify(captcha_jwt, captcha_num) == false {
 		return error('Captcha error')
 	}
 
