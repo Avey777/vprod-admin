@@ -63,12 +63,18 @@ pub fn jwt_verify(secret string, token string) bool {
 
 // 恒定时间比较
 fn constant_time_compare(a string, b string) bool {
-	if a.len != b.len {
-		return false
+	// 将长度差异转换为非零值（若长度不同）
+	mut diff := a.len ^ b.len
+	// 取最大长度确保循环次数一致
+	max_len := if a.len > b.len { a.len } else { b.len }
+
+	for i in 0 .. max_len {
+		// 安全获取字符（若索引越界则返回0）
+		a_char := if i < a.len { a[i] } else { u8(0) }
+		b_char := if i < b.len { b[i] } else { u8(0) }
+		// 累积差异：任何不匹配的字节会将diff变为非零
+		diff |= int(a_char) ^ int(b_char)
 	}
-	mut result := u8(0)
-	for i in 0 .. a.len {
-		result |= a[i] ^ b[i]
-	}
-	return result == 0
+	// 只有长度和所有字节完全相同时diff才为0
+	return diff == 0
 }
