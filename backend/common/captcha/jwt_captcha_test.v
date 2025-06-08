@@ -11,7 +11,9 @@ module captcha
 
 fn test_captcha_verify() {
 	token, captcha_image, captcha_text := captcha_generate()
-	// captcha_text := ''
+	dump(token)
+	dump('${captcha_image[..50]}...')
+	dump(captcha_text)
 	verify := captcha_verify(token, captcha_text)
 	assert verify == true
 }
