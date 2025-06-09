@@ -14,7 +14,7 @@ import internal.structs { Context }
 import common.jwt
 import common.captcha
 
-// Create Token | 创建Token
+// Login by Account | 帐号登入
 @['/login_by_account'; post]
 fn (app &Authentication) login_by_account_logic(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')

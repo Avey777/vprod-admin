@@ -9,7 +9,7 @@ import common.api { json_error, json_success }
 import internal.structs { Context }
 import common.captcha
 
-// Create Token | 创建Token
+// Get captcha image | 获取验证码图片
 @['/login_by_email'; post]
 fn (app &Authentication) get_captcha_logic(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')

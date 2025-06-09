@@ -14,7 +14,7 @@ import internal.structs { Context }
 import common.jwt
 import common.opt
 
-// Create Token | 创建Token
+// Login by Email | 邮箱登入
 @['/login_by_email'; post]
 fn (app &Authentication) login_by_email_logic(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -32,32 +32,29 @@ fn login_by_email_resp(mut ctx Context, req json2.Any) !map[string]Any {
 
 	mut db := db_mysql()
 	defer { db.close() }
-	username := req.as_map()['UserName'] or { return error('Please enter your email') }.str()
-	password := req.as_map()['Password'] or { return error('Please input a password') }.str()
-	expired_at := req.as_map()['expiredAt'] or { time.now().add_days(30).unix() }.to_time()!
-	opt_num := req.as_map()['captchaNum'] or { return error('Please input captcha_num') }.str()
-	opt_jwt := req.as_map()['captchaJWT'] or { return error('Please return captcha_jwt') }.str()
 
-	if opt.opt_verify(opt_jwt, opt_num) == false {
+	email := req.as_map()['email'] or { 'Please input a Email' }.str()
+	opt_num := req.as_map()['opt_num'] or { return error('Please input captcha_num') }.str()
+	opt_token := req.as_map()['opt_token'] or { return error('Please return captcha_jwt') }.str()
+
+	if opt.opt_verify(opt_token, opt_num) == false {
 		return error('Captcha error')
 	}
 
 	mut sys_user := orm.new_query[schema_sys.SysUser](db)
-	mut user_info := sys_user.select('id', 'username', 'password', 'status')!.where('username = ?',
-		username)!.limit(1)!.query()!
+	mut user_info := sys_user.select('id', 'username', 'email', 'status')!.where('email = ?',
+		email)!.limit(1)!.query()!
 	if user_info.len == 0 {
-		return error('UserName not exit')
-	}
-	if user_info[0].password != password {
-		return error('UserName or Password error')
+		return error('email not exit')
 	}
 
+	expired_at := time.now().add_days(30)
 	token_jwt := email_token_jwt_generate(mut ctx, req) // 生成token和captcha
 	tokens := schema_sys.SysToken{
 		id:         rand.uuid_v7()
 		status:     req.as_map()['Status'] or { 0 }.u8()
 		user_id:    req.as_map()['UserId'] or { '' }.str()
-		username:   username
+		username:   user_info[0].username
 		token:      token_jwt
 		source:     req.as_map()['Source'] or { '' }.str()
 		expired_at: expired_at
