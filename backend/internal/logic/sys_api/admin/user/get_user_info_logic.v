@@ -6,7 +6,7 @@ import orm
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema_sys
-import common.api { json_success, json_error }
+import common.api { json_error, json_success }
 import internal.structs { Context }
 
 @['/info'; get]
@@ -22,7 +22,7 @@ fn (app &User) user_info(mut ctx Context) veb.Result {
 fn user_info_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	user_id := req.as_map()['userId'] or { '' }.str()
+	user_id := req.as_map()['user_id'] or { '' }.str()
 
 	mut db := db_mysql()
 	defer { db.close() }
@@ -59,7 +59,7 @@ fn user_info_resp(req json2.Any) !map[string]Any {
 		//*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
 		data['avatar'] = row.avatar or { '' }
 		data['desc'] = row.description or { '' }
-		data['homePath'] = row.home_path
+		data['home_path'] = row.home_path
 		//*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		// mut user_info := sql db {select from schema_sys.SysUser  where id == user_id limit 1}!
 		mut user_info := sys_user.select('department_id')!.where('id = ?', user_id)!.query()!
@@ -68,7 +68,7 @@ fn user_info_resp(req json2.Any) !map[string]Any {
 		mut sys_department := orm.new_query[schema_sys.SysDepartment](db)
 		department_info := sys_department.select('name')!.where('id = ?', dpt_id)!.query()!
 
-		data['departmentName'] = department_info[0].name
+		data['department_info'] = department_info[0].name
 		//*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
 
 		datalist << data //追加data到maplist 数组

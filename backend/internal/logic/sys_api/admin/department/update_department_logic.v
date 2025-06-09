@@ -7,7 +7,7 @@ import time
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema_sys
-import common.api { json_success, json_error }
+import common.api { json_error, json_success }
 import internal.structs { Context }
 
 // Update department ||更新department
@@ -24,17 +24,17 @@ fn (app &Department) update_token(mut ctx Context) veb.Result {
 fn update_department_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	id := req.as_map()['Id'] or { '' }.str()
-	name := req.as_map()['Name'] or { '' }.str()
-	ancestors := req.as_map()['Ancestors'] or { '' }.str()
-	leader := req.as_map()['Leader'] or { '' }.str()
-	phone := req.as_map()['Phone'] or { '' }.str()
-	email := req.as_map()['Email'] or { '' }.str()
-	remark := req.as_map()['Remark'] or { '' }.str()
-	parent_id := req.as_map()['parentId'] or { '' }.str()
-	status := req.as_map()['Status'] or { 0 }.u8()
-	sort := req.as_map()['Sort'] or { 0 }.u64()
-	updated_at := req.as_map()['updatedAt'] or { time.now() }.to_time()!
+	id := req.as_map()['id'] or { '' }.str()
+	name := req.as_map()['name'] or { '' }.str()
+	ancestors := req.as_map()['ancestors'] or { '' }.str()
+	leader := req.as_map()['leader'] or { '' }.str()
+	phone := req.as_map()['phone'] or { '' }.str()
+	email := req.as_map()['email'] or { '' }.str()
+	remark := req.as_map()['remark'] or { '' }.str()
+	parent_id := req.as_map()['parent_id'] or { '' }.str()
+	status := req.as_map()['status'] or { 0 }.u8()
+	sort := req.as_map()['sort'] or { 0 }.u64()
+	updated_at := req.as_map()['updated_at'] or { time.now() }.to_time()!
 
 	mut db := db_mysql()
 	defer { db.close() }

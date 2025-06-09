@@ -30,9 +30,9 @@ fn refresh_token_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	defer { db.close() }
 
 	time_now := time.now()
-	secret := req.as_map()['Secret'] or { '' }.str()
+	secret := req.as_map()['secret'] or { '' }.str()
 	expired_at := time_now.add_days(30).unix()
-	req_user_id := req.as_map()['UserId'] or { '' }.str()
+	req_user_id := req.as_map()['req_user_id'] or { '' }.str()
 	// 禁用目前的所有token
 	mut sys_token := orm.new_query[schema_sys.SysToken](db)
 	sys_token.set('status=?', 1)!.where('id=?', req_user_id)!.update()!
@@ -49,7 +49,7 @@ fn refresh_token_resp(mut ctx Context, req json2.Any) !map[string]Any {
 		// 自定义业务字段 (Custom Claims)
 		roles:     ['', '']
 		client_ip: ctx.ip()
-		device_id: req.as_map()['DeviceId'] or { '' }.str()
+		device_id: req.as_map()['device_id'] or { '' }.str()
 	}
 	token := jwt.jwt_generate(secret, payload)
 
@@ -62,15 +62,15 @@ fn refresh_token_resp(mut ctx Context, req json2.Any) !map[string]Any {
 		user_id:    req_user_id
 		username:   username.str()
 		token:      token
-		source:     req.as_map()['Source'] or { 'Core' }.str()
+		source:     req.as_map()['source'] or { 'Core' }.str()
 		expired_at: time.unix(expired_at)
-		created_at: req.as_map()['createdAt'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
-		updated_at: req.as_map()['updatedAt'] or { time.now() }.to_time()!
+		created_at: req.as_map()['created_at'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
+		updated_at: req.as_map()['updated_at'] or { time.now() }.to_time()!
 	}
 	sys_token.insert(new_token)! // 新token插入数据库
 
 	mut data := map[string]Any{}
-	data['expiredAt'] = expired_at.str()
+	data['expired_at'] = expired_at.str()
 	data['token'] = token
 	return data
 }

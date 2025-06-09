@@ -7,7 +7,7 @@ import orm
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema_sys
-import common.api { json_success, json_error }
+import common.api { json_error, json_success }
 import internal.structs { Context }
 
 @['/list'; post]
@@ -25,7 +25,7 @@ fn token_list_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	page := req.as_map()['page'] or { 1 }.int()
-	page_size := req.as_map()['pageSize'] or { 10 }.int()
+	page_size := req.as_map()['page_size'] or { 10 }.int()
 	username := req.as_map()['username'] or { '' }.str()
 
 	mut db := db_mysql()
@@ -50,11 +50,11 @@ fn token_list_resp(req json2.Any) !map[string]Any {
 		data['username'] = row.username
 		data['token'] = row.token
 		data['source'] = row.source
-		data['expiredAt'] = row.expired_at.format_ss()
+		data['expired_at'] = row.expired_at.format_ss()
 		data['status'] = int(row.status)
-		data['createdAt'] = row.created_at.format_ss()
-		data['updatedAt'] = row.updated_at.format_ss()
-		data['deletedAt'] = row.deleted_at or { time.Time{} }.format_ss()
+		data['created_at'] = row.created_at.format_ss()
+		data['updated_at'] = row.updated_at.format_ss()
+		data['deleted_at'] = row.deleted_at or { time.Time{} }.format_ss()
 
 		datalist << data //追加data到maplist 数组
 	}

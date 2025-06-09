@@ -7,7 +7,7 @@ import time
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema_sys
-import common.api { json_success, json_error }
+import common.api { json_error, json_success }
 import internal.structs { Context }
 
 // Update menu ||更新menu
@@ -24,31 +24,31 @@ fn (app &Menu) update_menu(mut ctx Context) veb.Result {
 fn update_menu_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	id := req.as_map()['Id'] or { '' }.str()
-	parent_id := req.as_map()['parentId'] or { '' }.str()
-	menu_level := req.as_map()['menuLevel'] or { 0 }.u64()
-	menu_type := req.as_map()['MenuType'] or { 0 }.u64()
-	path := req.as_map()['Path'] or { '' }.str()
-	name := req.as_map()['Name'] or { '' }.str()
-	redirect := req.as_map()['Redirect'] or { '' }.str()
-	component := req.as_map()['Component'] or { '' }.str()
-	disabled := req.as_map()['Disabled'] or { 0 }.u8()
-	service_name := req.as_map()['serviceName'] or { '' }.str()
-	permission := req.as_map()['Permission'] or { '' }.str()
-	title := req.as_map()['Title'] or { '' }.str()
-	icon := req.as_map()['Icon'] or { '' }.str()
-	hide_menu := req.as_map()['hideMenu'] or { 0 }.u8()
-	hide_breadcrumb := req.as_map()['hideBreadcrumb'] or { 0 }.u8()
-	ignore_keep_alive := req.as_map()['ignoreKeepAlive'] or { 0 }.u8()
+	id := req.as_map()['id'] or { '' }.str()
+	parent_id := req.as_map()['parent_id'] or { '' }.str()
+	menu_level := req.as_map()['menu_level'] or { 0 }.u64()
+	menu_type := req.as_map()['menu_type'] or { 0 }.u64()
+	path := req.as_map()['path'] or { '' }.str()
+	name := req.as_map()['name'] or { '' }.str()
+	redirect := req.as_map()['redirect'] or { '' }.str()
+	component := req.as_map()['component'] or { '' }.str()
+	disabled := req.as_map()['disabled'] or { 0 }.u8()
+	service_name := req.as_map()['service_name'] or { '' }.str()
+	permission := req.as_map()['permission'] or { '' }.str()
+	title := req.as_map()['title'] or { '' }.str()
+	icon := req.as_map()['icon'] or { '' }.str()
+	hide_menu := req.as_map()['hide_menu'] or { 0 }.u8()
+	hide_breadcrumb := req.as_map()['hide_breadcrumb'] or { 0 }.u8()
+	ignore_keep_alive := req.as_map()['ignore_keep_alive'] or { 0 }.u8()
 	hide_tab := req.as_map()['hide_tab'] or { 0 }.u8()
-	frame_src := req.as_map()['frameSrc'] or { '' }.str()
-	carry_param := req.as_map()['carryParam'] or { 0 }.u8()
+	frame_src := req.as_map()['frame_src'] or { '' }.str()
+	carry_param := req.as_map()['carry_param'] or { 0 }.u8()
 	hide_children_in_menu := req.as_map()['hide_children_in_menu'] or { 0 }.u8()
-	affix := req.as_map()['Affix'] or { 20 }.u8()
-	dynamic_level := req.as_map()['dynamicLevel'] or { 0 }.u64()
+	affix := req.as_map()['affix'] or { 20 }.u8()
+	dynamic_level := req.as_map()['dynamic_level'] or { 0 }.u64()
 	real_path := req.as_map()['real_path'] or { '' }.str()
-	sort := req.as_map()['Sort'] or { 0 }.u64()
-	updated_at := req.as_map()['updatedAt'] or { time.now() }.to_time()!
+	sort := req.as_map()['sort'] or { 0 }.u64()
+	updated_at := req.as_map()['updated_at'] or { time.now() }.to_time()!
 
 	mut db := db_mysql()
 	defer { db.close() }

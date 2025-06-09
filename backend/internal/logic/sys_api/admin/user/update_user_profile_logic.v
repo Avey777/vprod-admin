@@ -23,7 +23,7 @@ fn (app &User) update_user_profile_id(mut ctx Context) veb.Result {
 fn update_user_profile_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	user_id := req.as_map()['userId'] or { '' }.str()
+	user_id := req.as_map()['user_id'] or { '' }.str()
 	avatar := req.as_map()['avatar'] or { '' }.str()
 	email := req.as_map()['email'] or { '' }.str()
 	mobile := req.as_map()['mobile'] or { '' }.str()

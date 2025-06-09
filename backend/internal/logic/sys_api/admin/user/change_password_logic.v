@@ -6,7 +6,7 @@ import orm
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema_sys
-import common.api { json_success, json_error }
+import common.api { json_error, json_success }
 import internal.structs { Context }
 
 // Change Password | 修改密码
@@ -23,9 +23,9 @@ fn (app &User) change_password(mut ctx Context) veb.Result {
 fn change_password_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	user_id := req.as_map()['userId'] or { '' }.str()
-	new_password := req.as_map()['newPassword'] or { '' }.str()
-	old_password := req.as_map()['oldPassword'] or { '' }.str()
+	user_id := req.as_map()['user_id'] or { '' }.str()
+	new_password := req.as_map()['new_password'] or { '' }.str()
+	old_password := req.as_map()['old_password'] or { '' }.str()
 
 	mut db := db_mysql()
 	defer { db.close() }

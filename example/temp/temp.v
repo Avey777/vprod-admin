@@ -1,8 +1,75 @@
-module captcha
+module main
 
+import veb
+import time
 import rand
 import encoding.base64
-import time
+
+struct Context {
+	veb.Context
+}
+
+struct App {
+	veb.Middleware[Context]
+}
+
+@['/base64']
+fn (mut app App) index_base64(mut ctx Context) veb.Result {
+	// 设置随机种子
+	now := time.now()
+	rand.seed([u32(now.unix()), u32(now.nanosecond)])
+
+	// 生成验证码
+	captcha := generate_captcha()
+	println('验证码文本: ${captcha.text}')
+	println('图像数据: ${captcha.image[..50]}...') // 打印部分Base64数据
+	return ctx.text(captcha.image)
+}
+
+fn (mut app App) index(mut ctx Context) veb.Result {
+	// 生成验证码
+	captcha := generate_captcha()
+
+	// 构建包含验证码图片的HTML页面
+	html := '
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<title>验证码示例</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				margin: 200px;
+			}
+			#captcha-img {
+				display: block;
+				margin: 0 auto;
+				width: 150px; /* 固定宽度 */
+				height: 50px; /* 固定高度 */
+			}
+		</style>
+	</head>
+	<body>
+		<div class="captcha-container">
+		<img id="captcha-img" src="${captcha.image}" alt="验证码">
+		</div>
+	</body>
+	</html>
+	'
+	dump(captcha.text)
+	return ctx.html(html)
+}
+
+fn main() {
+	port := 9008
+	mut app := &App{}
+	veb.run[App, Context](mut app, port)
+}
+
+// >>>>>>>>>Captcha>>>>>>>>>>>
 
 struct Captcha {
 mut:
@@ -15,10 +82,6 @@ pub fn generate_captcha() Captcha {
 	width := 120
 	height := 50
 	char_count := 5
-
-	// 设置随机种子,每次运行程序时生成不同的随机数序列
-	now := time.now()
-	rand.seed([u32(now.unix()), u32(now.nanosecond)])
 
 	// 1. 生成随机文本
 	chars := 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789@#%*'

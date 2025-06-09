@@ -4,7 +4,7 @@ import time
 
 const secret = 'b17989d7-57d2-4ffa-88ab-f6987feb3eec' // uuid_v4
 
-const payload = JwtPayload{
+const payload_jwt = JwtPayload{
 	iss: 'vprod-workspase'
 	sub: '0196b736-f807-73f0-8731-7a08c0ed75ea' // 用户唯一标识 (Subject)
 	aud: ['api-service', 'webapp']
@@ -19,13 +19,13 @@ const payload = JwtPayload{
 }
 
 fn test_jwt_generate() {
-	token := jwt_generate(secret, payload)
+	token := jwt_generate(secret, payload_jwt)
 	dump(token)
 	assert typeof(token).name == 'string'
 }
 
 fn test_jwt_verify() {
-	token := jwt_generate(secret, payload)
+	token := jwt_generate(secret, payload_jwt)
 	verify := jwt_verify(secret, token)
 	dump(verify)
 	assert verify == true
