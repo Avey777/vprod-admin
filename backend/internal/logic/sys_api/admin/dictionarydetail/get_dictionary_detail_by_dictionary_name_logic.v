@@ -47,16 +47,16 @@ fn dictionarydetail_by_dictionary_name_resp(req json2.Any) !map[string]Any {
 	for row in result {
 		mut data := map[string]Any{} // map初始化
 		data['id'] = row.id //主键ID
-		data['Title'] = row.title
-		data['Status'] = int(row.status)
-		data['Key'] = row.key
-		data['Value'] = row.value
-		data['DictionaryId'] = row.dictionary_id
-		data['Sort'] = int(row.sort)
+		data['title'] = row.title
+		data['status'] = int(row.status)
+		data['key'] = row.key
+		data['value'] = row.value
+		data['dictionary_id'] = row.dictionary_id
+		data['sort'] = int(row.sort)
 
-		data['createdAt'] = row.created_at.format_ss()
-		data['updatedAt'] = row.updated_at.format_ss()
-		data['deletedAt'] = row.deleted_at or { time.Time{} }.format_ss()
+		data['created_at'] = row.created_at.format_ss()
+		data['updated_at'] = row.updated_at.format_ss()
+		data['deleted_at'] = row.deleted_at or { time.Time{} }.format_ss()
 
 		datalist << data //追加data到maplist 数组
 	}

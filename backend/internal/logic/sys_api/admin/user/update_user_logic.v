@@ -23,20 +23,20 @@ fn (app &User) update_user_id(mut ctx Context) veb.Result {
 fn update_user_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	user_id := req.as_map()['userId'] or { '' }.str()
-	position_ids := req.as_map()['positionId'] or { []json2.Any{} }.arr()
-	rule_ids := req.as_map()['roleIds'] or { []json2.Any{} }.arr()
+	user_id := req.as_map()['user_id'] or { '' }.str()
+	position_ids := req.as_map()['position_ids'] or { []json2.Any{} }.arr()
+	rule_ids := req.as_map()['rule_ids'] or { []json2.Any{} }.arr()
 	avatar := req.as_map()['avatar'] or { '' }.str()
-	department_id := req.as_map()['departmentId'] or { '' }.str()
+	department_id := req.as_map()['department_id'] or { '' }.str()
 	description := req.as_map()['description'] or { '' }.str()
 	email := req.as_map()['email'] or { '' }.str()
-	home_path := req.as_map()['homePath'] or { '' }.str()
+	home_path := req.as_map()['home_path'] or { '' }.str()
 	mobile := req.as_map()['mobile'] or { '' }.str()
 	nickname := req.as_map()['nickname'] or { '' }.str()
 	password := req.as_map()['password'] or { '' }.str()
 	status := req.as_map()['status'] or { 0 }.u8()
 	username := req.as_map()['username'] or { '' }.str()
-	updated_at := req.as_map()['updatedAt'] or { time.now() }.to_time()!
+	updated_at := req.as_map()['updated_at'] or { time.now() }.to_time()!
 
 	mut user_positions := []schema_sys.SysUserPosition{cap: position_ids.len}
 	for raw in position_ids {

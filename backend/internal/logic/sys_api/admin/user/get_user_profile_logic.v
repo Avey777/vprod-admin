@@ -6,7 +6,7 @@ import orm
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema_sys
-import common.api { json_success, json_error }
+import common.api { json_error, json_success }
 import internal.structs { Context }
 
 @['/profile'; get]
@@ -22,7 +22,7 @@ fn (app &User) user_profile(mut ctx Context) veb.Result {
 fn user_profile_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	user_id := req.as_map()['userId'] or { '' }.str()
+	user_id := req.as_map()['user_id'] or { '' }.str()
 
 	mut db := db_mysql()
 	defer { db.close() }

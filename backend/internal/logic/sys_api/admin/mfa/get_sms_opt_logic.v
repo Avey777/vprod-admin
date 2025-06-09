@@ -11,6 +11,7 @@ import internal.structs.schema_sys
 import common.api { json_error, json_success }
 import internal.structs { Context }
 import regex
+import common.opt
 
 @['/list'; post]
 fn (app &MFA) sms_list(mut ctx Context) veb.Result {
@@ -38,10 +39,7 @@ fn sms_resp(req json2.Any) !map[string]Any {
 		return error('Invalid email format')
 	}
 
-	random_num := fn () int {
-		mut r := rand.new_default()
-		return r.int_in_range(10000, 100000) or { 0 }
-	}()
+	token_opt, opt_num := opt.opt_generate()
 
 	mut db := db_mysql()
 	defer { db.close() }
@@ -50,14 +48,15 @@ fn sms_resp(req json2.Any) !map[string]Any {
 		id:            rand.uuid_v7()
 		verify_source: req_phone
 		method:        'SMS'
-		code:          random_num.str()
-		created_at:    req.as_map()['createdAt'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
+		code:          opt_num
+		created_at:    req.as_map()['created_at'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
 	}
 	mut sys_info := orm.new_query[schema_sys.SysMFAlog](db)
 	sys_info.insert(infos)!
 
 	mut data := map[string]Any{}
-	data['code'] = random_num
+	data['code'] = opt_num
+	data['token_opt'] = token_opt
 
 	return data
 }

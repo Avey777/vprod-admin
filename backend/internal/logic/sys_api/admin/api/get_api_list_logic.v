@@ -25,12 +25,12 @@ fn api_list_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	page := req.as_map()['page'] or { 1 }.int()
-	page_size := req.as_map()['pageSize'] or { 10 }.int()
-	path := req.as_map()['Path'] or { '' }.str()
-	api_group := req.as_map()['Group'] or { '' }.str()
-	service_name := req.as_map()['ServiceName'] or { '' }.str()
-	method := req.as_map()['Method'] or { '' }.str()
-	is_required := req.as_map()['IsRequired'] or { 100 }.u8()
+	page_size := req.as_map()['page_size'] or { 10 }.int()
+	path := req.as_map()['path'] or { '' }.str()
+	api_group := req.as_map()['api_group'] or { '' }.str()
+	service_name := req.as_map()['service_name'] or { '' }.str()
+	method := req.as_map()['method'] or { '' }.str()
+	is_required := req.as_map()['is_required'] or { 100 }.u8()
 
 	mut db := db_mysql()
 	defer { db.close() }
@@ -64,16 +64,16 @@ fn api_list_resp(req json2.Any) !map[string]Any {
 	for row in result {
 		mut data := map[string]Any{} // map初始化
 		data['id'] = row.id //主键ID
-		data['Path'] = row.path
-		data['Description'] = row.description or { '' }
-		data['Group'] = row.api_group
-		data['Method'] = row.method
-		data['IsRequired'] = int(row.is_required)
-		data['ServiceName'] = row.service_name
+		data['path'] = row.path
+		data['description'] = row.description or { '' }
+		data['api_group'] = row.api_group
+		data['method'] = row.method
+		data['is_required'] = int(row.is_required)
+		data['service_name'] = row.service_name
 
-		data['createdAt'] = row.created_at.format_ss()
-		data['updatedAt'] = row.updated_at.format_ss()
-		data['deletedAt'] = row.deleted_at or { time.Time{} }.format_ss()
+		data['created_at'] = row.created_at.format_ss()
+		data['updated_at'] = row.updated_at.format_ss()
+		data['deleted_at'] = row.deleted_at or { time.Time{} }.format_ss()
 
 		datalist << data //追加data到maplist 数组
 	}

@@ -7,7 +7,7 @@ import time
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema_sys
-import common.api { json_success, json_error }
+import common.api { json_error, json_success }
 import internal.structs { Context }
 
 // Update dictionary ||更新dictionary
@@ -24,12 +24,12 @@ fn (app &Dictionary) update_dictionary(mut ctx Context) veb.Result {
 fn update_dictionary_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	id := req.as_map()['Id'] or { '' }.str()
-	name := req.as_map()['Name'] or { '' }.str()
-	title := req.as_map()['Title'] or { '' }.str()
-	desc := req.as_map()['Desc'] or { '' }.str()
-	status := req.as_map()['Status'] or { 0 }.u8()
-	updated_at := req.as_map()['updatedAt'] or { time.now() }.to_time()!
+	id := req.as_map()['id'] or { '' }.str()
+	name := req.as_map()['name'] or { '' }.str()
+	title := req.as_map()['title'] or { '' }.str()
+	desc := req.as_map()['desc'] or { '' }.str()
+	status := req.as_map()['status'] or { 0 }.u8()
+	updated_at := req.as_map()['updated_at'] or { time.now() }.to_time()!
 
 	mut db := db_mysql()
 	defer { db.close() }

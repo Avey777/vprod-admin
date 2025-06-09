@@ -7,7 +7,7 @@ import orm
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema_sys
-import common.api { json_success, json_error }
+import common.api { json_error, json_success }
 import internal.structs { Context }
 
 @['/list'; post]
@@ -25,10 +25,10 @@ fn configuration_list_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	page := req.as_map()['page'] or { 1 }.int()
-	page_size := req.as_map()['pageSize'] or { 10 }.int()
-	name := req.as_map()['Name'] or { '' }.str()
-	key := req.as_map()['Key'] or { '' }.str()
-	category := req.as_map()['Category'] or { 0 }.u8()
+	page_size := req.as_map()['page_size'] or { 10 }.int()
+	name := req.as_map()['name'] or { '' }.str()
+	key := req.as_map()['key'] or { '' }.str()
+	category := req.as_map()['category'] or { 0 }.u8()
 
 	mut db := db_mysql()
 	defer { db.close() }
@@ -55,17 +55,17 @@ fn configuration_list_resp(req json2.Any) !map[string]Any {
 	for row in result {
 		mut data := map[string]Any{} // map初始化
 		data['id'] = row.id //主键ID
-		data['Status'] = int(row.status)
-		data['Name'] = row.name
-		data['Key'] = row.key
-		data['Value'] = row.value
-		data['Category'] = row.category
-		data['Remark'] = row.remark or { '' }
-		data['Sort'] = int(row.sort)
+		data['status'] = int(row.status)
+		data['name'] = row.name
+		data['key'] = row.key
+		data['value'] = row.value
+		data['category'] = row.category
+		data['remark'] = row.remark or { '' }
+		data['Sosortrt'] = int(row.sort)
 
-		data['createdAt'] = row.created_at.format_ss()
-		data['updatedAt'] = row.updated_at.format_ss()
-		data['deletedAt'] = row.deleted_at or { time.Time{} }.format_ss()
+		data['created_at'] = row.created_at.format_ss()
+		data['updated_at'] = row.updated_at.format_ss()
+		data['deleted_at'] = row.deleted_at or { time.Time{} }.format_ss()
 
 		datalist << data //追加data到maplist 数组
 	}

@@ -7,7 +7,7 @@ import orm
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema_sys
-import common.api { json_success, json_error }
+import common.api { json_error, json_success }
 import internal.structs { Context }
 
 @['/id'; post]
@@ -40,17 +40,17 @@ fn role_by_id_resp(req json2.Any) !map[string]Any {
 	for row in result {
 		mut data := map[string]Any{} // map初始化
 		data['id'] = row.id //主键ID
-		data['Status'] = int(row.status)
-		data['Name'] = row.name
-		data['Code'] = row.code
-		data['DefaultRouter'] = row.default_router
-		data['Remark'] = row.remark or { '' }
-		data['Sort'] = int(row.sort)
-		data['DataScope'] = int(row.data_scope)
-		data['CustomDeptIds'] = row.custom_dept_ids or { '' }
-		data['createdAt'] = row.created_at.format_ss()
-		data['updatedAt'] = row.updated_at.format_ss()
-		data['deletedAt'] = row.deleted_at or { time.Time{} }.format_ss()
+		data['status'] = int(row.status)
+		data['name'] = row.name
+		data['code'] = row.code
+		data['default_router'] = row.default_router
+		data['remark'] = row.remark or { '' }
+		data['sort'] = int(row.sort)
+		data['data_scope'] = int(row.data_scope)
+		data['custom_dept_ids'] = row.custom_dept_ids or { '' }
+		data['created_at'] = row.created_at.format_ss()
+		data['updated_at'] = row.updated_at.format_ss()
+		data['deleted_at'] = row.deleted_at or { time.Time{} }.format_ss()
 
 		datalist << data //追加data到maplist 数组
 	}

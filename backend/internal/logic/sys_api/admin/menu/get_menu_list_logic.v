@@ -7,7 +7,7 @@ import orm
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema_sys
-import common.api { json_success, json_error }
+import common.api { json_error, json_success }
 import internal.structs { Context }
 
 @['/list'; post]
@@ -25,8 +25,8 @@ fn menu_list_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	page := req.as_map()['page'] or { 1 }.int()
-	page_size := req.as_map()['pageSize'] or { 10 }.int()
-	name := req.as_map()['Name'] or { '' }.str()
+	page_size := req.as_map()['page_size'] or { 10 }.int()
+	name := req.as_map()['name'] or { '' }.str()
 
 	mut db := db_mysql()
 	defer { db.close() }

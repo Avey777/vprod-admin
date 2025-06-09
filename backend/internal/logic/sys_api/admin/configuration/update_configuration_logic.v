@@ -7,7 +7,7 @@ import time
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema_sys
-import common.api { json_success, json_error }
+import common.api { json_error, json_success }
 import internal.structs { Context }
 
 // Update configuration ||更新configuration
@@ -24,15 +24,15 @@ fn (app &Configuration) update_token(mut ctx Context) veb.Result {
 fn update_configuration_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	id := req.as_map()['Id'] or { '' }.str()
-	name := req.as_map()['Name'] or { '' }.str()
-	key := req.as_map()['Key'] or { '' }.str()
-	value := req.as_map()['Value'] or { '' }.str()
-	category := req.as_map()['Category'] or { '' }.str()
-	remark := req.as_map()['Remark'] or { '' }.str()
-	status := req.as_map()['Status'] or { 0 }.u8()
-	sort := req.as_map()['Sort'] or { 0 }.u64()
-	updated_at := req.as_map()['updatedAt'] or { time.now() }.to_time()!
+	id := req.as_map()['id'] or { '' }.str()
+	name := req.as_map()['name'] or { '' }.str()
+	key := req.as_map()['key'] or { '' }.str()
+	value := req.as_map()['value'] or { '' }.str()
+	category := req.as_map()['category'] or { '' }.str()
+	remark := req.as_map()['remark'] or { '' }.str()
+	status := req.as_map()['status'] or { 0 }.u8()
+	sort := req.as_map()['sort'] or { 0 }.u64()
+	updated_at := req.as_map()['updated_at'] or { time.now() }.to_time()!
 
 	mut db := db_mysql()
 	defer { db.close() }

@@ -8,7 +8,7 @@ import x.json2
 import rand
 import internal.config { db_mysql }
 import internal.structs.schema_sys
-import common.api { json_success, json_error }
+import common.api { json_error, json_success }
 import internal.structs { Context }
 
 // Create User | 创建用户
@@ -29,23 +29,23 @@ fn create_user_resp(req json2.Any) !map[string]Any {
 	defer { db.close() }
 
 	user_id := rand.uuid_v7() // req.as_map()['id'] or { '' }.str()
-	position_ids := req.as_map()['positionId'] or { []json2.Any{} }.arr()
-	rule_ids := req.as_map()['roleIds'] or { []json2.Any{} }.arr()
+	position_ids := req.as_map()['position_ids'] or { []json2.Any{} }.arr()
+	rule_ids := req.as_map()['rule_ids'] or { []json2.Any{} }.arr()
 
 	users := schema_sys.SysUser{
 		id:            user_id
 		avatar:        req.as_map()['avatar'] or { '' }.str()
-		department_id: req.as_map()['departmentId'] or { '' }.str()
+		department_id: req.as_map()['department_id'] or { '' }.str()
 		description:   req.as_map()['description'] or { '' }.str()
 		email:         req.as_map()['email'] or { '' }.str()
-		home_path:     req.as_map()['homePath'] or { '' }.str()
+		home_path:     req.as_map()['home_path'] or { '' }.str()
 		mobile:        req.as_map()['mobile'] or { '' }.str()
 		nickname:      req.as_map()['nickname'] or { '' }.str()
 		password:      req.as_map()['password'] or { '' }.str()
 		status:        req.as_map()['status'] or { 0 }.u8()
 		username:      req.as_map()['username'] or { '' }.str()
-		created_at:    req.as_map()['createdAt'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
-		updated_at:    req.as_map()['updatedAt'] or { time.now() }.to_time()!
+		created_at:    req.as_map()['created_at'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
+		updated_at:    req.as_map()['updated_at'] or { time.now() }.to_time()!
 	}
 
 	mut user_positions := []schema_sys.SysUserPosition{cap: position_ids.len}

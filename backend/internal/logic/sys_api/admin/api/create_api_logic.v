@@ -30,14 +30,14 @@ fn create_api_resp(req json2.Any) !map[string]Any {
 
 	apis := schema_sys.SysApi{
 		id:           rand.uuid_v7()
-		path:         req.as_map()['Path'] or { '' }.str()
-		description:  req.as_map()['Description'] or { '' }.str()
-		api_group:    req.as_map()['Group'] or { '' }.str()
-		service_name: req.as_map()['ServiceName'] or { 0 }.str()
-		method:       req.as_map()['Method'] or { '' }.str()
-		is_required:  req.as_map()['IsRequired'] or { '' }.u8()
-		created_at:   req.as_map()['createdAt'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
-		updated_at:   req.as_map()['updatedAt'] or { time.now() }.to_time()!
+		path:         req.as_map()['path'] or { '' }.str()
+		description:  req.as_map()['description'] or { '' }.str()
+		api_group:    req.as_map()['api_group'] or { '' }.str()
+		service_name: req.as_map()['service_name'] or { 0 }.str()
+		method:       req.as_map()['method'] or { '' }.str()
+		is_required:  req.as_map()['is_required'] or { '' }.u8()
+		created_at:   req.as_map()['created_at'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
+		updated_at:   req.as_map()['updated_at'] or { time.now() }.to_time()!
 	}
 	mut sys_api := orm.new_query[schema_sys.SysApi](db)
 	sys_api.insert(apis)!

@@ -51,11 +51,11 @@ fn login_by_sms_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	token_jwt := sms_token_jwt_generate(mut ctx, req) // 生成token和copt
 	tokens := schema_sys.SysToken{
 		id:         rand.uuid_v7()
-		status:     req.as_map()['Status'] or { 0 }.u8()
-		user_id:    req.as_map()['UserId'] or { '' }.str()
+		status:     req.as_map()['status'] or { 0 }.u8()
+		user_id:    req.as_map()['user_id'] or { '' }.str()
 		username:   user_info[0].username
 		token:      token_jwt
-		source:     req.as_map()['Source'] or { '' }.str()
+		source:     req.as_map()['source'] or { '' }.str()
 		expired_at: expired_at
 		created_at: time.now()
 		updated_at: time.now()
@@ -64,9 +64,9 @@ fn login_by_sms_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	sys_token.insert(tokens)!
 
 	mut data := map[string]Any{}
-	data['ExpiredAt'] = expired_at.str()
-	data['Token'] = token_jwt
-	data['UserId'] = user_info[0].id
+	data['expired_at'] = expired_at.str()
+	data['token'] = token_jwt
+	data['user_id'] = user_info[0].id
 	return data
 }
 
@@ -76,7 +76,7 @@ fn sms_token_jwt_generate(mut ctx Context, req json2.Any) string {
 
 	mut payload := jwt.JwtPayload{
 		iss: 'v-admin' // 签发者 (Issuer) your-app-name
-		sub: req.as_map()['UserId'] or { '' }.str() // 用户唯一标识 (Subject)
+		sub: req.as_map()['user_id'] or { '' }.str() // 用户唯一标识 (Subject)
 		// aud: ['api-service', 'webapp'] // 接收方 (Audience)，可以是数组或字符串
 		exp: time.now().add_days(30).unix() // 过期时间 (Expiration Time) 7天后
 		nbf: time.now().unix() // 生效时间 (Not Before)，立即生效
@@ -84,8 +84,8 @@ fn sms_token_jwt_generate(mut ctx Context, req json2.Any) string {
 		jti: rand.uuid_v4() // JWT唯一标识 (JWT ID)，防重防攻击
 		// 自定义业务字段 (Custom Claims)
 		roles:     ['admin', 'editor'] // 用户角色
-		client_ip: req.as_map()['LoginIp'] or { '' }.str() // ip地址
-		device_id: req.as_map()['DeviceId'] or { '' }.str() // 设备id
+		client_ip: req.as_map()['login_ip'] or { '' }.str() // ip地址
+		device_id: req.as_map()['device_id'] or { '' }.str() // 设备id
 	}
 
 	token := jwt.jwt_generate(secret, payload)

@@ -7,7 +7,7 @@ import orm
 import x.json2
 import internal.config { db_mysql }
 import internal.structs.schema_sys
-import common.api { json_success, json_error }
+import common.api { json_error, json_success }
 import internal.structs { Context }
 
 @['/list'; post]
@@ -25,11 +25,11 @@ fn user_list_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	page := req.as_map()['page'] or { 1 }.int()
-	page_size := req.as_map()['pageSize'] or { 10 }.int()
-	department_id := req.as_map()['departmentId'] or { 0 }.int()
+	page_size := req.as_map()['page_size'] or { 10 }.int()
+	department_id := req.as_map()['department_id'] or { 0 }.int()
 	username := req.as_map()['username'] or { '' }.str()
 	nickname := req.as_map()['nickname'] or { '' }.str()
-	position_id := req.as_map()['positionId'] or { 0 }.int()
+	position_id := req.as_map()['position_id'] or { 0 }.int()
 	mobile := req.as_map()['mobile'] or { '' }.str()
 	email := req.as_map()['email'] or { '' }.str()
 
@@ -85,8 +85,8 @@ fn user_list_resp(req json2.Any) !map[string]Any {
 		data['avatar'] = row.avatar or { '' }
 		data['status'] = int(row.status)
 		data['description'] = row.description or { '' }
-		data['homePath'] = row.home_path
-		data['departmentId'] = row.department_id or { '' }
+		data['home_path'] = row.home_path
+		data['department_id'] = row.department_id or { '' }
 		//*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		// mut user_position := sql db {select from schema_sys.SysUserPosition where user_id == row.id}!
 		mut user_position := sys_user_position.select()!.where('user_id = ?', row.id)!.limit(1)!.query()!
@@ -94,11 +94,11 @@ fn user_list_resp(req json2.Any) !map[string]Any {
 		for row_ups in user_position {
 			user_position_ids_list << row_ups.position_id
 		}
-		data['positionId'] = user_position_ids_list
+		data['position_id'] = user_position_ids_list
 		//*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
-		data['createdAt'] = row.created_at.format_ss()
-		data['updatedAt'] = row.updated_at.format_ss()
-		data['deletedAt'] = row.deleted_at or { time.Time{} }.format_ss()
+		data['created_at'] = row.created_at.format_ss()
+		data['updated_at'] = row.updated_at.format_ss()
+		data['deleted_at'] = row.deleted_at or { time.Time{} }.format_ss()
 
 		datalist << data //追加data到maplist 数组
 	}
