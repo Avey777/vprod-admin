@@ -12,7 +12,7 @@ import internal.structs.schema_sys
 import common.api { json_error, json_success }
 import internal.structs { Context }
 import common.jwt
-import common.opt
+import common.captcha
 
 // Create Token | 创建Token
 @['/login_by_account'; post]
@@ -32,13 +32,12 @@ fn login_by_account_resp(mut ctx Context, req json2.Any) !map[string]Any {
 
 	mut db := db_mysql()
 	defer { db.close() }
-	username := req.as_map()['UserName'] or { return error('Please enter your account') }.str()
-	password := req.as_map()['Password'] or { return error('Please input a password') }.str()
-	expired_at := req.as_map()['expiredAt'] or { time.now().add_days(30).unix() }.to_time()!
-	captcha_num := req.as_map()['captchaNum'] or { return error('Please input captcha_num') }.str()
-	captcha_jwt := req.as_map()['captchaJWT'] or { return error('Please return captcha_jwt') }.str()
+	username := req.as_map()['username'] or { return error('Please enter your account') }.str()
+	password := req.as_map()['password'] or { return error('Please input a password') }.str()
+	captcha_text := req.as_map()['captcha'] or { return error('Please input captcha_text') }.str()
+	captcha_id := req.as_map()['captcha_id'] or { return error('Please return captcha_id') }.str()
 
-	if opt.opt_verify(captcha_jwt, captcha_num) == false {
+	if captcha.captcha_verify(captcha_id, captcha_text) == false {
 		return error('Captcha error')
 	}
 
@@ -51,7 +50,7 @@ fn login_by_account_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	if user_info[0].password != password {
 		return error('UserName or Password error')
 	}
-
+	expired_at := time.now().add_days(30)
 	token_jwt := token_jwt_generate(mut ctx, req) // 生成token和captcha
 	tokens := schema_sys.SysToken{
 		id:         rand.uuid_v7()
@@ -68,9 +67,9 @@ fn login_by_account_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	sys_token.insert(tokens)!
 
 	mut data := map[string]Any{}
-	data['expiredAt'] = expired_at.str()
-	data['token'] = token_jwt
-	data['userId'] = user_info[0].id
+	data['ExpiredAt'] = expired_at.str()
+	data['Token'] = token_jwt
+	data['UserId'] = user_info[0].id
 	return data
 }
 
