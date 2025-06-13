@@ -65,6 +65,40 @@ vprod-service
 - Database Connection Pool：数据库线程池，支持mysql和pgsql
 
 -------------
+## 租户权限
+流程图绘制[Mermaid Live Editor](https://www.mermaidchart.com/play?utm_source=mermaid_live_editor&utm_medium=toggle#pako:eNqVkEFLwzAcxb9KyGHMQ5Gk3QalFjvEs8hu1kPWZm5Qk5J0DBm7iifBgyhevAqC3vTix3GK38JkTeo21oG55b33f_9fMoUJTyn04SDjk2RIRAF6BzEDctw_EyQfAolOYhjInCituMjoXsIzLvxwQPwBcXIqJGfgiIuCZMABnx8P85v7n7unr6v3YFdPhTE8VX3mMNRWdWVqQvvO_PZy_nj9_fwa9EVYyhFLBR-lf5YpoCxd4cL_4dJlL2_buDqqrkxpLkNUCpZoRRxx6azDqdNtxjDKc4BiuAMcJ1T_BxoKtnSZ_kxtYzW3sA-VsAkZ6UADMFzj4wqfuSrSo-S86mTIU9Ixz-hyzDOr3SrW2rLb8qKmCo0lFQu1fFJkFlaQrk3jKo2rtHUjw-ZatuU17sLs2qtnsrrci5mV2_tTIIckpz4QfMxSms6s1VmyaFIYXeKNMkO1RTUDbk2Pt1n3avtbNUXrC-DsF_G8OEo)
+
+```
+flowchart TD
+ subgraph s1["<span style=color:>fa:fa-person Portal - 会员门户</span>"]
+        n16["会员web-商城端<br>会员Android-商城端"]
+  end
+ subgraph s2["<span style=color:>fa:fa-person Portal - 商家门户</span>"]
+        n17["商家web-端<br>商家Android-端<br>商家ios-端"]
+  end
+    B("App 1") --> s1 & s2
+    n1["App 2"] --> F["fa:fa-person Portal 1"] & n2["fa:fa-person Portal 2"]
+    n3["Team2"] --> n14["Role 2"]
+    n4["App 3"] --> n5["fa:fa-person Portal 1"]
+    n11(["user 1"]) --> A["Team 1"] & n3
+    n12(["user 2"]) --> n3
+    A --> n13["Role 1"]
+    n13 --> B
+    n14 --> n1 & n4
+
+    n16@{ shape: rounded}
+    n17@{ shape: rect}
+    s2@{ shape: rect}
+    n1@{ shape: rounded}
+    n2@{ shape: rect}
+    n3@{ shape: rect}
+    n14@{ shape: rect}
+    n4@{ shape: rounded}
+    n5@{ shape: rect}
+    n13@{ shape: rect}
+```
+
+-------------
 ## Git 贡献提交规范
 
 - 参考 [vue](https://github.com/vuejs/vue/blob/dev/.github/COMMIT_CONVENTION.md) 规范 ([Angular](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular))
