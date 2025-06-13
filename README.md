@@ -66,7 +66,7 @@ vprod-service
 
 -------------
 ## 租户权限
-流程图绘制[Mermaid Live Editor](https://www.mermaidchart.com)
+流程图绘制[Mermaid Live Editor](https://www.mermaidchart.com/play?utm_source=mermaid_live_editor&utm_medium=toggle#pako:eNqFj82LwjAQxf-VIQfRQw790IUgZStV2NsevJk9xCZVoTtT0sqyiP-7jYki-HUK837vvckcWEnaMME45xJLwmq3ERIBavVP-06AVhtrJJ5xVdNfuVW2g2XhPAD5SrKlUb8QSfYDnMN0bbP-zWA2lCxvGgdG3js760WfqJSoFG-MbQnhm2ynal8wgPkTHPfY12C08s2xX5nB4nUlxu87k3DHtRMjl0zDquTqzAMNudSP4xc_8M7CGydD14ja0k73bOSWfDjti1o3X078PEC7VY0RYGmP2uhjIPENMWV3kZPHcvq0Z3wXYMcT5OucmA)
 
 ```
 flowchart TD
