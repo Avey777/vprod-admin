@@ -68,6 +68,7 @@ vprod-service
 ## 租户权限
 流程图绘制[Mermaid Live Editor](https://www.mermaidchart.com)
 
+```
 flowchart TD
  subgraph s1["<span style=color:>fa:fa-person Portal - 会员门户</span>"]
         n16["会员web-商城端<br>会员Android-商城端"]
@@ -95,6 +96,7 @@ flowchart TD
     n4@{ shape: rounded}
     n5@{ shape: rect}
     n13@{ shape: rect}
+```
 
 -------------
 ## Git 贡献提交规范
