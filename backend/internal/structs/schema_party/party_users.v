@@ -1,9 +1,9 @@
-module schema_tema
+module schema_party
 
 import time
 
 //成员表
-@[table: 'core_users']
+@[table: 'party_users']
 pub struct CoreUser {
 pub:
 	id            string  @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID rand.uuid_v4()']
