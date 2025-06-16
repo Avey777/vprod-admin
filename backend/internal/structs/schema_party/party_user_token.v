@@ -3,8 +3,8 @@ module schema_tema
 import time
 
 // Token表
-@[table: 'core_tokens']
-pub struct CoreToken {
+@[table: 'party_user_tokens']
+pub struct PartyUserToken {
 pub:
 	id         string    @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomment: ' UUID']
 	user_id    string    @[omitempty; sql: 'user_id'; sql_type: 'CHAR(36)'; zcomment: ' User`s UUID | 用户的UUID']

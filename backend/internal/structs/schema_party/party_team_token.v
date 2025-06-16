@@ -1,10 +1,10 @@
-module schema_tema
+module schema_party
 
 import time
 
 // Token表
-@[table: 'core_user_tokens']
-pub struct CoreUserToken {
+@[table: 'party_team_tokens']
+pub struct PartyTeamToken {
 pub:
 	id         string    @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomment: ' UUID']
 	user_id    string    @[omitempty; sql: 'user_id'; sql_type: 'CHAR(36)'; zcomment: ' User`s UUID | 用户的UUID']
@@ -12,6 +12,8 @@ pub:
 	token      string    @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Token string | Token 字符串']
 	source     string    @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Log in source such as GitHub | Token 来源 （本地为core, 第三方如github等）']
 	expired_at time.Time @[omitempty; sql_type: 'TIMESTAMP'; zcomment: ' Expire time | 过期时间']
+  user_id      string    @[omitempty; required; sql_type: 'CHAR(36)'; zcomments: '用户ID']
+  app_id       string    @[omitempty; required; sql_type: 'CHAR(36)'; zcomments: '应用ID']
 	status     u8        @[default: 0; omitempty; sql_type: 'tinyint'; zcomments: '状态，0：正常，1：禁用']
 
 	updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']

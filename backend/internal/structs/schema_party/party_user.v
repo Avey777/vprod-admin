@@ -2,9 +2,9 @@ module schema_party
 
 import time
 
-//成员表
+// 外部用户表
 @[table: 'party_users']
-pub struct CoreUser {
+pub struct PartyUser {
 pub:
 	id            string  @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID rand.uuid_v4()']
 	username      string  @[omitempty; required; sql: 'username'; sql_type: 'VARCHAR(255)'; unique: 'username'; zcomments: 'User`s login name | 登录名']

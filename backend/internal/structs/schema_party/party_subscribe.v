@@ -1,8 +1,8 @@
-//订阅申请表
-module schema_tema
+module schema_party
 
 import time
 
+// 订阅表
 @[table: 'subscribe']
 pub struct Subscribe {
 pub:
