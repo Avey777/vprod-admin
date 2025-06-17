@@ -2,7 +2,7 @@ module schema_tema
 
 import time
 
-// Token表
+// 外部用户Token表
 @[table: 'party_user_tokens']
 pub struct PartyUserToken {
 pub:

@@ -2,14 +2,15 @@ module schema_party
 
 import time
 
-// 角色应用关系表
-@[table: 'party_role_applications']
-pub struct PartyRoleApplication {
+// 团队应用关系表（用于应用共享）
+@[table: 'party_team_applications']
+pub struct PartyTeamApplication {
 pub:
-	id          string @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: '关系ID']
-	role_id     string @[omitempty; required; sql_type: 'CHAR(36)'; zcomments: '角色ID']
-	app_id      string @[omitempty; required; sql_type: 'CHAR(36)'; zcomments: '应用ID']
-	permissions string @[omitempty; sql_type: 'TEXT'; zcomments: '额外权限配置']
+	id             string @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: '关系ID']
+	owner_team_id  string @[omitempty; required; sql_type: 'CHAR(36)'; zcomments: '应用所有者团队ID']
+	shared_team_id string @[omitempty; required; sql_type: 'CHAR(36)'; zcomments: '被共享团队ID']
+	application_id string @[omitempty; required; sql_type: 'CHAR(36)'; zcomments: '应用ID']
+	access_level   u8     @[default: 1; omitempty; sql_type: 'tinyint'; zcomments: '访问权限级别：0-只读，1-读写，2-管理员']
 
 	updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']
 	updated_at time.Time  @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Update Time | 修改日期']
