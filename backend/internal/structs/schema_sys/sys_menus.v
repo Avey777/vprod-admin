@@ -2,12 +2,12 @@ module schema_sys
 
 import time
 
-// 菜单表
+@[comment: '菜单表']
 @[table: 'sys_menus']
 pub struct SysMenu {
 pub:
-	id                    string  @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID']
-	parent_id             ?string @[immutable; primary; sql: 'parent_id'; sql_type: 'CHAR(36)'; zcomments: ' Parent menu ID | 父菜单ID']
+	id                    string  @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
+	parent_id             ?string @[comment: ' Parent menu ID | 父菜单ID'; immutable; primary; sql: 'parent_id'; sql_type: 'CHAR(36)']
 	menu_level            u64     @[omitempty; sql_type: 'int'; zcomment: 'Menu level | 菜单层级']
 	menu_type             u64     @[omitempty; sql_type: 'int'; zcomment: 'Menu type | 菜单类型 （菜单或目录）0 目录 1 菜单']
 	path                  ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: ' Index path | 菜单路由路径']
@@ -31,10 +31,10 @@ pub:
 	real_path             ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'The real path of the route without dynamic part | 菜单路由不包含参数部分']
 	sort                  u32     @[default: 0; omitempty; sql_type: 'int'; zcomment: 'Sort Number | 排序编号']
 
-	updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']
-	updated_at time.Time  @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Update Time | 修改日期']
-	creator_id ?string    @[immutable; omitempty; sql_type: 'CHAR(36)'; zcomments: '创建者ID']
-	created_at time.Time  @[immutable; omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Create Time | 创建日期']
-	del_flag   u8         @[default: 0; omitempty; sql_type: 'tinyint(1)'; zcomments: '删除标记，0：未删除，1：已删除']
-	deleted_at ?time.Time @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Delete Time | 删除日期']
+	updater_id ?string    @[comment: '修改者ID'; omitempty; sql_type: 'CHAR(36)']
+	updated_at time.Time  @[comment: 'Update Time | 修改日期'; omitempty; sql_type: 'TIMESTAMP']
+	creator_id ?string    @[comment: '创建者ID'; immutable; omitempty; sql_type: 'CHAR(36)']
+	created_at time.Time  @[comment: 'Create Time | 创建日期'; immutable; omitempty; sql_type: 'TIMESTAMP']
+	del_flag   u8         @[comment: '删除标记，0：未删除，1：已删除'; default: 0; omitempty; sql_type: 'tinyint(1)']
+	deleted_at ?time.Time @[comment: 'Delete Time | 删除日期'; omitempty; sql_type: 'TIMESTAMP']
 }

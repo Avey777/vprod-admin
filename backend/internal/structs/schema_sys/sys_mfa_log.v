@@ -2,20 +2,20 @@ module schema_sys
 
 import time
 
-// 认证发送日志: SMS/Email
+@[comment: '认证发送日志: SMS/Email']
 @[table: 'sys_mfa_logs']
 pub struct SysMFAlog {
 pub:
-	id            string @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID']
+	id            string @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	verify_source string @[sql_type: 'VARCHAR(255)'; zcomment: 'Verify source | 验证源:手机号/邮箱号/']
 	method        string @[sql_type: 'VARCHAR(255)'; zcomment: 'Configuration method |  方法: SMS/Email']
 	code          string @[sql_type: 'VARCHAR(255)'; zcomment: 'Attempt code |  验证码']
-	status        u8     @[default: 0; omitempty; sql_type: 'tinyint'; zcomments: '状态，0：正常，1：禁用']
+	status        u8     @[comment: '状态，0：正常，1：禁用'; default: 0; omitempty; sql_type: 'tinyint']
 
-	// updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']
-	// updated_at time.Time  @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Update Time | 修改日期']
-	creator_id ?string   @[immutable; omitempty; sql_type: 'CHAR(36)'; zcomments: '创建者ID']
-	created_at time.Time @[immutable; omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Create Time | 创建日期']
-	// del_flag   u8         @[default: 0; omitempty; sql_type: 'tinyint(1)'; zcomments: '删除标记，0：未删除，1：已删除']
-	// deleted_at ?time.Time @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Delete Time | 删除日期']
+	// updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; comment: '修改者ID']
+	// updated_at time.Time  @[omitempty; sql_type: 'TIMESTAMP'; comment: 'Update Time | 修改日期']
+	creator_id ?string   @[comment: '创建者ID'; immutable; omitempty; sql_type: 'CHAR(36)']
+	created_at time.Time @[comment: 'Create Time | 创建日期'; immutable; omitempty; sql_type: 'TIMESTAMP']
+	// del_flag   u8         @[default: 0; omitempty; sql_type: 'tinyint(1)'; comment: '删除标记，0：未删除，1：已删除']
+	// deleted_at ?time.Time @[omitempty; sql_type: 'TIMESTAMP'; comment: 'Delete Time | 删除日期']
 }

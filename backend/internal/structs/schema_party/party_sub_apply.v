@@ -2,22 +2,22 @@ module schema_party
 
 import time
 
-// 订阅申请表
+@[comment: '订阅申请表']
 @[table: 'subscribe_apply']
 pub struct SubscribeApply {
 pub:
-	id          u64       @[auto_increment; primary; sql_type: 'BIGINT'; zcomments: '主键ID']
-	uuid        string    @[required; sql_type: 'VARCHAR(36)'; unique: 'uuid'; zcomments: 'uuid']
-	name        string    @[required; sql_type: 'VARCHAR(36)'; zcomments: '名称']
-	service     string    @[index: 'service'; required; sql_type: 'VARCHAR(36)'; zcomments: '服务id']
-	team        string    @[index: 'team'; required; sql_type: 'VARCHAR(36)'; zcomments: '团队id']
-	application string    @[index: 'application'; required; sql_type: 'VARCHAR(36)'; zcomments: '应用id,项目id,系统id']
-	apply_team  string    @[index: 'apply_team'; required; sql_type: 'VARCHAR(36)'; zcomments: '申请团队id']
-	applier     string    @[index: 'applier'; required; sql_type: 'VARCHAR(36)'; zcomments: '申请人']
-	apply_at    time.Time @[default: 'CURRENT_TIMESTAMP'; sql_type: 'TIMESTAMP'; zcomments: '申请时间']
-	approver    string    @[index: 'approver'; required; sql_type: 'VARCHAR(36)'; zcomments: '审核人']
-	approve_at  time.Time @[default: 'CURRENT_TIMESTAMP'; sql_type: 'TIMESTAMP'; zcomments: '审核时间']
-	status      bool      @[index: 'status'; required; sql_type: 'TINYINT(1)'; zcomments: '审核状态']
-	opinion     string    @[required; sql_type: 'TEXT'; zcomments: '审核意见']
-	reason      string    @[required; sql_type: 'TEXT'; zcomments: '申请原因']
+	id          u64       @[auto_increment; comment: '主键ID'; primary; sql_type: 'BIGINT']
+	uuid        string    @[comment: 'uuid'; required; sql_type: 'VARCHAR(36)'; unique: 'uuid']
+	name        string    @[comment: '名称'; required; sql_type: 'VARCHAR(36)']
+	service     string    @[comment: '服务id'; index: 'service'; required; sql_type: 'VARCHAR(36)']
+	team        string    @[comment: '团队id'; index: 'team'; required; sql_type: 'VARCHAR(36)']
+	application string    @[comment: '应用id,项目id,系统id'; index: 'application'; required; sql_type: 'VARCHAR(36)']
+	apply_team  string    @[comment: '申请团队id'; index: 'apply_team'; required; sql_type: 'VARCHAR(36)']
+	applier     string    @[comment: '申请人'; index: 'applier'; required; sql_type: 'VARCHAR(36)']
+	apply_at    time.Time @[comment: '申请时间'; default: 'CURRENT_TIMESTAMP'; sql_type: 'TIMESTAMP']
+	approver    string    @[comment: '审核人'; index: 'approver'; required; sql_type: 'VARCHAR(36)']
+	approve_at  time.Time @[comment: '审核时间'; default: 'CURRENT_TIMESTAMP'; sql_type: 'TIMESTAMP']
+	status      bool      @[comment: '审核状态'; index: 'status'; required; sql_type: 'TINYINT(1)']
+	opinion     string    @[comment: '审核意见'; required; sql_type: 'TEXT']
+	reason      string    @[comment: '申请原因'; required; sql_type: 'TEXT']
 }

@@ -2,26 +2,26 @@ module schema_party
 
 import time
 
-// 外部用户表
+@[comment: '外部用户表']
 @[table: 'party_users']
 pub struct PartyUser {
 pub:
-	id            string  @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: 'UUID rand.uuid_v4()']
-	username      string  @[omitempty; required; sql: 'username'; sql_type: 'VARCHAR(255)'; unique: 'username'; zcomments: 'User`s login name | 登录名']
-	password      string  @[omitempty; required; sql: 'password'; sql_type: 'VARCHAR(255)'; zcomments: 'Password | 密码']
-	nickname      string  @[omitempty; sql_type: 'VARCHAR(255)'; unique: 'nickname'; zcomments: 'Nickname | 昵称']
-	description   ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomments: 'The description of user | 用户的描述信息']
-	home_path     string  @[default: '"/dashboard"'; omitempty; sql_type: 'VARCHAR(255)'; zcomments: 'The home page that the user enters after logging in | 用户登陆后进入的首页']
-	mobile        ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomments: 'Mobile number | 手机号']
-	email         ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomments: 'Email | 邮箱号']
-	avatar        ?string @[omitempty; sql_type: 'VARCHAR(512)'; zcomments: 'Avatar | 头像路径']
-	department_id ?u64    @[omitempty; optional; sql_type: 'VARCHAR(255)'; unique; zcomments: 'Department ID | 部门ID']
-	status        u8      @[default: 0; omitempty; sql_type: 'tinyint'; zcomments: '状态，0：正常，1：禁用']
+	id            string  @[comment: 'UUID rand.uuid_v4()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
+	username      string  @[comment: 'User`s login name | 登录名'; omitempty; required; sql: 'username'; sql_type: 'VARCHAR(255)'; unique: 'username']
+	password      string  @[comment: 'Password | 密码'; omitempty; required; sql: 'password'; sql_type: 'VARCHAR(255)']
+	nickname      string  @[comment: 'Nickname | 昵称'; omitempty; sql_type: 'VARCHAR(255)'; unique: 'nickname']
+	description   ?string @[comment: 'The description of user | 用户的描述信息'; omitempty; sql_type: 'VARCHAR(255)']
+	home_path     string  @[comment: 'The home page that the user enters after logging in | 用户登陆后进入的首页'; default: '"/dashboard"'; omitempty; sql_type: 'VARCHAR(255)']
+	mobile        ?string @[comment: 'Mobile number | 手机号'; omitempty; sql_type: 'VARCHAR(255)']
+	email         ?string @[comment: 'Email | 邮箱号'; omitempty; sql_type: 'VARCHAR(255)']
+	avatar        ?string @[comment: 'Avatar | 头像路径'; omitempty; sql_type: 'VARCHAR(512)']
+	department_id ?u64    @[comment: 'Department ID | 部门ID'; omitempty; optional; sql_type: 'VARCHAR(255)'; unique]
+	status        u8      @[comment: '状态，0：正常，1：禁用'; default: 0; omitempty; sql_type: 'tinyint']
 
-	updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']
-	updated_at time.Time  @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Update Time | 修改日期']
-	creator_id ?string    @[immutable; omitempty; sql_type: 'CHAR(36)'; zcomments: '创建者ID']
-	created_at time.Time  @[immutable; omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Create Time | 创建日期']
-	del_flag   u8         @[default: 0; omitempty; sql_type: 'tinyint(1)'; zcomments: '删除标记，0：未删除，1：已删除']
-	deleted_at ?time.Time @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Delete Time | 删除日期']
+	updater_id ?string    @[comment: '修改者ID'; omitempty; sql_type: 'CHAR(36)']
+	updated_at time.Time  @[comment: 'Update Time | 修改日期'; omitempty; sql_type: 'TIMESTAMP']
+	creator_id ?string    @[comment: '创建者ID'; immutable; omitempty; sql_type: 'CHAR(36)']
+	created_at time.Time  @[comment: 'Create Time | 创建日期'; immutable; omitempty; sql_type: 'TIMESTAMP']
+	del_flag   u8         @[comment: '删除标记，0：未删除，1：已删除'; default: 0; omitempty; sql_type: 'tinyint(1)']
+	deleted_at ?time.Time @[comment: 'Delete Time | 删除日期'; omitempty; sql_type: 'TIMESTAMP']
 }

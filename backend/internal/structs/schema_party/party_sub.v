@@ -2,18 +2,18 @@ module schema_party
 
 import time
 
-// 订阅表
+@[comment: '订阅表']
 @[table: 'subscribe']
 pub struct Subscribe {
 pub:
-	id           u64       @[auto_increment; primary; sql_type: 'BIGINT'; zcomments: '主键ID']
-	uuid         string    @[required; sql_type: 'VARCHAR(36)'; unique: 'uuid'; zcomments: 'uuid']
-	name         string    @[required; sql_type: 'VARCHAR(36)'; zcomments: '名称']
-	service      string    @[required; sql_type: 'VARCHAR(36)'; unique: 'unique_subscribe'; zcomments: '服务id']
-	application  string    @[required; sql_type: 'VARCHAR(36)'; unique: 'unique_subscribe'; zcomments: '应用id,项目id,系统id']
-	apply_status bool      @[index: 'status'; required; sql_type: 'TINYINT(1)'; zcomments: '申请状态']
-	applier      string    @[index: 'applier'; required; sql_type: 'VARCHAR(36)'; zcomments: '申请人']
-	from         bool      @[index: 'status'; required; sql_type: 'TINYINT(1)'; zcomments: '来源']
-	create_at    time.Time @[default: 'CURRENT_TIMESTAMP'; sql_type: 'TIMESTAMP'; zcomments: '创建时间']
-	approve_at   time.Time @[default: 'CURRENT_TIMESTAMP'; sql_type: 'TIMESTAMP'; zcomments: '审核时间']
+	id           u64       @[auto_increment; comment: '主键ID'; primary; sql_type: 'BIGINT']
+	uuid         string    @[comment: 'uuid'; required; sql_type: 'VARCHAR(36)'; unique: 'uuid']
+	name         string    @[comment: '名称'; required; sql_type: 'VARCHAR(36)']
+	service      string    @[comment: '服务id'; required; sql_type: 'VARCHAR(36)'; unique: 'unique_subscribe']
+	application  string    @[comment: '应用id,项目id,系统id'; required; sql_type: 'VARCHAR(36)'; unique: 'unique_subscribe']
+	apply_status bool      @[comment: '申请状态'; index: 'status'; required; sql_type: 'TINYINT(1)']
+	applier      string    @[comment: '申请人'; index: 'applier'; required; sql_type: 'VARCHAR(36)']
+	from         bool      @[comment: '来源'; index: 'status'; required; sql_type: 'TINYINT(1)']
+	create_at    time.Time @[comment: '创建时间'; default: 'CURRENT_TIMESTAMP'; sql_type: 'TIMESTAMP']
+	approve_at   time.Time @[comment: '审核时间'; default: 'CURRENT_TIMESTAMP'; sql_type: 'TIMESTAMP']
 }

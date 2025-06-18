@@ -2,20 +2,20 @@ module schema_party
 
 import time
 
-// 团队表
 @[table: 'party_teams']
+@[commnet: '团队表']
 pub struct PartyTeam {
 pub:
-	id          string  @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomments: '团队ID']
-	name        string  @[omitempty; required; sql_type: 'VARCHAR(255)'; unique: 'name'; zcomments: '团队名称']
-	description ?string @[omitempty; sql_type: 'VARCHAR(512)'; zcomments: '团队描述']
-	logo        ?string @[omitempty; sql_type: 'VARCHAR(512)'; zcomments: '团队Logo']
-	status      u8      @[default: 0; omitempty; sql_type: 'tinyint'; zcomments: '状态，0：正常，1：禁用']
+	id          string  @[comment: '团队ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
+	name        string  @[comment: '团队名称'; omitempty; required; sql_type: 'VARCHAR(255)'; unique: 'name']
+	description ?string @[comment: '团队描述'; omitempty; sql_type: 'VARCHAR(512)']
+	logo        ?string @[comment: '团队Logo'; omitempty; sql_type: 'VARCHAR(512)']
+	status      u8      @[comment: '状态，0：正常，1：禁用'; default: 0; omitempty; sql_type: 'tinyint']
 
-	updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; zcomments: '修改者ID']
-	updated_at time.Time  @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Update Time | 修改日期']
-	creator_id ?string    @[immutable; omitempty; sql_type: 'CHAR(36)'; zcomments: '创建者ID']
-	created_at time.Time  @[immutable; omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Create Time | 创建日期']
-	del_flag   u8         @[default: 0; omitempty; sql_type: 'tinyint(1)'; zcomments: '删除标记，0：未删除，1：已删除']
-	deleted_at ?time.Time @[omitempty; sql_type: 'TIMESTAMP'; zcomments: 'Delete Time | 删除日期']
+	updater_id ?string    @[comment: '修改者ID'; omitempty; sql_type: 'CHAR(36)']
+	updated_at time.Time  @[comment: 'Update Time | 修改日期'; omitempty; sql_type: 'TIMESTAMP']
+	creator_id ?string    @[comment: '创建者ID'; immutable; omitempty; sql_type: 'CHAR(36)']
+	created_at time.Time  @[comment: 'Create Time | 创建日期'; immutable; omitempty; sql_type: 'TIMESTAMP']
+	del_flag   u8         @[comment: '删除标记，0：未删除，1：已删除'; default: 0; omitempty; sql_type: 'tinyint(1)']
+	deleted_at ?time.Time @[comment: 'Delete Time | 删除日期'; omitempty; sql_type: 'TIMESTAMP']
 }
