@@ -1,9 +1,9 @@
 module schema_sys
 
-// 用户职位关联表
+@[comment: '用户职位关联表']
 @[table: 'sys_user_positions']
 pub struct SysUserPosition {
 pub:
-	user_id     string @[sql_type: 'CHAR(36)'; zcomments: '用户ID']
-	position_id string @[sql_type: 'CHAR(36)'; zcomments: '职位ID']
+	user_id     string @[comment: '用户ID'; sql_type: 'CHAR(36)']
+	position_id string @[comment: '职位ID'; sql_type: 'CHAR(36)']
 }

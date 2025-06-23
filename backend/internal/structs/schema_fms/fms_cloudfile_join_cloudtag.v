@@ -4,6 +4,6 @@ module schema_fms
 @[table: 'fms_cloudfile_join_cloudtag']
 pub struct FmsCloudFileCloudFileTag {
 pub:
-	cloud_file_tag_id string @[primary; sql: 'cloud_file_tag_id'; sql_type: 'CHAR(36)'; zcomments: '云文件标签ID']
-	cloud_file_id     string @[primary; sql: 'cloud_file_id'; sql_type: 'CHAR(36)'; zcomments: '云文件UUID']
+	cloud_file_tag_id string @[comment: '云文件标签ID'; primary; sql: 'cloud_file_tag_id'; sql_type: 'CHAR(36)']
+	cloud_file_id     string @[comment: '云文件UUID'; primary; sql: 'cloud_file_id'; sql_type: 'CHAR(36)']
 }
