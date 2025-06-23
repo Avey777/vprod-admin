@@ -25,3 +25,68 @@ pub:
 	del_flag   u8         @[comment: '删除标记，0：未删除，1：已删除'; default: 0; omitempty; sql_type: 'tinyint(1)']
 	deleted_at ?time.Time @[comment: 'Delete Time | 删除日期'; omitempty; sql_type: 'TIMESTAMP']
 }
+
+// type User struct {
+//     Owner       string `xorm:"varchar(100) notnull pk" json:"owner"`
+//     Name        string `xorm:"varchar(100) notnull pk" json:"name"`
+//     CreatedTime string `xorm:"varchar(100)" json:"createdTime"`
+//     UpdatedTime string `xorm:"varchar(100)" json:"updatedTime"`
+
+//     Id                string   `xorm:"varchar(100)" json:"id"`
+//     Type              string   `xorm:"varchar(100)" json:"type"`
+//     Password          string   `xorm:"varchar(100)" json:"password"`
+//     PasswordSalt      string   `xorm:"varchar(100)" json:"passwordSalt"`
+//     DisplayName       string   `xorm:"varchar(100)" json:"displayName"`
+//     Avatar            string   `xorm:"varchar(500)" json:"avatar"`
+//     PermanentAvatar   string   `xorm:"varchar(500)" json:"permanentAvatar"`
+//     Email             string   `xorm:"varchar(100) index" json:"email"`
+//     Phone             string   `xorm:"varchar(100) index" json:"phone"`
+//     Location          string   `xorm:"varchar(100)" json:"location"`
+//     Address           []string `json:"address"`
+//     Affiliation       string   `xorm:"varchar(100)" json:"affiliation"`
+//     Title             string   `xorm:"varchar(100)" json:"title"`
+//     IdCardType        string   `xorm:"varchar(100)" json:"idCardType"`
+//     IdCard            string   `xorm:"varchar(100) index" json:"idCard"`
+//     Homepage          string   `xorm:"varchar(100)" json:"homepage"`
+//     Bio               string   `xorm:"varchar(100)" json:"bio"`
+//     Tag               string   `xorm:"varchar(100)" json:"tag"`
+//     Region            string   `xorm:"varchar(100)" json:"region"`
+//     Language          string   `xorm:"varchar(100)" json:"language"`
+//     Gender            string   `xorm:"varchar(100)" json:"gender"`
+//     Birthday          string   `xorm:"varchar(100)" json:"birthday"`
+//     Education         string   `xorm:"varchar(100)" json:"education"`
+//     Score             int      `json:"score"`
+//     Ranking           int      `json:"ranking"`
+//     IsDefaultAvatar   bool     `json:"isDefaultAvatar"`
+//     IsOnline          bool     `json:"isOnline"`
+//     IsAdmin           bool     `json:"isAdmin"`
+//     IsGlobalAdmin     bool     `json:"isGlobalAdmin"`
+//     IsForbidden       bool     `json:"isForbidden"`
+//     IsDeleted         bool     `json:"isDeleted"`
+//     SignupApplication string   `xorm:"varchar(100)" json:"signupApplication"`
+//     Hash              string   `xorm:"varchar(100)" json:"hash"`
+//     PreHash           string   `xorm:"varchar(100)" json:"preHash"`
+
+//     CreatedIp      string `xorm:"varchar(100)" json:"createdIp"`
+//     LastSigninTime string `xorm:"varchar(100)" json:"lastSigninTime"`
+//     LastSigninIp   string `xorm:"varchar(100)" json:"lastSigninIp"`
+
+//     Github   string `xorm:"varchar(100)" json:"github"`
+//     Google   string `xorm:"varchar(100)" json:"google"`
+//     QQ       string `xorm:"qq varchar(100)" json:"qq"`
+//     WeChat   string `xorm:"wechat varchar(100)" json:"wechat"`
+//     Facebook string `xorm:"facebook varchar(100)" json:"facebook"`
+//     DingTalk string `xorm:"dingtalk varchar(100)" json:"dingtalk"`
+//     Weibo    string `xorm:"weibo varchar(100)" json:"weibo"`
+//     Gitee    string `xorm:"gitee varchar(100)" json:"gitee"`
+//     LinkedIn string `xorm:"linkedin varchar(100)" json:"linkedin"`
+//     Wecom    string `xorm:"wecom varchar(100)" json:"wecom"`
+//     Lark     string `xorm:"lark varchar(100)" json:"lark"`
+//     Gitlab   string `xorm:"gitlab varchar(100)" json:"gitlab"`
+//     Apple    string `xorm:"apple varchar(100)" json:"apple"`
+//     AzureAD  string `xorm:"azuread varchar(100)" json:"azuread"`
+//     Slack    string `xorm:"slack varchar(100)" json:"slack"`
+
+//     Ldap       string            `xorm:"ldap varchar(100)" json:"ldap"`
+//     Properties map[string]string `json:"properties"`
+// }

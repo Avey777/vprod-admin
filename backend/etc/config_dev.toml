@@ -8,23 +8,23 @@ log_level = 'debug' # 默认info [debug info warn error fatal]
 [i18nconf]
 Dir = './internal/i18n'
 
-# [dbconf]
-# type = 'mysql'            # mysql  tidb
-# host = '127.0.0.1'
-# port = '3306'
-# username = 'root'
-# password = 'mysql_123456'
-# dbname = 'vcore'
-# ssl_verify = false        #设置为false 时，不验证ssl证书
-
 [dbconf]
-type = 'mysql'                # mysql  tidb
-host = 'mysql2.sqlpub.com'
-port = '3307'
-username = 'vcore_test'
-password = 'wfo8wS7CylT0qIMg'
-dbname = 'vcore_test'
-ssl_verify = false            #设置为false 时，不验证ssl证书
+type = 'mysql'            # mysql  tidb
+host = '127.0.0.1'
+port = '3306'
+username = 'root'
+password = 'mysql_123456'
+dbname = 'vcore'
+ssl_verify = false        #设置为false 时，不验证ssl证书
+
+# [dbconf]
+# type = 'mysql'                # mysql  tidb
+# host = 'mysql2.sqlpub.com'
+# port = '3307'
+# username = 'vcore_test'
+# password = 'wfo8wS7CylT0qIMg'
+# dbname = 'vcore_test'
+# ssl_verify = false            #设置为false 时，不验证ssl证书
 
 
 # [dbconf]

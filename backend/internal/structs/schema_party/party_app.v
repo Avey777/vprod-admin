@@ -22,3 +22,35 @@ pub:
 	del_flag   u8         @[comment: '删除标记，0：未删除，1：已删除'; default: 0; omitempty; sql_type: 'tinyint(1)']
 	deleted_at ?time.Time @[comment: 'Delete Time | 删除日期'; omitempty; sql_type: 'TIMESTAMP']
 }
+
+// type Application struct {
+//     Owner               string          `xorm:"varchar(100) notnull pk" json:"owner"`
+//     Name                string          `xorm:"varchar(100) notnull pk" json:"name"`
+//     CreatedTime         string          `xorm:"varchar(100)" json:"createdTime"`
+//     DisplayName         string          `xorm:"varchar(100)" json:"displayName"`
+//     Logo                string          `xorm:"varchar(100)" json:"logo"`
+//     HomepageUrl         string          `xorm:"varchar(100)" json:"homepageUrl"`
+//     Description         string          `xorm:"varchar(100)" json:"description"`
+//     Organization        string          `xorm:"varchar(100)" json:"organization"`
+//     Cert                string          `xorm:"varchar(100)" json:"cert"`
+//     EnablePassword      bool            `json:"enablePassword"`
+//     EnableSignUp        bool            `json:"enableSignUp"`
+//     EnableSigninSession bool            `json:"enableSigninSession"`
+//     EnableCodeSignin    bool            `json:"enableCodeSignin"`
+//     Providers           []*ProviderItem `xorm:"mediumtext" json:"providers"`
+//     SignupItems         []*SignupItem   `xorm:"varchar(1000)" json:"signupItems"`
+//     OrganizationObj     *Organization   `xorm:"-" json:"organizationObj"`
+//     ClientId             string         `xorm:"varchar(100)" json:"clientId"`
+//     ClientSecret         string         `xorm:"varchar(100)" json:"clientSecret"`
+//     RedirectUris         []string       `xorm:"varchar(1000)" json:"redirectUris"`
+//     TokenFormat          string         `xorm:"varchar(100)" json:"tokenFormat"`
+//     ExpireInHours        int            `json:"expireInHours"`
+//     RefreshExpireInHours int            `json:"refreshExpireInHours"`
+//     SignupUrl            string         `xorm:"varchar(200)" json:"signupUrl"`
+//     SigninUrl            string         `xorm:"varchar(200)" json:"signinUrl"`
+//     ForgetUrl            string         `xorm:"varchar(200)" json:"forgetUrl"`
+//     AffiliationUrl       string         `xorm:"varchar(100)" json:"affiliationUrl"`
+//     TermsOfUse           string         `xorm:"varchar(100)" json:"termsOfUse"`
+//     SignupHtml           string         `xorm:"mediumtext" json:"signupHtml"`
+//     SigninHtml           string         `xorm:"mediumtext" json:"signinHtml"`
+// }

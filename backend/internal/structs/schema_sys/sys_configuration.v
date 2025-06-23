@@ -7,12 +7,12 @@ import time
 pub struct SysConfiguration {
 pub:
 	id       string  @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
-	name     string  @[sql_type: 'VARCHAR(255)'; zcomment: 'Configurarion name | 配置名称']
-	key      string  @[sql_type: 'VARCHAR(255)'; zcomment: 'Configuration key | 配置的键名']
-	value    string  @[sql_type: 'VARCHAR(255)'; zcomment: 'Configuraion value | 配置的值']
-	category string  @[sql_type: 'VARCHAR(255)'; zcomment: 'Configuration category | 配置的分类']
-	remark   ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Remark | 备注']
-	sort     u32     @[default: 0; omitempty; sql_type: 'int'; zcomment: 'Sort Number | 排序编号']
+	name     string  @[comment: 'Configurarion name | 配置名称'; sql_type: 'VARCHAR(255)']
+	key      string  @[comment: 'Configuration key | 配置的键名'; sql_type: 'VARCHAR(255)']
+	value    string  @[comment: 'Configuraion value | 配置的值'; sql_type: 'VARCHAR(255)']
+	category string  @[comment: 'Configuration category | 配置的分类'; sql_type: 'VARCHAR(255)']
+	remark   ?string @[comment: 'Remark | 备注'; omitempty; sql_type: 'VARCHAR(255)']
+	sort     u32     @[comment: 'Sort Number | 排序编号'; default: 0; omitempty; sql_type: 'int']
 	status   u8      @[comment: '状态，0：正常，1：禁用'; default: 0; omitempty; sql_type: 'tinyint']
 
 	updater_id ?string    @[comment: '修改者ID'; omitempty; sql_type: 'CHAR(36)']

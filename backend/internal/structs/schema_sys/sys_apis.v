@@ -7,12 +7,12 @@ import time
 pub struct SysApi {
 pub:
 	id           string  @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'VARCHAR(36)']
-	path         string  @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'API path | API 路径']
-	description  ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'API description | API 描述']
-	api_group    string  @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'API group | API 分组']
-	service_name string  @[default: '"Other"'; omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Service name | 服务名称']
-	method       string  @[default: '"POST"'; omitempty; sql_type: 'VARCHAR(32)'; zcomment: 'HTTP method | HTTP 请求类型']
-	is_required  u8      @[default: 0; omitempty; sql_type: 'tinyint(1)'; zcomment: 'Whether is required | 是否必选']
+	path         string  @[comment: 'API path | API 路径'; omitempty; sql_type: 'VARCHAR(255)']
+	description  ?string @[comment: 'API description | API 描述'; omitempty; sql_type: 'VARCHAR(255)']
+	api_group    string  @[comment: 'API group | API 分组'; omitempty; sql_type: 'VARCHAR(255)']
+	service_name string  @[comment: 'Service name | 服务名称'; default: '"Other"'; omitempty; sql_type: 'VARCHAR(255)']
+	method       string  @[comment: 'HTTP method | HTTP 请求类型'; default: '"POST"'; omitempty; sql_type: 'VARCHAR(32)']
+	is_required  u8      @[comment: 'Whether is required | 是否必选'; default: 0; omitempty; sql_type: 'tinyint(1)']
 
 	updater_id ?string    @[comment: '修改者ID'; omitempty; sql_type: 'CHAR(36)']
 	updated_at time.Time  @[comment: 'Update Time | 修改日期'; omitempty; sql_type: 'TIMESTAMP']

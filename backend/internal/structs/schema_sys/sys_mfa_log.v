@@ -7,9 +7,9 @@ import time
 pub struct SysMFAlog {
 pub:
 	id            string @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
-	verify_source string @[sql_type: 'VARCHAR(255)'; zcomment: 'Verify source | 验证源:手机号/邮箱号/']
-	method        string @[sql_type: 'VARCHAR(255)'; zcomment: 'Configuration method |  方法: SMS/Email']
-	code          string @[sql_type: 'VARCHAR(255)'; zcomment: 'Attempt code |  验证码']
+	verify_source string @[comment: 'Verify source | 验证源:手机号/邮箱号/'; sql_type: 'VARCHAR(255)']
+	method        string @[comment: 'Configuration method |  方法: SMS/Email'; sql_type: 'VARCHAR(255)']
+	code          string @[comment: 'Attempt code |  验证码'; sql_type: 'VARCHAR(255)']
 	status        u8     @[comment: '状态，0：正常，1：禁用'; default: 0; omitempty; sql_type: 'tinyint']
 
 	// updater_id ?string    @[omitempty; sql_type: 'CHAR(36)'; comment: '修改者ID']

@@ -6,11 +6,11 @@ import time
 @[comment: '职位表']
 pub struct SysPosition {
 pub:
-	id     string  @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomment: 'UUID']
-	name   string  @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Position Name | 职位名称']
-	code   string  @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'The code of position | 职位编码']
-	remark ?string @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Remark | 备注']
-	sort   u32     @[default: 0; omitempty; sql_type: 'int'; zcomment: 'Sort Number | 排序编号']
+	id     string  @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
+	name   string  @[comment: 'Position Name | 职位名称'; omitempty; sql_type: 'VARCHAR(255)']
+	code   string  @[comment: 'The code of position | 职位编码'; omitempty; sql_type: 'VARCHAR(255)']
+	remark ?string @[comment: 'Remark | 备注'; omitempty; sql_type: 'VARCHAR(255)']
+	sort   u32     @[comment: 'Sort Number | 排序编号'; default: 0; omitempty; sql_type: 'int']
 	status u8      @[comment: '状态，0：正常，1：禁用'; default: 0; omitempty; sql_type: 'tinyint']
 
 	updater_id ?string    @[comment: '修改者ID'; omitempty; sql_type: 'CHAR(36)']

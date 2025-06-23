@@ -7,11 +7,11 @@ import time
 pub struct SysDictionaryDetail {
 pub:
 	id            string @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
-	title         string @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'The title shown in the ui | 展示名称 （建议配合i18n）']
-	key           string @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'key | 键']
-	value         string @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'value | 值']
-	dictionary_id string @[omitempty; sql_type: 'CHAR(36)'; zcomment: 'Dictionary ID | 字典ID']
-	sort          u32    @[default: 0; omitempty; sql_type: 'int'; zcomment: 'Sort Number | 排序编号']
+	title         string @[comment: 'The title shown in the ui | 展示名称 （建议配合i18n）'; omitempty; sql_type: 'VARCHAR(255)']
+	key           string @[comment: 'key | 键'; omitempty; sql_type: 'VARCHAR(255)']
+	value         string @[comment: 'value | 值'; omitempty; sql_type: 'VARCHAR(255)']
+	dictionary_id string @[comment: 'Dictionary ID | 字典ID'; omitempty; sql_type: 'CHAR(36)']
+	sort          u32    @[comment: 'Sort Number | 排序编号'; default: 0; omitempty; sql_type: 'int']
 	status        u8     @[comment: '状态，0：正常，1：禁用'; default: 0; omitempty; sql_type: 'tinyint']
 
 	updater_id ?string    @[comment: '修改者ID'; omitempty; sql_type: 'CHAR(36)']
