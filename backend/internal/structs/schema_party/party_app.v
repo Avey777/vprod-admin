@@ -23,34 +23,60 @@ pub:
 	deleted_at ?time.Time @[comment: 'Delete Time | 删除日期'; omitempty; sql_type: 'TIMESTAMP']
 }
 
-// type Application struct {
-//     Owner               string          `xorm:"varchar(100) notnull pk" json:"owner"`
-//     Name                string          `xorm:"varchar(100) notnull pk" json:"name"`
-//     CreatedTime         string          `xorm:"varchar(100)" json:"createdTime"`
-//     DisplayName         string          `xorm:"varchar(100)" json:"displayName"`
-//     Logo                string          `xorm:"varchar(100)" json:"logo"`
-//     HomepageUrl         string          `xorm:"varchar(100)" json:"homepageUrl"`
-//     Description         string          `xorm:"varchar(100)" json:"description"`
-//     Organization        string          `xorm:"varchar(100)" json:"organization"`
-//     Cert                string          `xorm:"varchar(100)" json:"cert"`
-//     EnablePassword      bool            `json:"enablePassword"`
-//     EnableSignUp        bool            `json:"enableSignUp"`
-//     EnableSigninSession bool            `json:"enableSigninSession"`
-//     EnableCodeSignin    bool            `json:"enableCodeSignin"`
-//     Providers           []*ProviderItem `xorm:"mediumtext" json:"providers"`
-//     SignupItems         []*SignupItem   `xorm:"varchar(1000)" json:"signupItems"`
-//     OrganizationObj     *Organization   `xorm:"-" json:"organizationObj"`
-//     ClientId             string         `xorm:"varchar(100)" json:"clientId"`
-//     ClientSecret         string         `xorm:"varchar(100)" json:"clientSecret"`
-//     RedirectUris         []string       `xorm:"varchar(1000)" json:"redirectUris"`
-//     TokenFormat          string         `xorm:"varchar(100)" json:"tokenFormat"`
-//     ExpireInHours        int            `json:"expireInHours"`
-//     RefreshExpireInHours int            `json:"refreshExpireInHours"`
-//     SignupUrl            string         `xorm:"varchar(200)" json:"signupUrl"`
-//     SigninUrl            string         `xorm:"varchar(200)" json:"signinUrl"`
-//     ForgetUrl            string         `xorm:"varchar(200)" json:"forgetUrl"`
-//     AffiliationUrl       string         `xorm:"varchar(100)" json:"affiliationUrl"`
-//     TermsOfUse           string         `xorm:"varchar(100)" json:"termsOfUse"`
-//     SignupHtml           string         `xorm:"mediumtext" json:"signupHtml"`
-//     SigninHtml           string         `xorm:"mediumtext" json:"signinHtml"`
-// }
+@[table: 'applications']
+@[comment: '应用表']
+pub struct Application {
+pub:
+	owner                 string @[comment: '应用所有者'; primary; required; sql_type: 'VARCHAR(100)']
+	name                  string @[comment: '应用名称'; primary; required; sql_type: 'VARCHAR(100)']
+	created_time          string @[comment: '创建时间'; omitempty; sql_type: 'VARCHAR(100)']
+	display_name          string @[comment: '显示名称'; omitempty; sql_type: 'VARCHAR(100)']
+	logo                  string @[comment: '应用Logo'; omitempty; sql_type: 'VARCHAR(100)']
+	homepage_url          string @[comment: '主页URL'; omitempty; sql_type: 'VARCHAR(100)']
+	description           string @[comment: '应用描述'; omitempty; sql_type: 'VARCHAR(100)']
+	organization          string @[comment: '所属组织'; omitempty; sql_type: 'VARCHAR(100)']
+	cert                  string @[comment: '证书'; omitempty; sql_type: 'VARCHAR(100)']
+	enable_password       bool   @[comment: '是否启用密码登录'; default: false; omitempty]
+	enable_sign_up        bool   @[comment: '是否启用注册'; default: false; omitempty]
+	enable_signin_session bool   @[comment: '是否启用会话登录'; default: false; omitempty]
+	enable_code_signin    bool   @[comment: '是否启用验证码登录'; default: false; omitempty]
+	// providers               []ProviderItem @[comment: '认证提供商列表'; omitempty; sql_type: 'MEDIUMTEXT']
+	// signup_items            []SignupItem   @[comment: '注册项列表'; omitempty; sql_type: 'VARCHAR(1000)']
+	// organization_obj        Organization   @[comment: '组织对象'; omitempty; sql_type: '-']
+	client_id               string   @[comment: '客户端ID'; omitempty; sql_type: 'VARCHAR(100)']
+	client_secret           string   @[comment: '客户端密钥'; omitempty; sql_type: 'VARCHAR(100)']
+	redirect_uris           []string @[comment: '重定向URI列表'; omitempty; sql_type: 'VARCHAR(1000)']
+	token_format            string   @[comment: '令牌格式'; omitempty; sql_type: 'VARCHAR(100)']
+	expire_in_hours         int      @[comment: '令牌过期时间(小时)'; default: 0; omitempty]
+	refresh_expire_in_hours int      @[comment: '刷新令牌过期时间(小时)'; default: 0; omitempty]
+	signup_url              string   @[comment: '注册URL'; omitempty; sql_type: 'VARCHAR(200)']
+	signin_url              string   @[comment: '登录URL'; omitempty; sql_type: 'VARCHAR(200)']
+	forget_url              string   @[comment: '忘记密码URL'; omitempty; sql_type: 'VARCHAR(200)']
+	affiliation_url         string   @[comment: '关联URL'; omitempty; sql_type: 'VARCHAR(100)']
+	terms_of_use            string   @[comment: '使用条款'; omitempty; sql_type: 'VARCHAR(100)']
+	signup_html             string   @[comment: '注册HTML'; omitempty; sql_type: 'MEDIUMTEXT']
+	signin_html             string   @[comment: '登录HTML'; omitempty; sql_type: 'MEDIUMTEXT']
+}
+
+// 应用表 (核心实体)
+@[table: 'applications']
+@[comment: '应用表']
+pub struct Application0 {
+pub:
+	// 基础信息 (保持不变)
+	owner        string @[comment: '应用所有者'; primary; required; sql_type: 'VARCHAR(100)']
+	name         string @[comment: '应用名称'; primary; required; sql_type: 'VARCHAR(100)']
+	created_time string @[comment: '创建时间'; omitempty; sql_type: 'DATETIME']
+	display_name string @[comment: '显示名称'; omitempty; sql_type: 'VARCHAR(100)']
+	logo         string @[comment: '应用Logo'; omitempty; sql_type: 'VARCHAR(255)']
+	homepage_url string @[comment: '主页URL'; omitempty; sql_type: 'VARCHAR(255)']
+	description  string @[comment: '应用描述'; omitempty; sql_type: 'VARCHAR(500)']
+
+	// 多租户支持
+	is_multi_tenant     bool   @[comment: '是否支持多租户'; default: false; omitempty]
+	tenant_id_field     string @[comment: '租户ID字段名'; omitempty; sql_type: 'VARCHAR(50)']
+	default_tenant_name string @[comment: '默认租户名称'; omitempty; sql_type: 'VARCHAR(100)']
+
+	// 状态管理
+	status string @[comment: '应用状态(active/inactive)'; default: 'active'; sql_type: 'VARCHAR(20)']
+}
