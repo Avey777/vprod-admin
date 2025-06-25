@@ -80,3 +80,13 @@ pub:
 	// 状态管理
 	status string @[comment: '应用状态(active/inactive)'; default: 'active'; sql_type: 'VARCHAR(20)']
 }
+
+/*
+-- 应用表（不再直接关联团队）
+CREATE TABLE applications (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL UNIQUE, -- 应用名全局唯一
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+*/
