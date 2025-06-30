@@ -54,6 +54,6 @@ pub fn (mut pool ConnectionPoolGeneric[T]) release(conn T) {
 pub fn (mut pool ConnectionPoolGeneric[T]) close() {
 	for _ in 0 .. pool.connections.len {
 		mut conn := <-pool.connections or { break }
-		conn.close()
+		conn.close() or {panic}
 	}
 }

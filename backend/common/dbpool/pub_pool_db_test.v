@@ -3,11 +3,11 @@ module dbpool
 import db.mysql
 
 const config = mysql.Config{
-	host:     '127.0.0.1'
-	port:     3306
-	username: 'root'
-	password: 'mysql_123456'
-	dbname:   'vcore'
+	host:     'mysql2.sqlpub.com'
+	port:     3307
+	username: 'vcore_test'
+	password: 'wfo8wS7CylT0qIMg'
+	dbname:   'vcore_test'
 }
 
 fn test_new_conn_pool() {
