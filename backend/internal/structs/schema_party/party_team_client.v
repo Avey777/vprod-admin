@@ -30,3 +30,6 @@ CREATE TABLE team_applications (
     FOREIGN KEY (app_id) REFERENCES applications(id) ON DELETE CASCADE
 );
 */
+
+//-- 团队-应用-门户-终端  关联表（多对多关系）
+// tospino / mall / seller / pc

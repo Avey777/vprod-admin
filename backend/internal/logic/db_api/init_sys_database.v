@@ -13,7 +13,7 @@ fn (app &Base) init_sys(mut ctx Context) veb.Result {
 
 	mut db := db_mysql() // or { return ctx.json(json_error(1, 'failed to connect to database')) }
 	defer {
-		db.close()
+		db.close() or {panic}
 	}
 
 	sql db {

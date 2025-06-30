@@ -27,7 +27,7 @@ fn dictionary_by_id_resp(req json2.Any) !map[string]Any {
 	dictionary_id := req.as_map()['id'] or { '' }.str()
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	mut sys_dictionary := orm.new_query[schema_sys.SysDictionary](db)
 	mut query := sys_dictionary.select()!

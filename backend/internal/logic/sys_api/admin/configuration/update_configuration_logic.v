@@ -35,7 +35,7 @@ fn update_configuration_resp(req json2.Any) !map[string]Any {
 	updated_at := req.as_map()['updated_at'] or { time.now() }.to_time()!
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	mut sys_configuration := orm.new_query[schema_sys.SysConfiguration](db)
 

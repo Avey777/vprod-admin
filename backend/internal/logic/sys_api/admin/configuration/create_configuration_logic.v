@@ -26,7 +26,7 @@ fn create_configuration_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	configurations := schema_sys.SysConfiguration{
 		id:         rand.uuid_v7()

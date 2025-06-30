@@ -42,7 +42,7 @@ fn sms_resp(req json2.Any) !map[string]Any {
 	token_opt, opt_num := opt.opt_generate()
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	infos := schema_sys.SysMFAlog{
 		id:            rand.uuid_v7()

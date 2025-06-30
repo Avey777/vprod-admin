@@ -31,7 +31,7 @@ fn configuration_list_resp(req json2.Any) !map[string]Any {
 	category := req.as_map()['category'] or { 0 }.u8()
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 	mut sys_configuration := orm.new_query[schema_sys.SysConfiguration](db)
 	// 总页数查询 - 分页偏移量构造
 	mut count := sql db {

@@ -31,7 +31,7 @@ fn login_by_sms_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 	phone_num := req.as_map()['phone_num'] or { return error('Please enter your phone_num') }.str()
 	opt_num := req.as_map()['opt_num'] or { return error('Please input opt_num') }.str()
 	opt_token := req.as_map()['opt_token'] or { return error('Please return opt_token') }.str()

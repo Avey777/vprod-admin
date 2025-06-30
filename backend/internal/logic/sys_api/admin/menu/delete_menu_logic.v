@@ -24,7 +24,7 @@ fn delete_menu_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	menu_id := req.as_map()['id'] or { '' }.str()
 

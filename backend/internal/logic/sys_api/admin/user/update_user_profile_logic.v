@@ -30,7 +30,7 @@ fn update_user_profile_resp(req json2.Any) !map[string]Any {
 	nickname := req.as_map()['nickname'] or { '' }.str()
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	mut sys_user := orm.new_query[schema_sys.SysUser](db)
 

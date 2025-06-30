@@ -25,7 +25,7 @@ fn user_info_resp(req json2.Any) !map[string]Any {
 	user_id := req.as_map()['user_id'] or { '' }.str()
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	mut sys_user := orm.new_query[schema_sys.SysUser](db)
 	result := sys_user.select()!.query()!

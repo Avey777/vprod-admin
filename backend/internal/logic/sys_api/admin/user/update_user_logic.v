@@ -55,7 +55,7 @@ fn update_user_resp(req json2.Any) !map[string]Any {
 	}
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	mut sys_user := orm.new_query[schema_sys.SysUser](db)
 	mut user_position := orm.new_query[schema_sys.SysUserPosition](db)

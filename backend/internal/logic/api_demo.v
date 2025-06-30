@@ -35,7 +35,7 @@ module logic
 // 	page_size := req_data.as_map()['page_size'] or { 10 }.int()
 
 // 	mut db := db_mysql()
-// 	defer { db.close() }
+// 	defer { db.close() or {panic} }
 
 // 	return map[string]Any{}
 // }

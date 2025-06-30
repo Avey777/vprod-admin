@@ -31,7 +31,7 @@ fn login_by_account_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 	username := req.as_map()['username'] or { return error('Please enter your account') }.str()
 	password := req.as_map()['password'] or { return error('Please input a password') }.str()
 	captcha_text := req.as_map()['captcha'] or { return error('Please input captcha_text') }.str()

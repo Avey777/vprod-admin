@@ -32,7 +32,7 @@ fn update_dictionary_resp(req json2.Any) !map[string]Any {
 	updated_at := req.as_map()['updated_at'] or { time.now() }.to_time()!
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	mut sys_dictionary := orm.new_query[schema_sys.SysDictionary](db)
 

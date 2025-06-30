@@ -24,7 +24,7 @@ fn delete_dictionary_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	dictionary_id := req.as_map()['id'] or { '' }.str()
 

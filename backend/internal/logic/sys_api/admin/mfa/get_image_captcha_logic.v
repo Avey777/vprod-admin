@@ -35,7 +35,7 @@ fn get_captcha_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	captcha_token, captcha_image, _ := captcha.captcha_generate() // 生成token和captcha
 

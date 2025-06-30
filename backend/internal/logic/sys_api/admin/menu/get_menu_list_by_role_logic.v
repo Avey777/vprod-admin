@@ -31,7 +31,7 @@ fn role_menu_list_resp(req json2.Any) !map[string]Any {
 	role_id := req.as_map()['role_id'] or { '' }.str()
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 	mut sys_role_menu := orm.new_query[schema_sys.SysRoleMenu](db)
 	mut sys_menu := orm.new_query[schema_sys.SysMenu](db)
 	// 分页偏移量构造

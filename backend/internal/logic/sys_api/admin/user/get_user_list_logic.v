@@ -34,7 +34,7 @@ fn user_list_resp(req json2.Any) !map[string]Any {
 	email := req.as_map()['email'] or { '' }.str()
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 	mut sys_user := orm.new_query[schema_sys.SysUser](db)
 	mut sys_user_position := orm.new_query[schema_sys.SysUserPosition](db)
 	// 总页数查询 - 分页偏移量构造

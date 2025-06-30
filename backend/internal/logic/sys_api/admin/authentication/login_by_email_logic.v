@@ -31,7 +31,7 @@ fn login_by_email_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	email := req.as_map()['email'] or { 'Please input a Email' }.str()
 	opt_num := req.as_map()['opt_num'] or { return error('Please input captcha_num') }.str()

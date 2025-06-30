@@ -26,7 +26,7 @@ fn create_dictionary_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	dictionarys := schema_sys.SysDictionary{
 		id:         rand.uuid_v7()
