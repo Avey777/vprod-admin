@@ -2,7 +2,7 @@ module schema_party
 
 import time
 
-@[commnt: '角色表']
+@[commnt: '角色表（关联团队）']
 @[table: 'sys_roles']
 pub struct SysRole {
 pub:
@@ -24,3 +24,16 @@ pub:
 	del_flag   u8         @[comment: '删除标记，0：未删除，1：已删除'; default: 0; omitempty; sql_type: 'tinyint(1)']
 	deleted_at ?time.Time @[comment: 'Delete Time | 删除日期'; omitempty; sql_type: 'TIMESTAMP']
 }
+
+/*
+-- 角色表（关联团队）
+CREATE TABLE roles (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    team_id INT NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (team_id, name), -- 同一团队内角色名唯一
+    FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
+);
+*/

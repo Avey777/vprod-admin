@@ -3,7 +3,7 @@ module schema_tema
 import time
 
 @[table: 'party_app_tokens']
-@[comment: '应用Token表']
+@[comment: '门户Token表']
 pub struct PartyAppToken {
 pub:
 	id         string    @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomment: ' UUID']

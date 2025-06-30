@@ -27,7 +27,7 @@ fn create_token_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	tokens := schema_sys.SysToken{
 		id:         rand.uuid_v7()

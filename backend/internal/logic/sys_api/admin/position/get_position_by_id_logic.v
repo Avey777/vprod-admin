@@ -27,7 +27,7 @@ fn position_by_id_resp(req json2.Any) !map[string]Any {
 	position_id := req.as_map()['id'] or { '' }.str()
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	mut sys_position := orm.new_query[schema_sys.SysPosition](db)
 	mut query := sys_position.select()!

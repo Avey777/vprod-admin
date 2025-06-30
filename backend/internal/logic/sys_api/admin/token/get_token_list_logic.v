@@ -29,7 +29,7 @@ fn token_list_resp(req json2.Any) !map[string]Any {
 	username := req.as_map()['username'] or { '' }.str()
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 	mut sys_token := orm.new_query[schema_sys.SysToken](db)
 	// 总页数查询 - 分页偏移量构造
 	mut count := sql db {

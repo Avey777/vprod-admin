@@ -28,7 +28,7 @@ fn change_password_resp(req json2.Any) !map[string]Any {
 	old_password := req.as_map()['old_password'] or { '' }.str()
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	mut sys_user := orm.new_query[schema_sys.SysUser](db)
 	pwd := sys_user.select('password')!.where('id = ?', user_id)!.query()!

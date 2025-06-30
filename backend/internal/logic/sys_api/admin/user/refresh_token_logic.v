@@ -27,7 +27,7 @@ fn refresh_token_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	time_now := time.now()
 	secret := req.as_map()['secret'] or { '' }.str()

@@ -27,7 +27,7 @@ fn api_by_id_resp(req json2.Any) !map[string]Any {
 	api_id := req.as_map()['id'] or { '' }.str()
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	mut sys_api := orm.new_query[schema_sys.SysApi](db)
 	mut query := sys_api.select()!

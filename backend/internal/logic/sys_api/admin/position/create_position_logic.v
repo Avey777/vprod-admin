@@ -26,7 +26,7 @@ fn create_position_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	position := schema_sys.SysPosition{
 		id:         rand.uuid_v7()

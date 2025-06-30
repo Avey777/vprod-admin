@@ -27,7 +27,7 @@ fn configuration_by_id_resp(req json2.Any) !map[string]Any {
 	configuration_id := req.as_map()['id'] or { '' }.str()
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	mut sys_configuration := orm.new_query[schema_sys.SysConfiguration](db)
 	mut query := sys_configuration.select()!

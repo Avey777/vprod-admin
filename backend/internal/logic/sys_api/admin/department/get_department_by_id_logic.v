@@ -27,7 +27,7 @@ fn department_by_id_resp(req json2.Any) !map[string]Any {
 	department_id := req.as_map()['id'] or { '' }.str()
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	mut sys_department := orm.new_query[schema_sys.SysDepartment](db)
 	mut query := sys_department.select()!

@@ -27,7 +27,7 @@ fn token_by_id_resp(req json2.Any) !map[string]Any {
 	token_id := req.as_map()['id'] or { '' }.str()
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	mut sys_token := orm.new_query[schema_sys.SysToken](db)
 	mut query := sys_token.select()!

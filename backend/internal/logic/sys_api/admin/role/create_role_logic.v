@@ -26,7 +26,7 @@ fn create_role_resp(req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	roles := schema_sys.SysRole{
 		id:              rand.uuid_v7()

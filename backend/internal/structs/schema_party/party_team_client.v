@@ -2,7 +2,7 @@ module schema_party
 
 import time
 
-@[comment: '团队应用关系表（用于应用共享）']
+@[comment: '团队应用关系表（多对多关系）']
 @[table: 'party_team_applications']
 pub struct PartyTeamApplication {
 pub:
@@ -19,3 +19,17 @@ pub:
 	del_flag   u8         @[comment: '删除标记，0：未删除，1：已删除'; default: 0; omitempty; sql_type: 'tinyint(1)']
 	deleted_at ?time.Time @[comment: 'Delete Time | 删除日期'; omitempty; sql_type: 'TIMESTAMP']
 }
+
+/*
+-- 团队-应用关联表（多对多关系）
+CREATE TABLE team_applications (
+    team_id INT NOT NULL,
+    app_id INT NOT NULL,
+    PRIMARY KEY (team_id, app_id),
+    FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE,
+    FOREIGN KEY (app_id) REFERENCES applications(id) ON DELETE CASCADE
+);
+*/
+
+//-- 团队-应用-门户-终端  关联表（多对多关系）
+// tospino / mall / seller / pc

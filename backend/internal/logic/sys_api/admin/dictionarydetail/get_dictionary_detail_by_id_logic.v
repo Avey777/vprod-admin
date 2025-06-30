@@ -27,7 +27,7 @@ fn dictionarydetail_by_id_resp(req json2.Any) !map[string]Any {
 	dictionarydetail_id := req.as_map()['id'] or { '' }.str()
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 
 	mut sys_dictionarydetail := orm.new_query[schema_sys.SysDictionaryDetail](db)
 	mut query := sys_dictionarydetail.select()!

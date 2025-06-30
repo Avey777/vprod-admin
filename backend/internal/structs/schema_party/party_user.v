@@ -29,8 +29,6 @@ pub:
 // type User struct {
 //     Owner       string `xorm:"varchar(100) notnull pk" json:"owner"`
 //     Name        string `xorm:"varchar(100) notnull pk" json:"name"`
-//     CreatedTime string `xorm:"varchar(100)" json:"createdTime"`
-//     UpdatedTime string `xorm:"varchar(100)" json:"updatedTime"`
 
 //     Id                string   `xorm:"varchar(100)" json:"id"`
 //     Type              string   `xorm:"varchar(100)" json:"type"`
@@ -90,3 +88,15 @@ pub:
 //     Ldap       string            `xorm:"ldap varchar(100)" json:"ldap"`
 //     Properties map[string]string `json:"properties"`
 // }
+
+/*
+-- 用户表
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password_hash CHAR(60) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+*/

@@ -2,7 +2,7 @@ module schema_party
 
 import time
 
-@[comment: '团队用户关系表']
+@[comment: '用户-团队关联表（多对多）']
 @[table: 'party_team_users']
 pub struct PartyTeamUser {
 pub:
@@ -15,3 +15,15 @@ pub:
 	del_flag   u8         @[comment: '删除标记，0：未删除，1：已删除'; default: 0; omitempty; sql_type: 'tinyint(1)']
 	deleted_at ?time.Time @[comment: 'Delete Time | 删除日期'; omitempty; sql_type: 'TIMESTAMP']
 }
+
+/*
+-- 用户-团队关联表（多对多）
+CREATE TABLE user_teams (
+    user_id INT NOT NULL,
+    team_id INT NOT NULL,
+    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, team_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE
+);
+*/

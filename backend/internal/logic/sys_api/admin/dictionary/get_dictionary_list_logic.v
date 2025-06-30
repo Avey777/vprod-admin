@@ -31,7 +31,7 @@ fn dictionary_list_resp(req json2.Any) !map[string]Any {
 	status := req.as_map()['status'] or { 0 }.u8()
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 	mut sys_dictionary := orm.new_query[schema_sys.SysDictionary](db)
 	// 总页数查询 - 分页偏移量构造
 	mut count := sql db {

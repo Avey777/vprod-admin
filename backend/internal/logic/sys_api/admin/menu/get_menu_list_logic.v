@@ -29,7 +29,7 @@ fn menu_list_resp(req json2.Any) !map[string]Any {
 	name := req.as_map()['name'] or { '' }.str()
 
 	mut db := db_mysql()
-	defer { db.close() }
+	defer { db.close() or {panic} }
 	mut sys_menu := orm.new_query[schema_sys.SysMenu](db)
 	// 总页数查询 - 分页偏移量构造
 	mut count := sql db {

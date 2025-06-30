@@ -18,7 +18,7 @@ pub fn check_all() {
 	// }
 
 	defer {
-		conn.close()
+		conn.close() or {panic}
 		log.info('数据库连接检测完成，关闭连接')
 	}
 }
