@@ -4,8 +4,6 @@ module dbpool
 import db.mysql
 import pool
 import time
-import veb
-import api { Context }
 
 // 数据库连接配置
 struct DbConfig {
@@ -69,12 +67,6 @@ pub fn (mut p DBConnPool) release(conn &pool.ConnectionPoolable) ! {
 // 关闭连接池
 pub fn (mut p DBConnPool) close() {
 	p.inner.close()
-}
-
-struct App {
-	veb.Middleware[Context]
-mut:
-	db_pool &DBConnPool // 使用封装的连接池
 }
 
 pub fn init_pool() !&DBConnPool {

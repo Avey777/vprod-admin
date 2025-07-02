@@ -1,4 +1,3 @@
-
 // module main
 
 // import db.mysql
@@ -70,14 +69,15 @@
 // 	p.inner.close()
 // }
 
+// // 添加上下文中的连接池
 // struct Context {
 // 	veb.Context
+// pub mut:
+// 	db_pool &DBPool
 // }
 
 // struct App {
 // 	veb.Middleware[Context]
-// mut:
-// 	db_pool &DBPool // 使用封装的连接池
 // }
 
 // fn init_pool() !&DBPool {
@@ -89,7 +89,7 @@
 // 		dbname:   'vcore_test'
 // 	}
 // 	return new_db_pool(config) or {
-// 		eprintln('连接池创建失败: ${err}')
+// 		eprint('连接池创建失败: ${err}')
 // 		return err
 // 	}
 // }
@@ -103,26 +103,29 @@
 // 		db_pool.close()
 // 	}
 
-// 	mut app := &App{
-// 		db_pool: db_pool
-// 	}
+// 	mut app := &App{}
+// 	// 中间件：将 db_pool 注入到每个请求的 Context
+// 	app.use(veb.MiddlewareOptions[Context]{
+// 		handler: fn [db_pool] (mut ctx Context) bool {
+// 			ctx.db_pool = db_pool
+// 			return true
+// 		}
+// 	})
+
 // 	veb.run[App, Context](mut app, 9008)
 // }
 
 // @['/index']
 // fn (mut app App) get_user(mut ctx Context) veb.Result {
-// 	// 直接使用app中的db_pool获取连接
-// 	mut db, conn := app.db_pool.acquire() or { return ctx.text('获取连接失败: ${err}') }
+// 	// 使用上下文中的连接池
+// 	mut db, conn := ctx.db_pool.acquire() or { return ctx.text('获取连接失败: ${err}') }
 
-// 	// 确保连接会被释放
 // 	defer {
-// 		app.db_pool.release(conn) or { eprintln('释放连接失败: ${err}') }
+// 		ctx.db_pool.release(conn) or { eprintln('释放连接失败: ${err}') }
 // 	}
 
-// 	// 执行SQL查询
 // 	query := 'SELECT * FROM sys_users WHERE id = 1'
 // 	rows := db.exec(query) or { return ctx.text('查询失败: ${err}') }
 
-// 	// 返回查询结果
 // 	return ctx.text(rows.str())
 // }
