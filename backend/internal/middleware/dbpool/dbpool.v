@@ -19,23 +19,23 @@ struct DbConfig {
 	get_timeout    time.Duration = 5 * time.second
 }
 
-// 公共接口
-pub interface DatabaseMysqlPool {
+// 公共接口 - 使用泛型
+pub interface DatabaseMysqlPool[T] {
 mut:
-	acquire() !(mysql.DB, &pool.ConnectionPoolable)
+	acquire() !(T, &pool.ConnectionPoolable)
 	release(conn &pool.ConnectionPoolable) !
 	close()
 }
 
-// 连接池结构体
+// 连接池结构体 - 添加泛型参数
 @[heap]
-struct DatabasePoolImpl {
+struct DatabasePoolImpl[T] {
 mut:
 	inner &pool.ConnectionPool
 }
 
-// 创建新连接池 (返回接口类型) - 工厂函数返回接口类型
-pub fn new_mysql_pool(config DbConfig) !&DatabaseMysqlPool {
+// 创建新连接池 - 指定泛型类型
+pub fn new_mysql_pool[T](config DbConfig) !&DatabaseMysqlPool[T] {
 	create_conn := fn [config] () !&pool.ConnectionPoolable {
 		mut db := mysql.connect(mysql.Config{
 			host:     config.host
@@ -56,24 +56,27 @@ pub fn new_mysql_pool(config DbConfig) !&DatabaseMysqlPool {
 	}
 
 	inner_pool := pool.new_connection_pool(create_conn, pool_conf)!
-	pool_instance := &DatabasePoolImpl{
+	pool_instance := &DatabasePoolImpl[T]{
 		inner: inner_pool
 	}
 	return pool_instance
 }
 
-// 获取连接
-pub fn (mut p DatabasePoolImpl) acquire() !(mysql.DB, &pool.ConnectionPoolable) {
+// 获取连接 - 使用泛型类型转换
+pub fn (mut p DatabasePoolImpl[T]) acquire() !(T, &pool.ConnectionPoolable) {
 	conn := p.inner.get()!
-	return conn as mysql.DB, conn
+	// 安全类型转换
+
+	return conn as mysql.DB , conn
+
 }
 
 // 释放连接
-pub fn (mut p DatabasePoolImpl) release(conn &pool.ConnectionPoolable) ! {
+pub fn (mut p DatabasePoolImpl[T]) release(conn &pool.ConnectionPoolable) ! {
 	p.inner.put(conn)!
 }
 
 // 关闭连接池
-pub fn (mut p DatabasePoolImpl) close() {
+pub fn (mut p DatabasePoolImpl[T]) close() {
 	p.inner.close()
 }
