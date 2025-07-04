@@ -1,9 +1,10 @@
 module structs
 
 import veb
-// import internal.middleware.dbpool
+import internal.middleware.dbpool
 
 pub struct Context {
-	veb.Context // pub mut:
-	// 	db_pool &dbpool.DatabasePoolImpl
+	veb.Context
+pub mut:
+	dbpool &dbpool.DatabasePool
 }
