@@ -5,7 +5,8 @@ import pool
 import time
 
 // 数据库连接配置
-struct DatabaseConfig {
+pub struct DatabaseConfig {
+pub mut:
 	type           string
 	host           string
 	port           u32

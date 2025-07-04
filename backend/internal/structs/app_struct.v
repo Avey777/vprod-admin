@@ -6,5 +6,5 @@ import internal.middleware.dbpool
 pub struct Context {
 	veb.Context
 pub mut:
-	dbpool &dbpool.DatabasePool
+	dbpool &dbpool.DatabasePoolable
 }
