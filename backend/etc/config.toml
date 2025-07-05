@@ -16,6 +16,12 @@ Dir = './internal/i18n'
 # password = 'mysql_123456'
 # dbname = 'vcore'
 # ssl_verify = false #设置为false 时，不验证ssl证书
+# 连接池配置
+# max_conns = 100 # 默认 100 个
+# min_idle_conns = 10 # 默认 10 个
+# max_lifetime = 60 # 默认 60 minute
+# idle_timeout = 30 # 默认 30 minute
+# get_timeout = 3  # 默认 3 second
 
 
 [dbconf]
@@ -31,3 +37,9 @@ ssl_cert = ''
 ssl_ca = './etc/client-cert.pem'
 ssl_capath = ''
 ssl_cipher = ''
+# 连接池配置
+max_conns = 100 # 默认 100 个
+min_idle_conns = 10 # 默认 10 个
+max_lifetime = 60 # 默认 60 minute
+idle_timeout = 30 # 默认 30 minute
+get_timeout = 3  # 默认 3 second

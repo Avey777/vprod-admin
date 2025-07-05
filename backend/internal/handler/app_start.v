@@ -2,13 +2,13 @@ module handler
 
 import veb
 import log
-import internal.config { toml_load }
+import internal.config
 import internal.structs { Context }
 import internal.middleware
 
 pub fn new_app() {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	doc := toml_load()
+	doc := config.toml_load()
 
 	log.info('init_db_pool()')
 	mut conn := middleware.init_db_pool() or {
