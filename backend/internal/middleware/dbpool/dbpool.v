@@ -28,7 +28,7 @@ mut:
 	close()
 }
 
-// 连接池结构体
+// 连接池结构体，和APP同生命周期，分配到堆上
 @[heap]
 pub struct DatabasePool implements DatabasePoolable {
 pub mut:
