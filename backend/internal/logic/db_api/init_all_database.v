@@ -17,7 +17,7 @@ fn (app &Base) index(mut ctx Context) veb.Result {
 
 	mut db := db_mysql() // or { return ctx.json(json_error(1, 'failed to connect to database')) }
 	defer {
-		db.close() or {panic}
+		db.close() or { panic }
 	}
 
 	sql db {

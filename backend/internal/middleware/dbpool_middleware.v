@@ -36,12 +36,12 @@ pub fn init_db_pool() !&dbpool.DatabasePoolable {
 		config_db.ssl_capath = doc.value('dbconf.ssl_capath').string()
 		config_db.ssl_cipher = doc.value('dbconf.ssl_cipher').string()
 	}
-	log.debug('${config_db}')
+	// log.debug('${config_db}')
 	mut conn := dbpool.new_db_pool(config_db) or {
 		log.error('Mysql/TiDB数据库连接失败,请检查配置文件: ${config.config_toml()}: ${doc.value('dbconf')} : ${err}')
 		return err
 	}
-	log.debug('${conn}')
+	// log.debug('${conn}')
 	log.debug(doc.value('dbconf.type').string() + '数据库连接成功')
 	return conn
 }
