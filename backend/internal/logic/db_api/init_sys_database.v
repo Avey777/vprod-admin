@@ -17,11 +17,12 @@ fn (app &Base) init_sys(mut ctx Context) veb.Result {
 	// }
 
 	db, conn := ctx.dbpool.acquire() or {
-		log.debug('ctx.dbpool.acquire(): ${err}')
-		return ctx.json(json_error(500, '获取连接失败: ${err}'))
+		return ctx.json(json_error(500, '获取的连接无效: ${err}'))
 	}
 	defer {
-		ctx.dbpool.release(conn) or { log.warn('${@LOCATION}') } // or { return ctx.json(json_error(500,'释放连接失败: ${err}')) }
+		ctx.dbpool.release(conn) or {
+			log.warn('Failed to release connection ${@LOCATION}: ${err}')
+		}
 	}
 
 	sql db {
@@ -42,23 +43,7 @@ fn (app &Base) init_sys(mut ctx Context) veb.Result {
 		create table schema_sys.SysCasbinRule
 		create table schema_sys.SysApi
 	} or { return ctx.text('error creating table:  ${err}') }
-	log.warn('数据库 init sys success')
+	log.info('Database init sys success')
 
 	return ctx.json(json_success_optparams(msg: 'sys database init Successfull'))
-}
-
-@['/init']
-fn (mut app Base) get_user(mut ctx Context) veb.Result {
-	log.debug('Executing DDL:0')
-	_, conn := ctx.dbpool.acquire() or { return ctx.text('获取连接失败: ${err}') }
-	log.debug('Executing DDL:1')
-	defer {
-		ctx.dbpool.release(conn) or { eprintln('释放连接失败: ${err}') }
-	}
-	log.debug('Executing DDL:1')
-	// rows := sql db {
-	// 	select from schema_sys.SysUser
-	// } or { panic(err) }
-
-	return ctx.text('rows.str()')
 }
