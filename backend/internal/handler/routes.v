@@ -37,6 +37,7 @@ fn (mut app App) register_routes[T, U](mut ctrl T, url_path string, conn &dbpool
 	ctrl.use(middleware.cores_middleware_generic())
 	ctrl.use(middleware.logger_middleware_generic())
 	ctrl.use(middleware.authority_middleware()) // 需要token认证通过
+	ctrl.use(middleware.db_middleware(conn))
 	app.register_controller[T, U](url_path, mut ctrl) or { log.error('${err}') }
 	// app.register_controller[T,Context](url_path, mut ctrl) or { log.error('${err}') }
 }
