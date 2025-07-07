@@ -36,6 +36,8 @@ pub fn toml_load() toml.Doc {
 	return doc_toml
 }
 
+
+
 /*
 配置加载器
 在main文件引用，APP启动时初始化
