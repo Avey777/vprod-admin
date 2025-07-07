@@ -6,9 +6,9 @@ import orm
 import time
 import x.json2
 import rand
-import internal.config { db_mysql }
+
 import internal.structs.schema_sys
-import common.api { json_error, json_success }
+import common.api
 import internal.structs { Context }
 
 // Create dictionarydetail | 创建dictionarydetail
@@ -16,19 +16,23 @@ import internal.structs { Context }
 fn (app &DictionaryDetail) create_dictionarydetail(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
-	mut result := create_dictionarydetail_resp(req) or {
-		return ctx.json(json_error(503, '${err}'))
+	req := json2.raw_decode(ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	mut result := create_dictionarydetail_resp(mut ctx, req) or {
+		return ctx.json(api.json_error_500(err.msg()) )
 	}
 
-	return ctx.json(json_success(200,'success', result))
+	return ctx.json(api.json_success_200(result) )
 }
 
-fn create_dictionarydetail_resp(req json2.Any) !map[string]Any {
+fn create_dictionarydetail_resp(mut ctx Context,req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	mut db := db_mysql()
-	defer { db.close() or {panic} }
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or {
+			log.warn('Failed to release connection ${@LOCATION}: ${err}')
+		}
+	}
 
 	dictionary_details := schema_sys.SysDictionaryDetail{
 		id:            rand.uuid_v7()

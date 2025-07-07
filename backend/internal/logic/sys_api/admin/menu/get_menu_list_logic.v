@@ -5,9 +5,9 @@ import log
 import time
 import orm
 import x.json2
-import internal.config { db_mysql }
+
 import internal.structs.schema_sys
-import common.api { json_error, json_success }
+import common.api
 import internal.structs { Context }
 
 @['/list'; post]
@@ -15,21 +15,26 @@ fn (app &Menu) menu_list(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
-	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
-	mut result := menu_list_resp(req) or { return ctx.json(json_error(503, '${err}')) }
+	req := json2.raw_decode(ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	mut result := menu_list_resp(mut ctx, req) or { return ctx.json(api.json_error_500(err.msg()) ) }
 
-	return ctx.json(json_success(200,'success', result))
+	return ctx.json(api.json_success_200(result) )
 }
 
-fn menu_list_resp(req json2.Any) !map[string]Any {
+fn menu_list_resp(mut ctx Context,req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	page := req.as_map()['page'] or { 1 }.int()
 	page_size := req.as_map()['page_size'] or { 10 }.int()
 	name := req.as_map()['name'] or { '' }.str()
 
-	mut db := db_mysql()
-	defer { db.close() or {panic} }
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or {
+			log.warn('Failed to release connection ${@LOCATION}: ${err}')
+		}
+	}
+
 	mut sys_menu := orm.new_query[schema_sys.SysMenu](db)
 	// 总页数查询 - 分页偏移量构造
 	mut count := sql db {

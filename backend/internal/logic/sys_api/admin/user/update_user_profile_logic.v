@@ -14,7 +14,7 @@ fn (app &User) update_user_profile_id(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json2.raw_decode(ctx.req.data) or {
-		return ctx.json(api.json_error(400, 'Bad Request:${err}'))
+		return ctx.json(api.json_error_400(err.msg()))
 	}
 	mut result := update_user_profile_resp(mut ctx, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
