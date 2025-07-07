@@ -17,10 +17,10 @@ fn (app &User) update_user_profile_id(mut ctx Context) veb.Result {
 		return ctx.json(api.json_error(400, 'Bad Request:${err}'))
 	}
 	mut result := update_user_profile_resp(mut ctx, req) or {
-		return ctx.json(api.json_error(500, 'Internal Server Error:${err}'))
+		return ctx.json(api.json_error_500(err.msg()))
 	}
 
-	return ctx.json(api.json_success(200, 'success', result))
+	return ctx.json(api.json_success_200(result))
 }
 
 fn update_user_profile_resp(mut ctx Context, req json2.Any) !map[string]Any {

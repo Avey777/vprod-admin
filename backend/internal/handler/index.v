@@ -2,7 +2,7 @@ module handler
 
 import veb
 import log
-import common.api { json_success }
+import common.api
 import internal.structs { Context }
 import internal.structs.schema_sys
 
@@ -11,7 +11,7 @@ import internal.structs.schema_sys
 pub fn (app &App) index(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	return ctx.json(json_success(200, 'req success', ''))
+	return ctx.json(api.json_success(200, 'req success', ''))
 }
 
 @['/index2'; get]
