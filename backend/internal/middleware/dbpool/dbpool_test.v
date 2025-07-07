@@ -1,7 +1,5 @@
 module dbpool
 
-import db.mysql
-
 const config = DatabaseConfig{
 	host:     'mysql2.sqlpub.com'
 	port:     3307
@@ -10,12 +8,12 @@ const config = DatabaseConfig{
 	dbname:   'vcore_test'
 }
 
-// fn test_new_mysql_pool() {
-// 	mut db_pool := new_mysql_pool(config)!
-// 	defer { db_pool.close() }
-// 	// dump(db_pool)
-// 	assert typeof(db_pool).name == '&dbpool.DatabaseMysqlPool'
-// }
+fn test_new_db_pool() {
+	mut db_pool := new_db_pool(config)!
+	defer { db_pool.close() }
+	// dump(db_pool)
+	assert typeof(db_pool).name == '&dbpool.DatabasePool'
+}
 
 fn test_acquire() {
 	mut db_pool := new_db_pool(config) or { panic(err) }

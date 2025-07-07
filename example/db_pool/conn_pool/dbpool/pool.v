@@ -21,6 +21,13 @@ struct DbConfig {
 	get_timeout    time.Duration = 5 * time.second
 }
 
+pub interface DBConnPoolable {
+mut:
+	acquire() !(mysql.DB, &pool.ConnectionPoolable)
+	release(conn &pool.ConnectionPoolable) !
+	close()
+}
+
 // 连接池结构体
 @[heap]
 pub struct DBConnPool {
@@ -64,6 +71,7 @@ pub fn (mut p DBConnPool) acquire() !(mysql.DB, &pool.ConnectionPoolable) {
 // 释放连接
 pub fn (mut p DBConnPool) release(conn &pool.ConnectionPoolable) ! {
 	p.inner.put(conn)!
+	return
 }
 
 // 关闭连接池

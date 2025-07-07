@@ -8,7 +8,7 @@ import internal.structs { Context }
 import internal.middleware.dbpool
 
 // 初始化数据库连接池
-pub fn init_db_pool() !&dbpool.DatabasePoolable {
+pub fn init_db_pool() !&dbpool.DatabasePool {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	doc := config.toml_load()
@@ -47,10 +47,10 @@ pub fn init_db_pool() !&dbpool.DatabasePoolable {
 }
 
 // 独立中间件生成函数
-pub fn db_middleware(conn &dbpool.DatabasePoolable) veb.MiddlewareOptions[Context] {
+pub fn db_middleware(conn &dbpool.DatabasePool) veb.MiddlewareOptions[Context] {
 	return veb.MiddlewareOptions[Context]{
 		handler: fn [conn] (mut ctx Context) bool {
-			ctx.dbpool = unsafe { conn } //分配到堆上，需要使用 unsafe
+			ctx.dbpool = conn  //分配到堆上，需要使用 unsafe
 			return true // 返回 true 表示继续处理请求
 		}
 	}

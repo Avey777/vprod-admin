@@ -58,7 +58,7 @@ pub mut:
 }
 
 // 创建新连接池
-pub fn new_db_pool(config DatabaseConfig) !&DatabasePoolable {
+pub fn new_db_pool(config DatabaseConfig) !&DatabasePool {
 	create_conn := fn [config] () !&pool.ConnectionPoolable {
 		mut db := mysql.connect(mysql.Config{
 			host:     config.host
@@ -95,6 +95,7 @@ pub fn (mut p DatabasePool) acquire() !(mysql.DB, &pool.ConnectionPoolable) {
 // 释放连接
 pub fn (mut p DatabasePool) release(conn &pool.ConnectionPoolable) ! {
 	p.inner.put(conn)!
+	return
 }
 
 // 关闭连接池
