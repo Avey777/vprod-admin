@@ -24,7 +24,7 @@ fn (app &Authentication) login_by_email_logic(mut ctx Context) veb.Result {
 		return ctx.json(json_error(503, '${err}'))
 	}
 
-	return ctx.json(json_success('success', result))
+	return ctx.json(json_success(200,'success', result))
 }
 
 fn login_by_email_resp(mut ctx Context, req json2.Any) !map[string]Any {

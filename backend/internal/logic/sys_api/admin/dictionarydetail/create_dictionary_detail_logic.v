@@ -21,7 +21,7 @@ fn (app &DictionaryDetail) create_dictionarydetail(mut ctx Context) veb.Result {
 		return ctx.json(json_error(503, '${err}'))
 	}
 
-	return ctx.json(json_success('success', result))
+	return ctx.json(json_success(200,'success', result))
 }
 
 fn create_dictionarydetail_resp(req json2.Any) !map[string]Any {

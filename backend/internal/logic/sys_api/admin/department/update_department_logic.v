@@ -18,7 +18,7 @@ fn (app &Department) update_token(mut ctx Context) veb.Result {
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
 	mut result := update_department_resp(req) or { return ctx.json(json_error(503, '${err}')) }
 
-	return ctx.json(json_success('success', result))
+	return ctx.json(json_success(200,'success', result))
 }
 
 fn update_department_resp(req json2.Any) !map[string]Any {

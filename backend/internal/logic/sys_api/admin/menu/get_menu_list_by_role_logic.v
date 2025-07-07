@@ -20,7 +20,7 @@ fn (app &Menu) role_menu_list(mut ctx Context) veb.Result {
 	dump('4646466')
 	mut result := role_menu_list_resp(req) or { return ctx.json(json_error(503, '${err}')) }
 
-	return ctx.json(json_success('success', result))
+	return ctx.json(json_success(200,'success', result))
 }
 
 fn role_menu_list_resp(req json2.Any) !map[string]Any {

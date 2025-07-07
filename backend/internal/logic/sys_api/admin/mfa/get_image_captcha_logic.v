@@ -28,7 +28,7 @@ fn (app &MFA) get_captcha_logic(mut ctx Context) veb.Result {
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
 	mut result := get_captcha_resp(mut ctx, req) or { return ctx.json(json_error(503, '${err}')) }
 
-	return ctx.json(json_success('success', result))
+	return ctx.json(json_success(200,'success', result))
 }
 
 fn get_captcha_resp(mut ctx Context, req json2.Any) !map[string]Any {

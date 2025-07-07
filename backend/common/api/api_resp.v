@@ -19,12 +19,12 @@ pub:
 	result  T
 }
 
-pub fn json_success[T](message_success string, respose_data T) ApiSuccessResponse[T] {
+pub fn json_success[T](http_code int, message_success string, respose_data T) ApiSuccessResponse[T] {
 	mut uuid := rand.uuid_v7()
 	response := ApiSuccessResponse[T]{
 		resp_id: uuid
 		status:  true
-		code:    0
+		code:    http_code
 		msg:     message_success
 		result:  respose_data
 	}
@@ -58,7 +58,7 @@ pub struct ApiErrorResponseOptparams {
 pub:
 	resp_id string
 	status  bool
-	code    int
+	code    int = 200
 	msg     string
 	result  SumResp
 }
@@ -68,7 +68,7 @@ pub fn json_success_optparams(c ApiErrorResponseOptparams) ApiErrorResponseOptpa
 	response := ApiErrorResponseOptparams{
 		resp_id: uuid
 		status:  true
-		code:    0
+		code:    c.code
 		msg:     c.msg
 		result:  c.result
 	}

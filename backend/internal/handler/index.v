@@ -11,7 +11,7 @@ import internal.structs.schema_sys
 pub fn (app &App) index(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	return ctx.json(json_success('req success', ''))
+	return ctx.json(json_success(200, 'req success', ''))
 }
 
 @['/index2'; get]
