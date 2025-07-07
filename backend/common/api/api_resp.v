@@ -4,27 +4,27 @@ import rand
 
 pub struct ApiErrorResponse {
 pub:
-	resp_id string
+  code    int
 	status  bool
-	code    int
+	resp_id string
 	msg     string
 }
 
 pub struct ApiSuccessResponse[T] {
 pub:
-	resp_id string
-	status  bool
 	code    int
+	status  bool
+	resp_id string
 	msg     string
 	result  T
 }
 
-pub fn json_success[T](message_success string, respose_data T) ApiSuccessResponse[T] {
+pub fn json_success[T](status_code int, message_success string, respose_data T) ApiSuccessResponse[T] {
 	mut uuid := rand.uuid_v7()
 	response := ApiSuccessResponse[T]{
-		resp_id: uuid
+		code:    status_code
 		status:  true
-		code:    0
+		resp_id: uuid
 		msg:     message_success
 		result:  respose_data
 	}
@@ -34,9 +34,9 @@ pub fn json_success[T](message_success string, respose_data T) ApiSuccessRespons
 pub fn json_error(status_code int, message_error string) ApiErrorResponse {
 	mut uuid := rand.uuid_v7()
 	response := ApiErrorResponse{
-		resp_id: uuid
-		status:  false
 		code:    status_code
+		status:  false
+		resp_id: uuid
 		msg:     message_error
 	}
 	return response
@@ -68,7 +68,7 @@ pub fn json_success_optparams(c ApiErrorResponseOptparams) ApiErrorResponseOptpa
 	response := ApiErrorResponseOptparams{
 		resp_id: uuid
 		status:  true
-		code:    0
+		code:    c.code
 		msg:     c.msg
 		result:  c.result
 	}

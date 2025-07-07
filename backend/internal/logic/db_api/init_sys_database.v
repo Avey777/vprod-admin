@@ -2,18 +2,27 @@ module db_api
 
 import veb
 import log
-import common.api { json_success_optparams }
+import common.api { json_error, json_success_optparams }
 import internal.structs { Context }
-import internal.config { db_mysql }
+// import internal.config { db_mysql }
 import internal.structs.schema_sys
 
 @['/init/sys_database'; get]
 fn (app &Base) init_sys(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	mut db := db_mysql() // or { return ctx.json(json_error(1, 'failed to connect to database')) }
+	// mut db := db_mysql() // or { return ctx.json(json_error(1, 'failed to connect to database')) }
+	// defer {
+	// 	db.close() or {panic}
+	// }
+
+	db, conn := ctx.dbpool.acquire() or {
+		return ctx.json(json_error(500, '获取的连接无效: ${err}'))
+	}
 	defer {
-		db.close() or {panic}
+		ctx.dbpool.release(conn) or {
+			log.warn('Failed to release connection ${@LOCATION}: ${err}')
+		}
 	}
 
 	sql db {
@@ -34,7 +43,7 @@ fn (app &Base) init_sys(mut ctx Context) veb.Result {
 		create table schema_sys.SysCasbinRule
 		create table schema_sys.SysApi
 	} or { return ctx.text('error creating table:  ${err}') }
-	log.debug('数据库 init sys success')
+	log.info('Database init sys success')
 
 	return ctx.json(json_success_optparams(msg: 'sys database init Successfull'))
 }

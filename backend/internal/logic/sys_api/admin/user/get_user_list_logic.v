@@ -5,9 +5,8 @@ import log
 import time
 import orm
 import x.json2
-import internal.config { db_mysql }
 import internal.structs.schema_sys
-import common.api { json_error, json_success }
+import common.api
 import internal.structs { Context }
 
 @['/list'; post]
@@ -15,14 +14,23 @@ fn (app &User) user_list(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
-	req := json2.raw_decode(ctx.req.data) or { return ctx.json(json_error(502, '${err}')) }
-	mut result := user_list_resp(req) or { return ctx.json(json_error(503, '${err}')) }
+	req := json2.raw_decode(ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	mut result := user_list_resp(mut ctx, req) or {
+		return ctx.json(api.json_error(500, 'Internal Server Error:${err}'))
+	}
 
-	return ctx.json(json_success('success', result))
+	return ctx.json(api.json_success(200, 'success', result))
 }
 
-fn user_list_resp(req json2.Any) !map[string]Any {
+fn user_list_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or {
+			log.warn('Failed to release connection ${@LOCATION}: ${err}')
+		}
+	}
 
 	page := req.as_map()['page'] or { 1 }.int()
 	page_size := req.as_map()['page_size'] or { 10 }.int()
@@ -33,8 +41,6 @@ fn user_list_resp(req json2.Any) !map[string]Any {
 	mobile := req.as_map()['mobile'] or { '' }.str()
 	email := req.as_map()['email'] or { '' }.str()
 
-	mut db := db_mysql()
-	defer { db.close() or {panic} }
 	mut sys_user := orm.new_query[schema_sys.SysUser](db)
 	mut sys_user_position := orm.new_query[schema_sys.SysUserPosition](db)
 	// 总页数查询 - 分页偏移量构造

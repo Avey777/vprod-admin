@@ -11,5 +11,5 @@ import internal.structs { Context }
 fn (app &Admin) index(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	return ctx.json(json_success('success', ''))
+	return ctx.json(json_success(200, 'success', ''))
 }
