@@ -15,7 +15,6 @@ pub fn new_app() {
 		log.info('初始化失败: ${err}')
 		return
 	}
-
 	defer {
 		conn.close()
 	}
