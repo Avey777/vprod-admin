@@ -21,7 +21,7 @@ max_conns = 50     # 默认 100 个
 min_idle_conns = 5 # 默认 10 个
 max_lifetime = 60  # 默认 60 minute
 idle_timeout = 30  # 默认 30 minute
-get_timeout = 3    # 默认 3 second
+get_timeout = 5    # 默认 3 second
 
 # [dbconf]
 # type = 'mysql'                # mysql  tidb

@@ -1,13 +1,12 @@
 module main
 
-import internal.config { check_all, log_set_sevel, new_config_loader }
+import internal.config { check_all, log_set_sevel }
 import internal.handler { new_app }
 import log
 // import time
 // import sync
 
 fn main() {
-	new_config_loader() //初始化toml配置
 	log_set_sevel()!
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	check_all() //启动前配置检查

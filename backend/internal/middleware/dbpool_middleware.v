@@ -7,7 +7,19 @@ import internal.config
 import internal.structs { Context }
 import internal.middleware.dbpool
 
+// 独立中间件生成函数
+pub fn db_middleware(conn &dbpool.DatabasePool) veb.MiddlewareOptions[Context] {
+	return veb.MiddlewareOptions[Context]{
+		handler: fn [conn] (mut ctx Context) bool {
+			ctx.dbpool = conn //分配到堆上，需要使用 unsafe
+			return true // 返回 true 表示继续处理请求
+		}
+	}
+}
+
+/*移动到app_start 这里只做备份*/
 // 初始化数据库连接池
+@[deprecated: '2025-07-10']
 pub fn init_db_pool() !&dbpool.DatabasePool {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
@@ -44,14 +56,4 @@ pub fn init_db_pool() !&dbpool.DatabasePool {
 	// log.debug('${conn}')
 	log.debug(doc.value('dbconf.type').string() + '数据库连接成功')
 	return conn
-}
-
-// 独立中间件生成函数
-pub fn db_middleware(conn &dbpool.DatabasePool) veb.MiddlewareOptions[Context] {
-	return veb.MiddlewareOptions[Context]{
-		handler: fn [conn] (mut ctx Context) bool {
-			ctx.dbpool = conn  //分配到堆上，需要使用 unsafe
-			return true // 返回 true 表示继续处理请求
-		}
-	}
 }
