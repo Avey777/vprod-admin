@@ -37,6 +37,12 @@ pub:
 	ssl_ca     string
 	ssl_capath string
 	ssl_cipher string
+	// 连接池配置
+	max_conns      int = 100 // 默认 100 个
+	min_idle_conns int = 10  // 默认 10个
+	max_lifetime   int = 60  // 默认 60 minute
+	idle_timeout   int = 30  // 默认 30 minute
+	get_timeout    int = 3   // 默认 3 second
 }
 
 // MiddlewaresConf is the config of middlewares.
