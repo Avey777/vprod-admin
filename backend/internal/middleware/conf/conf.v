@@ -20,11 +20,15 @@ pub mut:
 
 // 创建新的配置加载器实例
 pub fn new_config_loader() &ConfigLoader {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
 	return &ConfigLoader{}
 }
 
 // 获取配置（带错误处理）
 pub fn (mut cl ConfigLoader) get_config() !&GlobalConfig {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
 	cl.once.do(fn [mut cl] () {
 		global_config := parse_data() or { return }
 		cl.globalconfig = &global_config
@@ -34,6 +38,8 @@ pub fn (mut cl ConfigLoader) get_config() !&GlobalConfig {
 
 // 解析toml文件
 pub fn parse_data() !GlobalConfig {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
 	doc := read_toml()!
 	// 解析web配置节
 	web_config := WebConf{
@@ -74,6 +80,8 @@ pub fn parse_data() !GlobalConfig {
 }
 
 pub fn read_toml() !toml.Doc {
+	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
 	// 提供默认路径和备用路径
 	mut path := find_toml() or { return error('指定的配置文件不存在') }
 
@@ -83,6 +91,8 @@ pub fn read_toml() !toml.Doc {
 
 // 需找配置文件
 pub fn find_toml() !string {
+	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
 	// 1. 首先处理通过 -f 参数指定的配置文件
 	custom_path := config_toml()
 	if custom_path != '' {
@@ -126,7 +136,7 @@ pub fn find_toml() !string {
 
 //指定配置文件 [v run . -f 'etc/config_dev.toml']
 pub fn config_toml() string {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut cf_toml := os.join_path('')
 	args := os.args[1..]
@@ -139,6 +149,6 @@ pub fn config_toml() string {
 			break
 		}
 	}
-	log.debug('toml配置文件路径：${cf_toml}')
+	log.info('toml配置文件路径：${cf_toml}')
 	return cf_toml
 }
