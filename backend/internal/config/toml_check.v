@@ -16,7 +16,7 @@ pub fn check_all() ! {
 //检查配置文件是否存在
 fn check_config_toml() ! {
 	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	default_path := os.join_path(@VMODROOT, 'etc', 'config_template.toml')
+	default_path := os.join_path(@VMODROOT, 'config_template.toml')
 
 	// 只调用一次 find_toml()
 	config_path := conf.find_toml() or {
@@ -39,11 +39,13 @@ fn check_config_toml() ! {
 			log.error('${default_path} 配置数据模板写入错误')
 			return
 		}
-		log.fatal('${default_path} 配置数据模板写入成功,请参考模板配置')
+		log.info('${default_path} 配置数据模板写入成功,请参考模板配置')
 
 		defer {
 			f.close()
 		} // 记得关闭文件句柄
+		log.info('正在退出程序...')
+		exit(0) // 生产配置模板后，退出程序
 	} else {
 		log.info('配置文件加载完成: ${conf.find_toml() or { return }}')
 	}
