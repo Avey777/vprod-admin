@@ -4,16 +4,22 @@ import veb
 import log
 import internal.structs { Context }
 import internal.middleware
-import internal.middleware.config_loader
+import internal.middleware.conf
+import internal.config { check_all }
 
 pub fn new_app() {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
+/*******init_config_loader********/
 	log.info('init_config_loader()')
-	mut loader := config_loader.new_config_loader()
+	mut loader := conf.new_config_loader()
 	doc := loader.get_config() or { panic('Failed to load config: ${err}') }
 	dump(doc)
+/********init_config_loader*******/
 
+	check_all() //启动前配置检查
+
+/*******init_db_pool********/
 	log.info('init_db_pool()')
 	mut conn := middleware.init_db_pool(doc) or {
 		log.info('初始化失败: ${err}')
@@ -22,6 +28,7 @@ pub fn new_app() {
 	defer {
 		conn.close()
 	}
+/*******init_db_pool********/
 
 	mut app := &App{} // 实例化 App 结构体 并返回指针
 	app.use(middleware.config_middle(doc))

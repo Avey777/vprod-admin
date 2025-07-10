@@ -1,15 +1,13 @@
 module main
 
-import internal.config { check_all, log_set_sevel }
-import internal.handler { new_app }
+import internal.handler { log_set_sevel, new_app }
 import log
 // import time
 // import sync
 
 fn main() {
-	log_set_sevel()!
+	log_set_sevel() or { log.fatal('log_set_sevel failed') }
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	check_all() //启动前配置检查
 
 	// // 定义全局互斥锁
 	// mut mx := sync.Mutex{}

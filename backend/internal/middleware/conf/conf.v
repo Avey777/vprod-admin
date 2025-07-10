@@ -4,7 +4,7 @@
 避免频繁进行 IO
 */
 
-module config_loader
+module conf
 
 import toml
 import sync
@@ -73,7 +73,7 @@ pub fn parse_data() !GlobalConfig {
 	}
 }
 
-fn read_toml() !toml.Doc {
+pub fn read_toml() !toml.Doc {
 	// 提供默认路径和备用路径
 	mut paths := $if test {
 		[

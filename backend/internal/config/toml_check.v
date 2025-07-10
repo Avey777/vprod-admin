@@ -2,6 +2,7 @@ module config
 
 import os
 import log
+import internal.middleware.conf
 
 const config_template = './etc/config_template.toml'
 
@@ -9,27 +10,15 @@ pub fn check_all() {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	check_config_toml() //检查配置文件是否存在
 	check_config_toml_data() //检查配置文件内必要数据是否配置
-
-	log.info('正在检测数据库连接...')
-	// 检查mysql数据库连接
-	mut conn := db_mysql() // or {
-	// 	log.error('数据库连接检测失败,请检查配置文件: ${config_toml()}')
-	// 	return
-	// }
-
-	defer {
-		conn.close() or {panic}
-		log.info('数据库连接检测完成，关闭连接')
-	}
 }
 
 //检查配置文件是否存在
 fn check_config_toml() {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	log.debug('配置文件路径: ${config_toml()}')
-	if !os.exists(config_toml()) {
-		log.warn('${config_toml()}配置文件不存在，生成新配置文件模板: ${config_template}')
+	log.debug('配置文件路径: ${conf.config_toml()}')
+	if !os.exists(conf.config_toml()) {
+		log.warn('${conf.config_toml()}配置文件不存在，生成新配置文件模板: ${config_template}')
 		mut f := os.create(config_template) or {
 			log.fatal('配置文件创建失败')
 			return
@@ -41,13 +30,13 @@ fn check_config_toml() {
 			log.error('${config_template} 配置数据模板写入错误')
 			return
 		}
-		log.info('${config_template} 配置数据模板写入成功,请参考模板配置：${config_toml()}')
+		log.info('${config_template} 配置数据模板写入成功,请参考模板配置：${conf.config_toml()}')
 
 		defer {
 			f.close()
 		} // 记得关闭文件句柄
 	} else {
-		log.info('配置文件加载完成: ${config_toml()}')
+		log.info('配置文件加载完成: ${conf.config_toml()}')
 	}
 }
 
@@ -56,7 +45,8 @@ fn check_config_toml_data() {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	log.info('开始检测必要配置')
-	doc := toml_load()
+	// doc := toml_load()
+	doc := conf.read_toml() or { panic(err) }
 
 	doc.value_opt('web.port') or {
 		log.warn('配置数据：web.port 键无效或键没有值，请检查配置数据')

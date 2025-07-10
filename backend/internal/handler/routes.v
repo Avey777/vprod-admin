@@ -5,10 +5,10 @@ import internal.structs { Context }
 import internal.middleware
 import internal.logic.db_api { Base }
 import internal.middleware.dbpool
-import internal.middleware.config_loader
+import internal.middleware.conf
 
 // 根据条件编译，选择运行的服务
-pub fn (mut app App) register_handlers(conn &dbpool.DatabasePool, doc_conf &config_loader.GlobalConfig) {
+pub fn (mut app App) register_handlers(conn &dbpool.DatabasePool, doc_conf &conf.GlobalConfig) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	$if fms ? {
@@ -34,7 +34,7 @@ pub fn (mut app App) register_handlers(conn &dbpool.DatabasePool, doc_conf &conf
 }
 
 // 封装泛型全局中间件
-fn (mut app App) register_routes[T, U](mut ctrl T, url_path string, conn &dbpool.DatabasePool, doc_conf &config_loader.GlobalConfig) {
+fn (mut app App) register_routes[T, U](mut ctrl T, url_path string, conn &dbpool.DatabasePool, doc_conf &conf.GlobalConfig) {
 	ctrl.use(middleware.cores_middleware_generic())
 	ctrl.use(middleware.logger_middleware_generic())
 	ctrl.use(middleware.config_middle(doc_conf))
@@ -45,7 +45,7 @@ fn (mut app App) register_routes[T, U](mut ctrl T, url_path string, conn &dbpool
 }
 
 // 封装泛型全局中间件,无token认证
-fn (mut app App) register_routes_no_token[T, U](mut ctrl T, url_path string, conn &dbpool.DatabasePool, doc_conf &config_loader.GlobalConfig) {
+fn (mut app App) register_routes_no_token[T, U](mut ctrl T, url_path string, conn &dbpool.DatabasePool, doc_conf &conf.GlobalConfig) {
 	ctrl.use(middleware.cores_middleware_generic())
 	ctrl.use(middleware.logger_middleware_generic())
 	ctrl.use(middleware.config_middle(doc_conf))
@@ -54,7 +54,7 @@ fn (mut app App) register_routes_no_token[T, U](mut ctrl T, url_path string, con
 	// app.register_controller[T,Context](url_path, mut ctrl) or { log.error('${err}') }
 }
 
-fn (mut app App) handler_base(conn &dbpool.DatabasePool, doc_conf &config_loader.GlobalConfig) {
+fn (mut app App) handler_base(conn &dbpool.DatabasePool, doc_conf &conf.GlobalConfig) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// 方式一: 直接使用中间件，适合对单个控制器单独使用中间件
 	mut base_app := &Base{}

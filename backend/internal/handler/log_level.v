@@ -1,10 +1,11 @@
-module config
+module handler
 
 import log
+import internal.middleware.conf
 
 // 配置文件设置日志级别
 pub fn log_set_sevel() ! {
-	doc := toml_load()
+	doc := conf.read_toml() or { panic(err) }
 	// 获取TOML中的log_level字符串值
 
 	log_level_str := doc.value('logging.log_level').string()

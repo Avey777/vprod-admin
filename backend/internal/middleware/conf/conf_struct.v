@@ -1,6 +1,4 @@
-module config_loader
-
-// import time
+module conf
 
 // 嵌套配置结构体
 @[heap]

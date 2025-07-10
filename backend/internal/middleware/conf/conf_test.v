@@ -1,12 +1,4 @@
-module config_loader
-
-// fn test_get_config() {
-// 	mut loader1 := new_config_loader()
-// 	doc := g_conf0.get_config()!
-// 	dump('Web端口: ${doc.web.port}')
-// 	// dump('数据库类型: ${doc.web.timeout}')
-// 	assert typeof(doc.web.port).name == 'int'
-// }
+module conf
 
 fn test_config_toml() {
 	dump(config_toml())
