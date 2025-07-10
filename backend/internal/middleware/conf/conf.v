@@ -4,7 +4,7 @@
 避免频繁进行 IO
 */
 
-module config_loader
+module conf
 
 import toml
 import sync
@@ -73,8 +73,33 @@ pub fn parse_data() !GlobalConfig {
 	}
 }
 
-fn read_toml() !toml.Doc {
+pub fn read_toml() !toml.Doc {
 	// 提供默认路径和备用路径
+	mut path := find_toml() or { return error('指定的配置文件不存在') }
+
+	doc := toml.parse_file(path) or { log.fatal('配置文件解析失败}') }
+	return doc
+}
+
+// 需找配置文件
+pub fn find_toml() !string {
+	// 1. 首先处理通过 -f 参数指定的配置文件
+	custom_path := config_toml()
+	if custom_path != '' {
+		// 处理用户指定的路径
+		resolved_path := if os.is_abs_path(custom_path) {
+			custom_path
+		} else {
+			os.join_path(@VMODROOT, custom_path)
+		}
+
+		if os.exists(resolved_path) {
+			return resolved_path
+		}
+		log.warn('指定的配置文件不存在: ${resolved_path}')
+	}
+
+	// 2. 默认搜索路径
 	mut paths := $if test {
 		[
 			os.join_path(@VMODROOT, 'etc', 'config_dev.toml'),
@@ -83,23 +108,20 @@ fn read_toml() !toml.Doc {
 		]
 	} $else {
 		[
-			config_toml(),
-			os.join_path(@VMODROOT, config_toml()), //优先指定配置文件
 			os.join_path(@VMODROOT, 'config.toml'),
 			os.join_path(@VMODROOT, 'etc', 'config.toml'),
 		]
 	}
 
+	// 3. 搜索默认路径
 	for path in paths {
-		doc := toml.parse_file(path) or {
-			log.warn('配置文件未找到-跳过继续: ${err.msg()}')
-			continue
+		if os.exists(path) {
+			return path
 		}
-		return doc
+		log.warn('配置文件未找到-跳过继续: ${path}')
 	}
-
-	// 所有路径都尝试失败后终止
-	log.fatal('配置文件未找到，尝试路径: ${paths.join(', ')}')
+	// 4. 所有路径都尝试失败
+	return error('所有路径都尝试失败')
 }
 
 //指定配置文件 [v run . -f 'etc/config_dev.toml']

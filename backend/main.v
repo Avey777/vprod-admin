@@ -1,16 +1,12 @@
 module main
 
-import internal.config { check_all, log_set_sevel, new_config_loader }
-import internal.handler { new_app }
-import log
 // import time
 // import sync
+import internal.handler
+import internal.config
 
 fn main() {
-	new_config_loader() //初始化toml配置
-	log_set_sevel()!
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	check_all() //启动前配置检查
+	config.check_all()! //启动前配置检查
 
 	// // 定义全局互斥锁
 	// mut mx := sync.Mutex{}
@@ -28,7 +24,7 @@ fn main() {
 	// 	}
 	// }()
 
-	new_app()
+	handler.new_app()
 }
 
 // lsof -i :9009
