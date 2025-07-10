@@ -10,7 +10,8 @@ import internal.structs.schema_sys
 @['/'; get]
 pub fn (app &App) index(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-
+	dump(ctx.config)
+	dump(ctx.config.web.port)
 	return ctx.json(api.json_success(200, 'req success', ''))
 }
 
