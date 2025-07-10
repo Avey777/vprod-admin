@@ -2,51 +2,58 @@ module config
 
 import os
 import log
+import toml
 import internal.middleware.conf
 
-const config_template = './etc/config_template.toml'
-
-pub fn check_all() {
+pub fn check_all() ! {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	check_config_toml() //检查配置文件是否存在
-	check_config_toml_data() //检查配置文件内必要数据是否配置
+	check_config_toml()! //检查配置文件是否存在
+	doc := conf.read_toml() or { return }
+	log_set_sevel(doc) or { return } //设置日志级别
+	check_config_toml_data(doc) //检查配置文件内必要数据是否配置
 }
 
 //检查配置文件是否存在
-fn check_config_toml() {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+fn check_config_toml() ! {
+	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+	default_path := os.join_path(@VMODROOT, 'etc', 'config_template.toml')
 
-	log.debug('配置文件路径: ${conf.config_toml()}')
-	if !os.exists(conf.config_toml()) {
-		log.warn('${conf.config_toml()}配置文件不存在，生成新配置文件模板: ${config_template}')
-		mut f := os.create(config_template) or {
+	// 只调用一次 find_toml()
+	config_path := conf.find_toml() or {
+		// 当找不到配置文件时，使用指定路径
+		log.warn('未找到配置文件，将使用默认路径: ${default_path}')
+		'etc/config.toml'
+	}
+
+	log.info('检查配置文件是否存在')
+	if !os.exists(config_path) {
+		log.warn('配置文件不存在，生成新配置文件模板: ${default_path}')
+		mut f := os.create(default_path) or {
 			log.fatal('配置文件创建失败')
 			return
 		}
 		log.info('配置文件已创建')
 
-		log.info('初始化配置数据文件模板: ${config_template}')
-		os.write_file(config_template, data) or {
-			log.error('${config_template} 配置数据模板写入错误')
+		log.info('初始化配置数据文件模板: ${default_path}')
+		os.write_file(default_path, data) or {
+			log.error('${default_path} 配置数据模板写入错误')
 			return
 		}
-		log.info('${config_template} 配置数据模板写入成功,请参考模板配置：${conf.config_toml()}')
+		log.fatal('${default_path} 配置数据模板写入成功,请参考模板配置')
 
 		defer {
 			f.close()
 		} // 记得关闭文件句柄
 	} else {
-		log.info('配置文件加载完成: ${conf.config_toml()}')
+		log.info('配置文件加载完成: ${conf.find_toml() or { return }}')
 	}
 }
 
 //检查配置文件内必要数据是否配置
-fn check_config_toml_data() {
+fn check_config_toml_data(doc toml.Doc) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	log.info('开始检测必要配置')
-	// doc := toml_load()
-	doc := conf.read_toml() or { panic(err) }
 
 	doc.value_opt('web.port') or {
 		log.warn('配置数据：web.port 键无效或键没有值，请检查配置数据')
