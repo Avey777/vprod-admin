@@ -6,6 +6,8 @@ import internal.handler
 import internal.config
 
 fn main() {
+	// 显示 v-admin 专属启动 Banner
+	print_banner()
 	config.check_all()! //启动前配置检查
 
 	// // 定义全局互斥锁
@@ -29,3 +31,21 @@ fn main() {
 
 // lsof -i :9009
 // sudo kill -9 $(lsof -t -i :9009)
+
+fn print_banner() {
+	cyan := '\x1b[38;5;51m'
+	reset := '\x1b[0m'
+
+	println(
+		r'
+██╗   ██╗    █████╗ ██████╗ ███╗   ███╗██╗███╗   ██╗
+██║   ██║   ██╔══██╗██╔══██╗████╗ ████║██║████╗  ██║
+██║   ██║   ███████║██║  ██║██╔████╔██║██║██╔██╗ ██║
+╚██╗ ██╔╝   ██╔══██║██║  ██║██║╚██╔╝██║██║██║╚██╗██║
+ ╚████╔╝    ██║  ██║██████╔╝██║ ╚═╝ ██║██║██║ ╚████║
+  ╚═══╝     ╚═╝  ╚═╝╚═════╝ ╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝
+' +
+		reset)
+
+	println(cyan + ':: v-admin ::    Professional Admin Dashboard (v0.5.0)' + reset)
+}
