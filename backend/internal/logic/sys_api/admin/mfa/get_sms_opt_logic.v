@@ -13,7 +13,7 @@ import internal.structs { Context }
 import regex
 import common.opt
 
-@['/list'; post]
+@['/login_by_sms'; post]
 fn (app &MFA) sms_list(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')

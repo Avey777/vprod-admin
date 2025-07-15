@@ -6,7 +6,6 @@ import orm
 import time
 import x.json2
 import rand
-
 import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
@@ -17,9 +16,11 @@ fn (app &User) create_user(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := create_user_resp(mut ctx,req) or { return ctx.json(api.json_error_500(err.msg()) ) }
+	mut result := create_user_resp(mut ctx, req) or {
+		return ctx.json(api.json_error_500(err.msg()))
+	}
 
-	return ctx.json(api.json_success_200(result) )
+	return ctx.json(api.json_success_200(result))
 }
 
 fn create_user_resp(mut ctx Context, req json2.Any) !map[string]Any {
@@ -42,7 +43,7 @@ fn create_user_resp(mut ctx Context, req json2.Any) !map[string]Any {
 		department_id: req.as_map()['department_id'] or { '' }.str()
 		description:   req.as_map()['description'] or { '' }.str()
 		email:         req.as_map()['email'] or { '' }.str()
-		home_path:     req.as_map()['home_path'] or { '' }.str()
+		home_path:     req.as_map()['home_path'] or { '/dashboard' }.str()
 		mobile:        req.as_map()['mobile'] or { '' }.str()
 		nickname:      req.as_map()['nickname'] or { '' }.str()
 		password:      req.as_map()['password'] or { '' }.str()
