@@ -44,16 +44,3 @@ pub:
 	expire_in_hours         int    @[comment: '令牌过期时间(小时)'; default: 24]
 	refresh_expire_in_hours int    @[comment: '刷新令牌过期时间(小时)'; default: 720]
 }
-
-/*
--- 门户表
-CREATE TABLE portals (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    app_id INT NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    access_url VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (app_id, name), -- 同一应用内门户名唯一
-    FOREIGN KEY (app_id) REFERENCES applications(id) ON DELETE CASCADE
-);
-*/
