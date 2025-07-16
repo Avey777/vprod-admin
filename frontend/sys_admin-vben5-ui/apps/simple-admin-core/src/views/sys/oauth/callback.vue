@@ -36,7 +36,7 @@ export default defineComponent({
 
         const userInfo = fetchUserInfoResult;
 
-        accessStore.setAccessCodes(accessCodes.data);
+        accessStore.setAccessCodes(accessCodes.result);
 
         await router.push(
           userInfo?.homePath || preferences.app.defaultHomePath,

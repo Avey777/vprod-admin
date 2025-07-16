@@ -11,7 +11,7 @@ export interface BaseListResp<T> {
 export interface BaseDataResp<T> {
   code: number;
   msg: string;
-  result: T;
+  data: T;
 }
 
 export interface BaseResp {

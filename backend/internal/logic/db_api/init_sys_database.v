@@ -45,5 +45,5 @@ fn (app &Base) init_sys(mut ctx Context) veb.Result {
 	} or { return ctx.text('error creating table:  ${err}') }
 	log.info('Database init sys success')
 
-	return ctx.json(json_success_optparams(msg: 'sys database init Successfull'))
+	return ctx.json(json_success_optparams(message: 'sys database init Successfull'))
 }

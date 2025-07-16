@@ -33,7 +33,7 @@ pub fn json_error_401() ApiErrorResponse {
 // 403 Forbidden - 禁止访问
 // 适用场景：认证成功但无权操作资源（如普通用户访问管理员接口）
 pub fn json_error_403() ApiErrorResponse {
-	return json_error(403, 'You don\'t have permission to perform this action')
+	return json_error(403, "You don't have permission to perform this action")
 }
 
 // 404 Not Found - 资源不存在

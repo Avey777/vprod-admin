@@ -40,9 +40,9 @@ const loginType: BasicOption[] = [
 // get captcha
 async function getCaptchaData() {
   const captcha = await getCaptcha();
-  if (captcha.code === 0) {
-    captchaId.value = captcha.data.captchaId;
-    imgPath.value = captcha.data.imgPath;
+  if (captcha.code === 200) {
+    captchaId.value = captcha.data.captcha_token;
+    imgPath.value = captcha.data.captcha_image;
   }
 }
 

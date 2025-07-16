@@ -145,7 +145,7 @@ const gridOptions: VxeGridProps<UserInfo> = {
           departmentId: selectedDepartmentId.value,
           ...formValues,
         });
-        return res.data;
+        return res.result;
       },
     },
   },

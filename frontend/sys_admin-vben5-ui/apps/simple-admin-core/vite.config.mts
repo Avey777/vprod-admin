@@ -6,10 +6,10 @@ export default defineConfig(async () => {
     vite: {
       server: {
         proxy: {
-          '/sys-api': {
+          '/sys_api': {
             changeOrigin: true,
-            rewrite: (path) => path.replace(/^\/sys-api/, ''),
-            target: 'http://localhost:9009/',
+            rewrite: (path) => path.replace(/^\/sys_api/, ''),
+            target: 'http://localhost:9009/sys_api/',
             ws: true,
           },
           // '/fms-api': {

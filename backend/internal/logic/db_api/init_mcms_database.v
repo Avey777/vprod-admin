@@ -30,5 +30,5 @@ fn (app &Base) init_mcms(mut ctx Context) veb.Result {
 	} or { return ctx.text('error creating table:  ${err}') }
 	log.debug('数据库 init mcms success')
 
-	return ctx.json(json_success_optparams(msg: 'mcms database init Successfull'))
+	return ctx.json(json_success_optparams(message: 'mcms database init Successfull'))
 }
