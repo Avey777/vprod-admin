@@ -63,5 +63,5 @@ fn (app &Base) index(mut ctx Context) veb.Result {
 	} or { return ctx.text('error creating table:  ${err}') }
 	log.debug('数据库 init all success')
 
-	return ctx.json(json_success_optparams(msg: 'all database init Successfull'))
+	return ctx.json(json_success_optparams(message: 'all database init Successfull'))
 }

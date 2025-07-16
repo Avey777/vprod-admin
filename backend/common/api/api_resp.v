@@ -2,31 +2,40 @@ module api
 
 import rand
 
+pub struct ValidationError {
+pub:
+	field   string
+	message string
+	rule    string
+	meta    map[string]string // 扩展参数（如 { "min": ’8‘, "max": 20 }）
+}
+
 pub struct ApiErrorResponse {
 pub:
-  code    int
-	status  bool
-	resp_id string
-	msg     string
+	code       int
+	status     bool
+	request_id string
+	error      string
+	details    ?[]ValidationError  //暂时未使用，待未来扩展
 }
 
 pub struct ApiSuccessResponse[T] {
 pub:
-	code    int
-	status  bool
-	resp_id string
-	msg     string
-	result  T
+	code       int
+	status     bool
+	request_id string
+	message    string
+	data       T
 }
 
 pub fn json_success[T](status_code int, message_success string, respose_data T) ApiSuccessResponse[T] {
 	mut uuid := rand.uuid_v7()
 	response := ApiSuccessResponse[T]{
-		code:    status_code
-		status:  true
-		resp_id: uuid
-		msg:     message_success
-		result:  respose_data
+		code:       status_code
+		status:     true
+		request_id: uuid
+		message:    message_success
+		data:       respose_data
 	}
 	return response
 }
@@ -34,10 +43,10 @@ pub fn json_success[T](status_code int, message_success string, respose_data T) 
 pub fn json_error(status_code int, message_error string) ApiErrorResponse {
 	mut uuid := rand.uuid_v7()
 	response := ApiErrorResponse{
-		code:    status_code
-		status:  false
-		resp_id: uuid
-		msg:     message_error
+		code:       status_code
+		status:     false
+		request_id: uuid
+		error:      message_error
 	}
 	return response
 }
@@ -56,21 +65,21 @@ type SumResp = []string
 @[params]
 pub struct ApiErrorResponseOptparams {
 pub:
-	resp_id string
-	status  bool
-	code    int
-	msg     string
-	result  SumResp
+	request_id string
+	status     bool
+	code       int
+	message    string
+	data       SumResp
 }
 
 pub fn json_success_optparams(c ApiErrorResponseOptparams) ApiErrorResponseOptparams {
 	mut uuid := rand.uuid_v4()
 	response := ApiErrorResponseOptparams{
-		resp_id: uuid
-		status:  true
-		code:    c.code
-		msg:     c.msg
-		result:  c.result
+		request_id: uuid
+		status:     true
+		code:       c.code
+		message:    c.message
+		data:       c.data
 	}
 	return response
 }

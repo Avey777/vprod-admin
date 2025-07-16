@@ -25,5 +25,5 @@ fn (app &Base) init_job(mut ctx Context) veb.Result {
 	} or { return ctx.text('error creating table:  ${err}') }
 	log.debug('数据库 init job success')
 
-	return ctx.json(json_success_optparams(msg: 'job database init Successfull'))
+	return ctx.json(json_success_optparams(message: 'job database init Successfull'))
 }
