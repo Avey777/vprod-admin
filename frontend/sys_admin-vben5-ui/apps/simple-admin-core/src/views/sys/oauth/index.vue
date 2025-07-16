@@ -102,7 +102,7 @@ const gridOptions: VxeGridProps<OauthProviderInfo> = {
           pageSize: page.pageSize,
           ...formValues,
         });
-        return res.data;
+        return res.result;
       },
     },
   },

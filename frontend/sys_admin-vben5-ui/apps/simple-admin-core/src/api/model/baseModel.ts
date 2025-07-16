@@ -4,7 +4,7 @@ export interface BaseListReq {
 }
 
 export interface BaseListResp<T> {
-  data: T[];
+  result: T[];
   total: number;
 }
 

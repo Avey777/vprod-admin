@@ -13,7 +13,7 @@ mut:
 // 生成图形验证码
 pub fn generate_captcha() Captcha {
 	width := 120
-	height := 50
+	height := 40
 	char_count := 5
 
 	// 设置随机种子,每次运行程序时生成不同的随机数序列
