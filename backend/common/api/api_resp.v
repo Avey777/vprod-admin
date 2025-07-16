@@ -5,7 +5,7 @@ import rand
 pub struct ValidationError {
 pub:
 	field   string
-	message string
+	msg string  //使用 message 更符合RESTful 接口规范
 	rule    string
 	meta    map[string]string // 扩展参数（如 { "min": ’8‘, "max": 20 }）
 }
@@ -24,7 +24,7 @@ pub:
 	code       int
 	status     bool
 	request_id string
-	message    string
+	msg    string //使用 message 更符合RESTful 接口规范
 	data       T
 }
 
@@ -34,7 +34,7 @@ pub fn json_success[T](status_code int, message_success string, respose_data T) 
 		code:       status_code
 		status:     true
 		request_id: uuid
-		message:    message_success
+		msg:    message_success
 		data:       respose_data
 	}
 	return response

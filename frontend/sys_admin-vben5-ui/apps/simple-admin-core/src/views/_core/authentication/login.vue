@@ -41,8 +41,8 @@ const target = ref<string>('');
 async function getCaptchaData() {
   const captcha = await getCaptcha();
   if (captcha.code === 200) {
-    captchaId.value = captcha.result.captcha_token;
-    imgPath.value = captcha.result.captcha_image;
+    captchaId.value = captcha.data.captcha_token;
+    imgPath.value = captcha.data.captcha_image;
   }
 }
 

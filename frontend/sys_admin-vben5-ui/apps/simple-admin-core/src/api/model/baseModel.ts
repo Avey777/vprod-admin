@@ -4,14 +4,14 @@ export interface BaseListReq {
 }
 
 export interface BaseListResp<T> {
-  result: T[];
+  data: T[];
   total: number;
 }
 
 export interface BaseDataResp<T> {
   code: number;
   msg: string;
-  result: T;
+  data: T;
 }
 
 export interface BaseResp {
