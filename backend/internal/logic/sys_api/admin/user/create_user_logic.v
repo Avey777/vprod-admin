@@ -9,6 +9,7 @@ import rand
 import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
+import common.encrypt
 
 // Create User | 创建用户
 @['/create_user'; post]
@@ -36,6 +37,8 @@ fn create_user_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	user_id := rand.uuid_v7() // req.as_map()['id'] or { '' }.str()
 	position_ids := req.as_map()['position_ids'] or { []json2.Any{} }.arr()
 	rule_ids := req.as_map()['rule_ids'] or { []json2.Any{} }.arr()
+	password := req.as_map()['password'] or { '' }.str()
+	client_hash := encrypt.bcrypt_hash(password) or { return error('Failed bcrypt_hash : ${err}') }
 
 	users := schema_sys.SysUser{
 		id:            user_id
@@ -46,7 +49,7 @@ fn create_user_resp(mut ctx Context, req json2.Any) !map[string]Any {
 		home_path:     req.as_map()['home_path'] or { '/dashboard' }.str()
 		mobile:        req.as_map()['mobile'] or { '' }.str()
 		nickname:      req.as_map()['nickname'] or { '' }.str()
-		password:      req.as_map()['password'] or { '' }.str()
+		password:      client_hash
 		status:        req.as_map()['status'] or { 0 }.u8()
 		username:      req.as_map()['username'] or { '' }.str()
 		created_at:    req.as_map()['created_at'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
