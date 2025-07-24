@@ -7,12 +7,12 @@ import orm
 import time
 import rand
 import x.json2
-
 import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
 import common.jwt
 import common.captcha
+import common.encrypt
 
 // Login by Account | 帐号登入
 @['/login_by_account'; post]
@@ -21,10 +21,10 @@ fn (app &Authentication) login_by_account_logic(mut ctx Context) veb.Result {
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
 	mut result := login_by_account_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()) )
+		return ctx.json(api.json_error_500(err.msg()))
 	}
 
-	return ctx.json(api.json_success_200(result) )
+	return ctx.json(api.json_success_200(result))
 }
 
 fn login_by_account_resp(mut ctx Context, req json2.Any) !map[string]Any {
@@ -52,9 +52,10 @@ fn login_by_account_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	if user_info.len == 0 {
 		return error('UserName not exit')
 	}
-	if user_info[0].password != password {
+	if !encrypt.bcrypt_verify(password, user_info[0].password) {
 		return error('UserName or Password error')
 	}
+
 	expired_at := time.now().add_days(30)
 	token_jwt := token_jwt_generate(mut ctx, req) // 生成token和captcha
 	tokens := schema_sys.SysToken{
