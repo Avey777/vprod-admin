@@ -25,10 +25,10 @@ COPY . /app
 
 # 使用 V 构建项目
 # RUN v -prod -o app .
-RUN v -o app .
+RUN v -prod -o app .
 
 # 暴露端口（如果有必要）
 EXPOSE 9009
 
 # 定义容器启动命令
-CMD ["./app"]
+CMD ["./app -f backend/etc/config.toml"]
