@@ -1,2 +1,2 @@
-podman build --network=host -f Dockerfile-docker -t avey777/v-admin
+podman build --network=host -f Containerfile-podman -t avey777/v-admin
 buildah rm -a
