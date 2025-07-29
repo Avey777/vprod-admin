@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  v_prod:
+    image: avey777/vprod:latest
+    container_name: v_prod
+    restart: unless-stopped
+    ports:
+      - "9009:9009"
+    environment:
+      CONFIG_PATH: /app/vprod/config.toml
+    volumes:
+      - /opt/vprod/config.toml:/app/vprod/config.toml
