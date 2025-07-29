@@ -134,7 +134,7 @@ pub fn find_toml() !string {
 	return error('所有路径都尝试失败')
 }
 
-//指定配置文件 [v run . -f 'etc/config_dev.toml']
+//指定配置文件 [v run . -f etc/config_dev.toml]
 pub fn config_toml() string {
 	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
