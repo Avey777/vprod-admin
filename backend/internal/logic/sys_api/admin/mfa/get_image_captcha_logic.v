@@ -33,7 +33,11 @@ fn (app &MFA) get_captcha_logic(mut ctx Context) veb.Result {
 fn get_captcha_resp(mut ctx Context) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	captcha_token, captcha_image, _ := captcha.captcha_generate() // 生成token和captcha
+	captcha_token, captcha_image, captcha_text := captcha.captcha_generate() or {
+		return error('Failed to generate captcha')
+	}
+
+	log.debug('Generated captcha text: ${captcha_text}')
 
 	mut data := map[string]Any{}
 	data['captcha_token'] = captcha_token

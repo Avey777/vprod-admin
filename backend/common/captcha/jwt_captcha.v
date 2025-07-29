@@ -17,7 +17,7 @@ const header_captcha = base64.url_encode_str(json.encode(JwtHeader{
 const captcha_secret = 'd8a3b1f0-6e7b-4c9a-9f2d-1c3e5f7a8b4c' //固定值，JWT有效性验证时使用
 
 //生成captcha令牌
-pub fn captcha_generate() (string, string, string) {
+pub fn captcha_generate() !(string, string, string) {
 	captch_obj := generate_captcha()
 
 	payload_captcha := JwtPayload{
