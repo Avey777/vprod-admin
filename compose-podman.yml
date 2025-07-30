@@ -1,12 +1,11 @@
 version: "3.8"
 services:
-  v_prod:
-    image: avey777/vprod:latest
-    container_name: v_prod
+  v_admin:
+    image: localhost/avey777/v-admin:latest
+    container_name: v-admin
     restart: unless-stopped
-    ports:
-      - "9009:9009"
-    environment:
-      CONFIG_PATH: /app/vprod/config.toml
+    network_mode: host # <-- 关键修改，使容器共享宿主机网络
+    # ports:
+    #   - "9900:9009"
     volumes:
-      - /opt/vprod/config.toml:/app/vprod/config.toml
+      - ~/opt/v-admin/etc/config.toml:/app/etc/config.toml
