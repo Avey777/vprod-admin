@@ -1,8 +1,5 @@
 <template>
   <footer class="footer">
-    <!-- 顶部灰色细分割线 -->
-    <div class="top-divider"></div>
-
     <div class="footer-top">
       <div class="footer-nav">
         <div class="nav-section">
@@ -10,39 +7,47 @@
             <li class="nav-main">
               <h4 class="nav-title">Drive Electric</h4>
               <ul class="sub-links">
-                <li><a href="#">Ekon</a></li>
-                <li><a href="#">Spiro Maps</a></li>
-                <li><a href="#">Spiro IoT</a></li>
-                <li><a href="#">CredTrack</a></li>
+                <li>
+                  <a href="#"><i class="fas fa-bolt"></i> Ekon</a>
+                </li>
+                <li>
+                  <a href="#"
+                    ><i class="fas fa-map-marker-alt"></i> Spiro Maps</a
+                  >
+                </li>
+                <li>
+                  <a href="#"><i class="fas fa-microchip"></i> Spiro IoT</a>
+                </li>
+                <li>
+                  <a href="#"><i class="fas fa-shield-alt"></i> CredTrack</a>
+                </li>
               </ul>
-            </li>
-            <li class="nav-main">
-              <a href="#" class="top-link">Tech Stack</a>
             </li>
             <li class="nav-main">
               <h4 class="nav-title">About Us</h4>
               <ul class="sub-links">
-                <li><a href="#">Our Team</a></li>
-                <li><a href="#">Contact Us</a></li>
+                <li>
+                  <a href="#"><i class="fas fa-users"></i> Our Team</a>
+                </li>
+                <li>
+                  <a href="#"><i class="fas fa-envelope"></i> Contact Us</a>
+                </li>
               </ul>
-            </li>
-            <li class="nav-main"><a href="#" class="top-link">FAQ</a></li>
-            <li class="nav-main">
-              <a href="#" class="top-link">Trust Center</a>
             </li>
           </ul>
         </div>
       </div>
 
       <div class="subscribe-section">
-        <h4>Subscribe</h4>
-        <p>Get product updates</p>
+        <h4>Subscribe to Updates</h4>
+        <p>Get the latest product news and industry insights</p>
         <div class="input-group">
           <input
             type="email"
             placeholder="Enter your email"
             class="email-input"
             v-model="email"
+            @keyup.enter="subscribe"
           />
           <button class="send-button" @click="subscribe">
             <svg
@@ -63,7 +68,9 @@
     <div class="footer-bottom">
       <div class="bottom-divider"></div>
 
-      <div class="copyright">© 2024 Spiro. All rights reserved.</div>
+      <div class="copyright">
+        © {{ currentYear }} Spiro Electric Solutions. All rights reserved.
+      </div>
       <div class="social-links">
         <a href="#" aria-label="LinkedIn">
           <svg
@@ -109,16 +116,36 @@
   </footer>
 </template>
 
-<script setup>
-import { ref } from "vue";
-
-const email = ref("");
-
-const subscribe = () => {
-  if (email.value) {
-    alert(`Subscribed: ${email.value} will receive updates`);
-    email.value = "";
-  }
+<script>
+export default {
+  name: "AppFooter",
+  data() {
+    return {
+      email: "",
+      currentYear: new Date().getFullYear(),
+    };
+  },
+  methods: {
+    subscribe() {
+      if (this.email) {
+        if (this.validateEmail(this.email)) {
+          alert(
+            `Thank you for subscribing! Updates will be sent to: ${this.email}`,
+          );
+          this.email = "";
+        } else {
+          alert("Please enter a valid email address.");
+        }
+      } else {
+        alert("Please enter your email address.");
+      }
+    },
+    validateEmail(email) {
+      const re =
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(String(email).toLowerCase());
+    },
+  },
 };
 </script>
 
@@ -129,23 +156,16 @@ const subscribe = () => {
   padding: 0 5% 30px;
   font-family: "Segoe UI", system-ui, sans-serif;
   position: relative;
-}
-
-/* 顶部分割线 - 极细灰色且横跨全屏 */
-.top-divider {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 0.5px;
-  background-color: #e0e0e0;
+  /*box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.03);*/
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .footer-top {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  padding-top: 45px; /* 增加顶部间距 */
+  padding-top: 45px;
   padding-bottom: 25px;
 }
 
@@ -155,6 +175,7 @@ const subscribe = () => {
 }
 
 .nav-section ul {
+  justify-content: center;
   display: flex;
   flex-wrap: wrap;
   list-style: none;
@@ -178,12 +199,13 @@ const subscribe = () => {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .sub-links li {
-  margin-bottom: 14px;
   display: block;
-  margin: 5px 0; /* 上下间距5px */
 }
 
 a,
@@ -192,13 +214,9 @@ a,
   color: #2a6dbd;
   font-size: 0.95rem;
   transition: color 0.2s;
-}
-
-.top-link {
-  font-weight: 500;
-  color: #1a3b5d;
-  display: block;
-  padding: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 a:hover,
@@ -210,6 +228,7 @@ a:hover,
 .subscribe-section {
   min-width: 300px;
   max-width: 350px;
+  margin: 0 auto;
 }
 
 .subscribe-section h4 {
@@ -263,7 +282,7 @@ a:hover,
 
 .footer-bottom {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding-top: 25px;
   font-size: 0.85rem;
@@ -280,6 +299,10 @@ a:hover,
   right: 0;
   height: 1px;
   background-color: #eaeaea;
+}
+
+.copyright {
+  color: #666;
 }
 
 .social-links {
@@ -299,6 +322,7 @@ a:hover,
 
 @media (max-width: 900px) {
   .footer-top {
+    align-items: center;
     flex-direction: column;
     gap: 35px;
   }
@@ -315,6 +339,7 @@ a:hover,
   .footer-bottom {
     flex-direction: column;
     text-align: center;
+    gap: 15px;
   }
 
   .social-links {
