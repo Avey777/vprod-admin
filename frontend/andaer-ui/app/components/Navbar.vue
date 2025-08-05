@@ -84,17 +84,22 @@
   </nav>
 </template>
 
-<script setup>
-import { ref } from "vue";
-
-const menuOpen = ref(false);
-
-const toggleMenu = () => {
-  menuOpen.value = !menuOpen.value;
-};
-
-const closeMenu = () => {
-  menuOpen.value = false;
+<script>
+export default {
+  name: "AppNavbar",
+  data() {
+    return {
+      menuOpen: false,
+    };
+  },
+  methods: {
+    toggleMenu() {
+      this.menuOpen = !this.menuOpen;
+    },
+    closeMenu() {
+      this.menuOpen = false;
+    },
+  },
 };
 </script>
 

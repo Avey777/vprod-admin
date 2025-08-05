@@ -8,18 +8,16 @@
               <h4 class="nav-title">Drive Electric</h4>
               <ul class="sub-links">
                 <li>
-                  <a href="#"><i class="fas fa-bolt"></i> Ekon</a>
+                  <a href="#"><i class="fas fa-bolt" /> Ekon</a>
                 </li>
                 <li>
-                  <a href="#"
-                    ><i class="fas fa-map-marker-alt"></i> Spiro Maps</a
-                  >
+                  <a href="#"><i class="fas fa-map-marker-alt" /> Spiro Maps</a>
                 </li>
                 <li>
-                  <a href="#"><i class="fas fa-microchip"></i> Spiro IoT</a>
+                  <a href="#"><i class="fas fa-microchip" /> Spiro IoT</a>
                 </li>
                 <li>
-                  <a href="#"><i class="fas fa-shield-alt"></i> CredTrack</a>
+                  <a href="#"><i class="fas fa-shield-alt" /> CredTrack</a>
                 </li>
               </ul>
             </li>
@@ -27,10 +25,10 @@
               <h4 class="nav-title">About Us</h4>
               <ul class="sub-links">
                 <li>
-                  <a href="#"><i class="fas fa-users"></i> Our Team</a>
+                  <a href="#"><i class="fas fa-users" /> Our Team</a>
                 </li>
                 <li>
-                  <a href="#"><i class="fas fa-envelope"></i> Contact Us</a>
+                  <a href="#"><i class="fas fa-envelope" /> Contact Us</a>
                 </li>
               </ul>
             </li>
@@ -43,10 +41,10 @@
         <p>Get the latest product news and industry insights</p>
         <div class="input-group">
           <input
+            v-model="email"
             type="email"
             placeholder="Enter your email"
             class="email-input"
-            v-model="email"
             @keyup.enter="subscribe"
           />
           <button class="send-button" @click="subscribe">
@@ -66,7 +64,7 @@
     </div>
 
     <div class="footer-bottom">
-      <div class="bottom-divider"></div>
+      <div class="bottom-divider" />
 
       <div class="copyright">
         © {{ currentYear }} Spiro Electric Solutions. All rights reserved.
@@ -143,7 +141,7 @@ export default {
     },
     validateEmail(email) {
       const re =
-        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return re.test(String(email).toLowerCase());
     },
   },

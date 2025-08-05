@@ -1,334 +1,630 @@
 <template>
-  <div class="home">
-    <!-- 英雄区域 -->
+  <div class="dji-page">
+    <!-- 主视觉区域 -->
     <section class="hero">
-      <div class="container">
-        <div class="hero-content">
-          <h1 class="hero-title">
-            打造惊艳的<span class="highlight">用户体验</span>
-          </h1>
-          <p class="hero-subtitle">
-            AndaerUI
-            提供现代化的界面组件库，帮助您快速构建美观、高性能的应用程序
-          </p>
-          <div class="hero-cta">
-            <NuxtLink to="/get-started" class="cta-btn primary"
-              >开始使用</NuxtLink
-            >
-            <NuxtLink to="/demo" class="cta-btn secondary">查看演示</NuxtLink>
-          </div>
-        </div>
-        <div class="hero-image">
-          <div class="gradient-circle"></div>
-          <div class="mockup">
-            <div class="mockup-header"></div>
-            <div class="mockup-content">
-              <div class="mockup-item"></div>
-              <div class="mockup-item"></div>
-              <div class="mockup-item"></div>
-            </div>
-          </div>
-        </div>
+      <h2>重新定义飞行</h2>
+      <p>
+        大疆创新致力于持续推动人类进步，提供突破性的无人机技术与影像解决方案
+      </p>
+      <div class="hero-buttons">
+        <button class="btn btn-primary">探索产品</button>
+        <button class="btn btn-outline">了解更多</button>
       </div>
     </section>
 
-    <!-- 特性展示 -->
+    <!-- 产品展示区域 -->
+    <div class="section-title">
+      <h2>旗舰产品</h2>
+    </div>
+    <div class="products">
+      <div
+        v-for="(product, index) in products"
+        :key="index"
+        class="product-card"
+      >
+        <div class="product-image">
+          <img :src="product.image" :alt="product.name" />
+        </div>
+        <div class="product-info">
+          <h3>{{ product.name }}</h3>
+          <p>{{ product.description }}</p>
+          <div class="product-price">
+            <div class="price">{{ product.price }}</div>
+            <button class="add-to-cart" @click="addToCart(product)">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 特色区域 -->
+    <div class="section-title">
+      <h2>技术优势</h2>
+    </div>
     <section class="features">
-      <div class="container">
-        <h2 class="section-title">强大的功能特性</h2>
-        <p class="section-subtitle">
-          探索我们精心设计的组件库，提升您的开发体验
-        </p>
-
-        <div class="features-grid">
-          <div class="feature-card">
-            <div class="feature-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
-            </div>
-            <h3>响应式设计</h3>
-            <p>
-              所有组件完美适配各种屏幕尺寸，从手机到桌面设备都能提供一致的用户体验
-            </p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-camera"></i>
           </div>
-
-          <div class="feature-card">
-            <div class="feature-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M12 2.69l5 4.5V18h-2v-6H9v6H7V7.19l5-4.5z" />
-              </svg>
-            </div>
-            <h3>主题定制</h3>
-            <p>轻松定制主题颜色、字体和样式，满足您的品牌需求</p>
+          <h3>专业影像</h3>
+          <p>提供电影级影像质量，满足专业摄影需求</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-rocket"></i>
           </div>
-
-          <div class="feature-card">
-            <div class="feature-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <polyline points="23 4 23 10 17 10" />
-                <polyline points="1 20 1 14 7 14" />
-                <path
-                  d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
-                />
-              </svg>
-            </div>
-            <h3>无缝集成</h3>
-            <p>与Vue、Nuxt、React等主流框架无缝集成，开箱即用</p>
+          <h3>智能飞行</h3>
+          <p>先进的避障系统与飞行辅助功能</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-battery-full"></i>
           </div>
+          <h3>持久续航</h3>
+          <p>长续航电池技术，提升飞行体验</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3>安全可靠</h3>
+          <p>多重安全保障，确保飞行安全</p>
         </div>
       </div>
     </section>
+
+    <!-- 轮播图 -->
+    <div class="section-title">
+      <h2>新品发布</h2>
+    </div>
+    <div class="carousel">
+      <div
+        class="carousel-inner"
+        :style="{ transform: `translateX(-${currentSlide * 100}%)` }"
+      >
+        <div
+          v-for="(slide, index) in slides"
+          :key="index"
+          class="carousel-item"
+        >
+          <img :src="slide.image" :alt="slide.title" />
+          <div class="carousel-caption">
+            <h3>{{ slide.title }}</h3>
+            <p>{{ slide.description }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-controls">
+        <button class="carousel-btn" @click="prevSlide">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="carousel-btn" @click="nextSlide">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+      <div class="carousel-indicators">
+        <div
+          v-for="(slide, index) in slides"
+          :key="index"
+          class="indicator"
+          :class="{ active: currentSlide === index }"
+          @click="currentSlide = index"
+        ></div>
+      </div>
+    </div>
   </div>
 </template>
 
+<script setup>
+import { ref, onMounted } from "vue";
+
+// 购物车商品数量
+const cartCount = ref(0);
+
+// 产品数据
+const products = ref([
+  {
+    id: 1,
+    name: "DJI Mavic 3 Pro",
+    description: "旗舰三摄航拍无人机，专业影像创作利器，哈苏相机系统",
+    price: "¥13,888",
+    image:
+      "https://images.unsplash.com/photo-1579820010410-c10411aaaa88?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: 2,
+    name: "DJI Air 2S",
+    description: "一英寸传感器，5.4K视频拍摄，大师镜头智能功能",
+    price: "¥6,499",
+    image:
+      "https://images.unsplash.com/photo-1602088113235-229c19758e9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: 3,
+    name: "DJI Mini 3 Pro",
+    description: "轻于249g，专业级航拍性能，4K HDR视频",
+    price: "¥4,788",
+    image:
+      "https://images.unsplash.com/photo-1620001689041-5f2c8c9a0d8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    id: 4,
+    name: "DJI FPV",
+    description: "沉浸式飞行体验，穿越机新标杆，150°超广视角",
+    price: "¥7,999",
+    image:
+      "https://images.unsplash.com/photo-1619380061814-58f03707f082?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  },
+]);
+
+// 轮播图数据
+const slides = ref([
+  {
+    title: "DJI Inspire 3",
+    description: "电影级专业无人机，8K全画幅航拍系统，全新智能返航",
+    image:
+      "https://images.unsplash.com/photo-1579820010410-c10411aaaa88?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    title: "DJI Matrice 350 RTK",
+    description: "旗舰行业无人机，为专业作业而生，55分钟超长续航",
+    image:
+      "https://images.unsplash.com/photo-1508614589041-895b88991e3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    title: "DJI Avata",
+    description: "沉浸式飞行体验，第一视角探索世界，自带桨叶保护罩",
+    image:
+      "https://images.unsplash.com/photo-1620001689041-5f2c8c9a0d8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+  },
+]);
+
+// 当前轮播图索引
+const currentSlide = ref(0);
+
+// 添加到购物车
+const addToCart = (product) => {
+  cartCount.value++;
+  alert(`${product.name} 已添加到购物车`);
+};
+
+// 上一张轮播图
+const prevSlide = () => {
+  currentSlide.value =
+    (currentSlide.value - 1 + slides.value.length) % slides.value.length;
+};
+
+// 下一张轮播图
+const nextSlide = () => {
+  currentSlide.value = (currentSlide.value + 1) % slides.value.length;
+};
+
+// 自动轮播逻辑
+onMounted(() => {
+  const interval = setInterval(() => {
+    nextSlide();
+  }, 5000);
+
+  // 清除定时器
+  return () => clearInterval(interval);
+});
+</script>
+
 <style scoped>
-.home {
-  padding-top: 80px;
+.dji-page {
+  --dji-red: #e51c23;
+  --dji-dark: #0c0c0c;
+  --dji-gray: #1a1a1a;
+  --dji-light: #f0f0f0;
+  --dji-text: #e0e0e0;
+
+  background-color: var(--dji-dark);
+  color: var(--dji-text);
+  overflow-x: hidden;
+  min-height: 100vh;
+  padding: 20px;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
+.dji-page * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Arial", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
-.hero {
-  padding: 6rem 0;
+/* 主视觉区域 */
+.dji-page .hero {
+  height: 70vh;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url("https://images.unsplash.com/photo-1508615070457-7baeba4003ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80")
+      center/cover no-repeat;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 20px;
+  margin-bottom: 50px;
   position: relative;
   overflow: hidden;
 }
 
-.hero::before {
+.dji-page .hero:after {
   content: "";
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
-  right: 0;
-  height: 100%;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  z-index: -1;
-  clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+  width: 100%;
+  height: 150px;
+  background: linear-gradient(transparent, var(--dji-dark));
 }
 
-.hero-content {
-  max-width: 600px;
-}
-
-.hero-title {
-  font-size: 3.5rem;
-  font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 1.5rem;
-  color: #0f172a;
-}
-
-.highlight {
-  background: linear-gradient(to right, #6366f1, #8b5cf6);
+.dji-page .hero h2 {
+  font-size: 4.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: linear-gradient(45deg, #fff, #aaa);
   -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  z-index: 2;
 }
 
-.hero-subtitle {
-  font-size: 1.25rem;
-  color: #475569;
-  margin-bottom: 2rem;
+.dji-page .hero p {
+  font-size: 1.5rem;
+  max-width: 700px;
+  margin-bottom: 40px;
   line-height: 1.6;
+  z-index: 2;
 }
 
-.hero-cta {
+.dji-page .hero-buttons {
   display: flex;
-  gap: 1rem;
+  gap: 20px;
+  z-index: 2;
 }
 
-.cta-btn {
-  padding: 1rem 2rem;
-  border-radius: 8px;
+.dji-page .btn {
+  padding: 14px 35px;
+  border-radius: 30px;
+  font-size: 16px;
   font-weight: 600;
-  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.cta-btn.primary {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+.dji-page .btn-primary {
+  background-color: var(--dji-red);
   color: white;
-  box-shadow: 0 4px 6px rgba(99, 102, 241, 0.3);
+  border: none;
 }
 
-.cta-btn.primary:hover {
+.dji-page .btn-primary:hover {
+  background-color: #c4141a;
   transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 10px 20px rgba(229, 28, 35, 0.3);
 }
 
-.cta-btn.secondary {
-  background: transparent;
-  color: #6366f1;
-  border: 2px solid #6366f1;
+.dji-page .btn-outline {
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
 }
 
-.cta-btn.secondary:hover {
-  background: rgba(99, 102, 241, 0.05);
+.dji-page .btn-outline:hover {
+  background-color: rgba(255, 255, 255, 0.1);
   transform: translateY(-3px);
 }
 
-.hero-image {
-  position: absolute;
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
-  width: 50%;
-  max-width: 600px;
-}
-
-.gradient-circle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 400px;
-  height: 400px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(99, 102, 241, 0.2) 0%,
-    rgba(99, 102, 241, 0) 70%
-  );
-  z-index: -1;
-}
-
-.mockup {
-  width: 320px;
-  height: 400px;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  margin-left: auto;
-  margin-right: 10%;
-}
-
-.mockup-header {
-  height: 50px;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-}
-
-.mockup-content {
-  padding: 1.5rem;
-}
-
-.mockup-item {
-  height: 60px;
-  background: #f8fafc;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-}
-
-.mockup-item:last-child {
-  margin-bottom: 0;
-}
-
-.features {
-  padding: 6rem 0;
-}
-
-.section-title {
+/* 产品展示区域 */
+.dji-page .section-title {
   text-align: center;
+  padding: 40px 0;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.dji-page .section-title h2 {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 15px;
+  background: linear-gradient(45deg, #fff, #aaa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.section-subtitle {
-  text-align: center;
-  color: #64748b;
-  max-width: 600px;
-  margin: 0 auto 3rem;
-  font-size: 1.1rem;
+.dji-page .section-title:after {
+  content: "";
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background-color: var(--dji-red);
+  border-radius: 2px;
 }
 
-.features-grid {
+.dji-page .products {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  margin-bottom: 60px;
 }
 
-.feature-card {
-  background: white;
-  border-radius: 16px;
-  padding: 2rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+.dji-page .product-card {
+  background-color: var(--dji-gray);
+  border-radius: 15px;
+  overflow: hidden;
+  transition:
+    transform 0.4s,
+    box-shadow 0.4s;
+  position: relative;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
-.feature-card:hover {
+.dji-page .product-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
 }
 
-.feature-icon {
-  width: 70px;
-  height: 70px;
-  border-radius: 18px;
-  background: rgba(99, 102, 241, 0.1);
+.dji-page .product-image {
+  height: 250px;
+  overflow: hidden;
+}
+
+.dji-page .product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s;
+}
+
+.dji-page .product-card:hover .product-image img {
+  transform: scale(1.1);
+}
+
+.dji-page .product-info {
+  padding: 20px;
+}
+
+.dji-page .product-info h3 {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.dji-page .product-info p {
+  color: #aaa;
+  margin-bottom: 15px;
+  line-height: 1.5;
+  min-height: 70px;
+}
+
+.dji-page .product-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dji-page .price {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--dji-red);
+}
+
+.dji-page .add-to-cart {
+  background-color: rgba(229, 28, 35, 0.2);
+  color: var(--dji-red);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: all 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.5rem;
 }
 
-.feature-icon svg {
-  width: 32px;
-  height: 32px;
-  stroke: #6366f1;
-  stroke-width: 1.5;
+.dji-page .add-to-cart:hover {
+  background-color: var(--dji-red);
+  color: white;
+  transform: rotate(90deg);
 }
 
-.feature-card h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #0f172a;
+/* 特色区域 */
+.dji-page .features {
+  background-color: var(--dji-gray);
+  padding: 50px 30px;
+  border-radius: 15px;
+  margin-bottom: 60px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-.feature-card p {
-  color: #64748b;
+.dji-page .features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dji-page .feature-card {
+  text-align: center;
+  padding: 30px;
+  border-radius: 10px;
+  transition: transform 0.3s;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dji-page .feature-card:hover {
+  transform: translateY(-10px);
+  background: rgba(229, 28, 35, 0.1);
+}
+
+.dji-page .feature-icon {
+  font-size: 3rem;
+  color: var(--dji-red);
+  margin-bottom: 20px;
+  transition: transform 0.3s;
+}
+
+.dji-page .feature-card:hover .feature-icon {
+  transform: scale(1.2);
+}
+
+.dji-page .feature-card h3 {
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+  color: white;
+}
+
+.dji-page .feature-card p {
+  color: #aaa;
   line-height: 1.6;
+}
+
+/* 轮播图 */
+.dji-page .carousel {
+  margin: 0 auto 50px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  max-width: 1200px;
+}
+
+.dji-page .carousel-inner {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+
+.dji-page .carousel-item {
+  min-width: 100%;
+  position: relative;
+}
+
+.dji-page .carousel-item img {
+  width: 100%;
+  display: block;
+  max-height: 500px;
+  object-fit: cover;
+}
+
+.dji-page .carousel-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+  padding: 30px;
+  color: white;
+}
+
+.dji-page .carousel-caption h3 {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.dji-page .carousel-controls {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.dji-page .carousel-btn {
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+}
+
+.dji-page .carousel-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.dji-page .carousel-indicators {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+}
+
+.dji-page .indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.dji-page .indicator.active {
+  background: var(--dji-red);
+  transform: scale(1.2);
 }
 
 /* 响应式设计 */
 @media (max-width: 992px) {
-  .hero {
-    padding: 4rem 0;
+  .dji-page .hero h2 {
+    font-size: 3.5rem;
   }
 
-  .hero-title {
-    font-size: 2.5rem;
-  }
-
-  .hero-image {
-    position: relative;
-    width: 100%;
-    max-width: none;
-    transform: none;
-    margin-top: 3rem;
-  }
-
-  .mockup {
-    margin: 0 auto;
+  .dji-page .hero p {
+    font-size: 1.2rem;
   }
 }
 
-@media (max-width: 576px) {
-  .hero-title {
-    font-size: 2rem;
+@media (max-width: 768px) {
+  .dji-page .hero {
+    height: 60vh;
   }
 
-  .hero-cta {
+  .dji-page .hero h2 {
+    font-size: 2.5rem;
+  }
+
+  .dji-page .hero p {
+    font-size: 1rem;
+  }
+
+  .dji-page .hero-buttons {
     flex-direction: column;
+    gap: 15px;
+  }
+
+  .dji-page .btn {
+    width: 100%;
+  }
+
+  .dji-page .section-title h2 {
+    font-size: 2rem;
   }
 }
 </style>

@@ -12,11 +12,20 @@ export default defineNuxtConfig({
     "@nuxt/test-utils",
     "@nuxt/ui",
     "@pinia/nuxt",
+    "nuxt-icon",
+    "@nuxtjs/tailwindcss",
   ],
   fonts: {
     providers: {
       google: false,
       googleicons: false,
+    },
+  },
+
+  // 启用 Vue 兼容性选项
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag) => tag.includes("fa-icon"), // 更新自定义标签名
     },
   },
 });
