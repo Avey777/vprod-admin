@@ -23,11 +23,11 @@
               background-image: url(&quot;/images/grid1.webp&quot;);
               background-size: cover;
               background-position: center;
-              position: absolute; /* 相对 grid-item 定位 */
+              position: absolute;
               top: 0;
               left: 0;
-              width: 100%; /* 继承父容器宽度 */
-              height: 100%; /* 继承父容器高度 */
+              width: 100%;
+              height: 100%;
               animation: float 6s infinite ease-in-out;
             "
           />
@@ -45,11 +45,11 @@
               background-image: url(&quot;/images/grid2.webp&quot;);
               background-size: cover;
               background-position: center;
-              position: absolute; /* 相对 grid-item 定位 */
+              position: absolute;
               top: 0;
               left: 0;
-              width: 100%; /* 继承父容器宽度 */
-              height: 100%; /* 继承父容器高度 */
+              width: 100%;
+              height: 100%;
               animation: float 6s infinite ease-in-out;
             "
           ></div>
@@ -67,11 +67,11 @@
               background-image: url(&quot;/images/grid3.jpg&quot;);
               background-size: cover;
               background-position: center;
-              position: absolute; /* 相对 grid-item 定位 */
+              position: absolute;
               top: 0;
               left: 0;
-              width: 100%; /* 继承父容器宽度 */
-              height: 100%; /* 继承父容器高度 */
+              width: 100%;
+              height: 100%;
               animation: float 6s infinite ease-in-out;
             "
           ></div>
@@ -89,11 +89,11 @@
               background-image: url(&quot;/images/grid4.jpg&quot;);
               background-size: cover;
               background-position: center;
-              position: absolute; /* 相对 grid-item 定位 */
+              position: absolute;
               top: 0;
               left: 0;
-              width: 100%; /* 继承父容器宽度 */
-              height: 100%; /* 继承父容器高度 */
+              width: 100%;
+              height: 100%;
               animation: float 6s infinite ease-in-out;
             "
           ></div>
@@ -252,81 +252,35 @@
 import { onMounted } from "vue";
 
 onMounted(() => {
-  // 确保在DOM完全渲染后执行动画
   setTimeout(() => {
     const gridItems = document.querySelectorAll(".grid-item");
     gridItems.forEach((item, index) => {
-      // 使用CSS类代替直接操作style
       item.style.setProperty("--animation-delay", `${index * 0.1}s`);
       item.classList.add("animate-grid");
     });
 
     const productCards = document.querySelectorAll(".product-card");
     productCards.forEach((card, index) => {
-      // 使用CSS变量控制延迟
       card.style.setProperty("--animation-delay", `${index * 0.1 + 0.4}s`);
       card.classList.add("animate-product");
     });
-  }, 300); // 300ms延迟确保浏览器完成初始渲染
+  }, 300);
 });
 </script>
 
 <style scoped>
-/* === 关键修复 === */
-/* 初始状态设置 */
-.grid-item {
-  position: relative;
-}
-.product-card {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-/* 动画类 */
-.animate-grid {
-  animation: fadeInUp 0.6s ease-out var(--animation-delay) forwards;
-}
-
-.animate-product {
-  animation: fadeInUp 0.5s ease-out var(--animation-delay) forwards;
-}
-
-/* === 布局优化 === */
 .container {
-  width: 100vw;
-  max-width: none;
+  width: 100%;
   padding: 0;
   overflow-x: hidden;
 }
 
-.products-container {
-  display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-}
-
-.product-card {
-  min-width: 320px;
-  scroll-snap-align: start;
-}
-
-/* === 基础样式 === */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
-}
-
-/* 全屏Banner */
 .banner {
   position: relative;
   height: 80vh;
   min-height: 650px;
   overflow: hidden;
-  margin-bottom: 20px;
-  background: #f8f9fa;
+  margin-bottom: 10px;
 }
 
 .banner-image {
@@ -335,13 +289,12 @@ onMounted(() => {
   background-position: center;
   width: 100%;
   height: 100%;
-  /*background: linear-gradient(135deg, #f0f5ff, #e6f0ff);*/
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  overflow: hidden;
 }
+
 .banner-image::before {
   content: "";
   position: absolute;
@@ -369,22 +322,18 @@ onMounted(() => {
   max-width: 900px;
   padding: 0 20px;
   animation: fadeInUp 1s ease-out;
-  margin-top: -500px;
-  transform: translateY(-8%);
 }
 
 .banner-title {
   font-family: "Montserrat", sans-serif;
-  font-size: 4.5rem;
+  font-size: clamp(2.2rem, 5vw, 4.5rem);
   font-weight: 700;
-  margin-top: 0;
   margin-bottom: 15px;
-  letter-spacing: 1px;
   color: #ffffff;
 }
 
 .banner-subtitle {
-  font-size: 1.8rem;
+  font-size: clamp(1.1rem, 2.5vw, 1.8rem);
   font-weight: 400;
   margin-bottom: 30px;
   line-height: 1.6;
@@ -394,31 +343,49 @@ onMounted(() => {
   color: #ffffff;
 }
 
-/* 四宫格布局 */
 .grid-section {
   margin-bottom: 80px;
-  /*padding: 0 5%;*/
+  /* 控制左右空白 */
+  padding: 0 0%;
 }
 
 .section-title {
   text-align: center;
-  font-size: 2.8rem;
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
   margin-bottom: 50px;
   color: #0a3d62;
   font-weight: 600;
-  position: relative;
   font-family: "Montserrat", sans-serif;
 }
 
 .grid-container {
-  grid-template-columns: repeat(auto-fit, minmax(850px, 1fr));
   display: grid;
+  /* 保持两列布局 */
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
+
+  /* 确保容器宽度铺满父元素 */
+  width: 100%;
+  max-width: 100%;
+  /* 边距和内边距优化 */
+  margin: 0;
+  padding: 0px; /* 增加内边距使内容不贴边 */
+  /* 确保网格项填满网格单元格 */
+  justify-items: stretch;
+  align-items: stretch;
+  box-sizing: border-box;
+  /* 添加响应式处理 */
+  gap: min(2vw, 15px);
 }
 
 .grid-item {
   position: relative;
-  height: 800px;
+  /* 修改高度为自适应 */
+  height: auto;
+  /* 添加最小高度确保显示 */
+  min-height: 300px;
+  /* 添加宽高比保持比例 */
+  aspect-ratio: 3/2;
   border-radius: 2px;
   overflow: hidden;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
@@ -426,7 +393,14 @@ onMounted(() => {
     transform 0.4s ease,
     box-shadow 0.4s ease;
   background: #f8f9fa;
-  /*border: 1px solid #eee;*/
+
+  /* 添加弹性布局使内部内容居中 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 确保项目填满网格单元格 */
+  width: 100%;
+  min-width: 0; /* 防止内容溢出 */
 }
 
 .grid-item:hover {
@@ -443,47 +417,34 @@ onMounted(() => {
   color: #333;
   z-index: 2;
   transition: transform 0.4s ease;
-  background: rgba(255, 255, 255, 0);
-}
-
-.grid-item:hover .grid-overlay {
-  transform: translateY(-10px);
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .grid-title {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   margin-bottom: 12px;
   font-weight: 600;
-  font-family: "Montserrat", sans-serif;
   color: #0a3d62;
 }
 
 .grid-desc {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #555;
-  margin-bottom: 20px;
 }
 
-/* 无人机图片样式 */
-.drone-img {
-  position: absolute;
-  z-index: 1;
-  transition: transform 0.5s ease;
-}
-
-/* 热销产品布局 */
 .products-section {
   margin-bottom: 100px;
-  padding: 0 20px;
+  padding: 0 0%;
 }
 
 .products-container {
   display: flex;
-  gap: 10px;
+  gap: 20px;
   overflow-x: auto;
-  padding-bottom: 30px;
-  scroll-snap-type: x mandatory;
-  justify-content: center;
+  padding: 0 0px 0px;
+  scrollbar-width: thin;
+  scrollbar-color: #ff6b00 transparent;
+  max-width: 100%;
 }
 
 .products-container::-webkit-scrollbar {
@@ -496,11 +457,10 @@ onMounted(() => {
 }
 
 .product-card {
-  /*aspect-ratio: 3/4;
-  width: 100%;*/
-  width: clamp(320px, 30vw, 480px);
+  width: 360px;
+  min-width: 320px;
   background: #fff;
-  border-radius: 2px;
+  border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
   transition: transform 0.4s ease;
@@ -515,11 +475,8 @@ onMounted(() => {
 }
 
 .product-image {
-  height: 300px;
+  height: 320px;
   background: #f0f2f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
   overflow: hidden;
 }
@@ -532,11 +489,10 @@ onMounted(() => {
 }
 
 .product-name {
-  font-size: 1.7rem;
+  font-size: 1.4rem;
   font-weight: 600;
   margin-bottom: 15px;
   color: #0a3d62;
-  font-family: "Montserrat", sans-serif;
 }
 
 .product-features {
@@ -554,14 +510,27 @@ onMounted(() => {
 }
 
 .product-price {
-  font-size: 1.7rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #ff8c3a;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   text-align: right;
 }
 
-/* 动画关键帧 */
+.grid-item,
+.product-card {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.animate-grid {
+  animation: fadeInUp 0.6s ease-out var(--animation-delay) forwards;
+}
+
+.animate-product {
+  animation: fadeInUp 0.5s ease-out var(--animation-delay) forwards;
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -585,64 +554,46 @@ onMounted(() => {
   }
 }
 
-/* 响应式设计 */
-@media (max-width: 1200px) {
-  .banner-title {
-    font-size: 3.8rem;
-  }
-  .banner-subtitle {
-    font-size: 1.6rem;
-  }
-  .grid-container {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 @media (max-width: 992px) {
   .banner {
-    height: 80vh;
+    height: 70vh;
+    min-height: 500px;
   }
-  .banner-title {
-    font-size: 3.2rem;
-  }
-  .section-title {
-    font-size: 2.5rem;
+
+  .grid-item {
+    height: 400px;
   }
 }
 
 @media (max-width: 768px) {
+  .banner {
+    height: 60vh;
+  }
+
   .grid-container {
     grid-template-columns: 1fr;
   }
-  .products-container {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+
+  .grid-item {
+    height: 350px;
   }
-  .banner {
-    height: 70vh;
-  }
-  .banner-title {
-    font-size: 2.5rem;
-  }
-  .banner-subtitle {
-    font-size: 1.3rem;
-  }
-  .section-title {
-    font-size: 2.2rem;
+
+  .product-card {
+    min-width: 280px;
   }
 }
 
 @media (max-width: 576px) {
   .banner {
-    height: 85vh;
+    height: 50vh;
   }
-  .banner-title {
-    font-size: 2.2rem;
+
+  .grid-section {
+    padding: 0 20px;
   }
-  .banner-subtitle {
-    font-size: 1.1rem;
-  }
-  .section-title {
-    font-size: 1.9rem;
+
+  .products-section {
+    padding: 0 10px;
   }
 }
 </style>

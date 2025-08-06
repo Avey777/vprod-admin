@@ -47,27 +47,6 @@
       <div class="subscribe-section">
         <h4>Andaer is walking with you</h4>
         <p>Get the latest product news and industry insights</p>
-        <!-- <div class="input-group"> -->
-        <!-- <input
-            v-model="email"
-            type="email"
-            placeholder="Enter your email"
-            class="email-input"
-            @keyup.enter="subscribe"
-          /> -->
-        <!-- <button class="send-button" @click="subscribe">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="white"
-              width="16px"
-              height="16px"
-            >
-              <path d="M0 0h24v24H0z" fill="none" />
-              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-            </svg>
-          </button> -->
-        <!-- </div> -->
       </div>
     </div>
 
@@ -128,30 +107,8 @@ export default {
   name: "AppFooter",
   data() {
     return {
-      email: "",
       currentYear: new Date().getFullYear(),
     };
-  },
-  methods: {
-    subscribe() {
-      if (this.email) {
-        if (this.validateEmail(this.email)) {
-          alert(
-            `Thank you for subscribing! Updates will be sent to: ${this.email}`,
-          );
-          this.email = "";
-        } else {
-          alert("Please enter a valid email address.");
-        }
-      } else {
-        alert("Please enter your email address.");
-      }
-    },
-    validateEmail(email) {
-      const re =
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return re.test(String(email).toLowerCase());
-    },
   },
 };
 </script>
@@ -161,9 +118,6 @@ export default {
   background-color: white;
   color: #333;
   padding: 0 5% 30px;
-  font-family: "Segoe UI", system-ui, sans-serif;
-  position: relative;
-  /*box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.03);*/
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -174,6 +128,7 @@ export default {
   justify-content: space-between;
   padding-top: 45px;
   padding-bottom: 25px;
+  gap: 40px;
 }
 
 .footer-nav {
@@ -182,13 +137,12 @@ export default {
 }
 
 .nav-section ul {
-  justify-content: center;
   display: flex;
   flex-wrap: wrap;
   list-style: none;
   padding: 0;
   margin: 0;
-  gap: 30px 150px;
+  gap: 30px 100px;
 }
 
 .nav-main {
@@ -251,45 +205,9 @@ a:hover,
   color: #555;
 }
 
-.input-group {
-  display: flex;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-}
-
-.email-input {
-  flex: 1;
-  padding: 14px 16px;
-  border: 1px solid #ddd;
-  border-right: none;
-  font-size: 0.95rem;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.email-input:focus {
-  border-color: #2a6dbd;
-}
-
-.send-button {
-  background-color: #2a6dbd;
-  border: none;
-  padding: 0 22px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.send-button:hover {
-  background-color: #1d4f8c;
-}
-
 .footer-bottom {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   padding-top: 25px;
   font-size: 0.85rem;
@@ -329,7 +247,6 @@ a:hover,
 
 @media (max-width: 900px) {
   .footer-top {
-    align-items: center;
     flex-direction: column;
     gap: 35px;
   }
