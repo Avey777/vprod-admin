@@ -5,19 +5,27 @@
         <div class="nav-section">
           <ul>
             <li class="nav-main">
-              <h4 class="nav-title">Drive Electric</h4>
+              <h4 class="nav-title">Safe Flight</h4>
               <ul class="sub-links">
                 <li>
-                  <a href="#"><i class="fas fa-bolt" /> Ekon</a>
+                  <a href="#"
+                    ><i class="fas fa-bolt" />Safe Flight Guidelines</a
+                  >
+                </li>
+              </ul>
+            </li>
+            <li class="nav-main">
+              <h4 class="nav-title">Help and Support</h4>
+              <ul class="sub-links">
+                <li>
+                  <a href="#"
+                    ><i class="fas fa-users" /> After sales service policy</a
+                  >
                 </li>
                 <li>
-                  <a href="#"><i class="fas fa-map-marker-alt" /> Spiro Maps</a>
-                </li>
-                <li>
-                  <a href="#"><i class="fas fa-microchip" /> Spiro IoT</a>
-                </li>
-                <li>
-                  <a href="#"><i class="fas fa-shield-alt" /> CredTrack</a>
+                  <a href="#"
+                    ><i class="fas fa-envelope" /> Security and Privacy</a
+                  >
                 </li>
               </ul>
             </li>
@@ -37,17 +45,17 @@
       </div>
 
       <div class="subscribe-section">
-        <h4>Subscribe to Updates</h4>
+        <h4>Andaer is walking with you</h4>
         <p>Get the latest product news and industry insights</p>
-        <div class="input-group">
-          <input
+        <!-- <div class="input-group"> -->
+        <!-- <input
             v-model="email"
             type="email"
             placeholder="Enter your email"
             class="email-input"
             @keyup.enter="subscribe"
-          />
-          <button class="send-button" @click="subscribe">
+          /> -->
+        <!-- <button class="send-button" @click="subscribe">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -58,8 +66,8 @@
               <path d="M0 0h24v24H0z" fill="none" />
               <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
             </svg>
-          </button>
-        </div>
+          </button> -->
+        <!-- </div> -->
       </div>
     </div>
 
@@ -67,7 +75,7 @@
       <div class="bottom-divider" />
 
       <div class="copyright">
-        © {{ currentYear }} Spiro Electric Solutions. All rights reserved.
+        © {{ currentYear }} Andaer Electric Solutions. All rights reserved.
       </div>
       <div class="social-links">
         <a href="#" aria-label="LinkedIn">
@@ -180,7 +188,7 @@ export default {
   list-style: none;
   padding: 0;
   margin: 0;
-  gap: 45px;
+  gap: 30px 150px;
 }
 
 .nav-main {

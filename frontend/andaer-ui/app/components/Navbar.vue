@@ -8,48 +8,31 @@
             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
           </svg>
         </div>
-        <span class="brand">Andaer<span class="highlight">UI</span></span>
+        <span class="brand">Andaer</span>
       </NuxtLink>
     </div>
 
     <!-- 导航链接 -->
     <div class="nav-links">
       <NuxtLink to="/" class="nav-link" exact-active-class="active">
-        <span class="link-text">首页</span>
+        <span class="link-text">Home</span>
       </NuxtLink>
-      <NuxtLink to="/products" class="nav-link" active-class="active">
-        <span class="link-text">产品</span>
+      <NuxtLink to="/" class="nav-link" active-class="active">
+        <span class="link-text">Flight</span>
       </NuxtLink>
-      <NuxtLink to="/services" class="nav-link" active-class="active">
-        <span class="link-text">服务</span>
+      <NuxtLink to="/" class="nav-link" active-class="active">
+        <span class="link-text">Service</span>
       </NuxtLink>
-      <NuxtLink to="/about" class="nav-link" active-class="active">
-        <span class="link-text">关于我们</span>
+      <NuxtLink to="/" class="nav-link" active-class="active">
+        <span class="link-text">About Us</span>
       </NuxtLink>
-      <NuxtLink to="/contact" class="nav-link" active-class="active">
-        <span class="link-text">联系我们</span>
+      <NuxtLink to="/" class="nav-link" active-class="active">
+        <span class="link-text">Contact Us</span>
       </NuxtLink>
     </div>
 
     <!-- 用户操作 -->
     <div class="user-actions">
-      <button class="search-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-      </button>
-      <button class="cart-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <circle cx="9" cy="21" r="1" />
-          <circle cx="20" cy="21" r="1" />
-          <path
-            d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"
-          />
-        </svg>
-        <span class="cart-count">3</span>
-      </button>
-      <button class="auth-btn">登录/注册</button>
       <button class="mobile-menu-btn" @click="toggleMenu">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <line x1="3" y1="12" x2="21" y2="12" />
@@ -57,29 +40,6 @@
           <line x1="3" y1="18" x2="21" y2="18" />
         </svg>
       </button>
-    </div>
-
-    <!-- 移动端菜单 -->
-    <div class="mobile-menu" :class="{ open: menuOpen }">
-      <NuxtLink to="/" class="mobile-nav-link" @click="closeMenu">
-        <span>首页</span>
-      </NuxtLink>
-      <NuxtLink to="/products" class="mobile-nav-link" @click="closeMenu">
-        <span>产品</span>
-      </NuxtLink>
-      <NuxtLink to="/services" class="mobile-nav-link" @click="closeMenu">
-        <span>服务</span>
-      </NuxtLink>
-      <NuxtLink to="/about" class="mobile-nav-link" @click="closeMenu">
-        <span>关于我们</span>
-      </NuxtLink>
-      <NuxtLink to="/contact" class="mobile-nav-link" @click="closeMenu">
-        <span>联系我们</span>
-      </NuxtLink>
-      <div class="mobile-auth">
-        <button class="mobile-login-btn">登录</button>
-        <button class="mobile-signup-btn">注册</button>
-      </div>
     </div>
   </nav>
 </template>
@@ -109,7 +69,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: linear-gradient(white, white);
   color: white;
   position: sticky;
   top: 0;
@@ -166,14 +126,14 @@ export default {
 .nav-link {
   position: relative;
   text-decoration: none;
-  color: #cbd5e1;
+  color: #334155;
   font-weight: 500;
   padding: 0.5rem 0;
   transition: all 0.3s ease;
 }
 
 .nav-link:hover {
-  color: white;
+  color: #6366f1;
 }
 
 .nav-link:hover .link-text::after {
@@ -198,7 +158,7 @@ export default {
 }
 
 .nav-link.active .link-text {
-  color: white;
+  color: #6366f1;
 }
 
 .nav-link.active .link-text::after {
@@ -209,58 +169,6 @@ export default {
   display: flex;
   align-items: center;
   gap: 1.25rem;
-}
-
-.search-btn,
-.cart-btn,
-.mobile-menu-btn {
-  background: transparent;
-  border: none;
-  color: #cbd5e1;
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.search-btn:hover,
-.cart-btn:hover,
-.mobile-menu-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-}
-
-.search-btn svg,
-.cart-btn svg,
-.mobile-menu-btn svg {
-  width: 20px;
-  height: 20px;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.cart-count {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  background: #ef4444;
-  color: white;
-  font-size: 0.7rem;
-  font-weight: 700;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .auth-btn {
@@ -298,10 +206,6 @@ export default {
     display: none;
   }
 
-  .mobile-menu-btn {
-    display: flex;
-  }
-
   .mobile-menu {
     display: flex;
     flex-direction: column;
@@ -324,7 +228,7 @@ export default {
   .mobile-nav-link {
     padding: 1rem;
     text-decoration: none;
-    color: #cbd5e1;
+    color: #334155;
     font-weight: 500;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.2s ease;
