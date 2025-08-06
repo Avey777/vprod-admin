@@ -17,16 +17,16 @@
       <NuxtLink to="/" class="nav-link" exact-active-class="active">
         <span class="link-text">Home</span>
       </NuxtLink>
-      <NuxtLink to="/products" class="nav-link" active-class="active">
+      <NuxtLink to="/" class="nav-link" active-class="active">
         <span class="link-text">Flight</span>
       </NuxtLink>
-      <NuxtLink to="/services" class="nav-link" active-class="active">
+      <NuxtLink to="/" class="nav-link" active-class="active">
         <span class="link-text">Service</span>
       </NuxtLink>
-      <NuxtLink to="/about" class="nav-link" active-class="active">
+      <NuxtLink to="/" class="nav-link" active-class="active">
         <span class="link-text">About Us</span>
       </NuxtLink>
-      <NuxtLink to="/contact" class="nav-link" active-class="active">
+      <NuxtLink to="/" class="nav-link" active-class="active">
         <span class="link-text">Contact Us</span>
       </NuxtLink>
     </div>
