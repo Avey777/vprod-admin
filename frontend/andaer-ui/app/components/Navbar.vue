@@ -41,6 +41,25 @@
         </svg>
       </button>
     </div>
+
+    <!-- 移动端菜单 -->
+    <div class="mobile-menu" :class="{ open: menuOpen }">
+      <NuxtLink to="/" class="mobile-nav-link" @click="closeMenu">
+        Home
+      </NuxtLink>
+      <NuxtLink to="/" class="mobile-nav-link" @click="closeMenu">
+        Flight
+      </NuxtLink>
+      <NuxtLink to="/" class="mobile-nav-link" @click="closeMenu">
+        Service
+      </NuxtLink>
+      <NuxtLink to="/" class="mobile-nav-link" @click="closeMenu">
+        About Us
+      </NuxtLink>
+      <NuxtLink to="/contact" class="mobile-nav-link" @click="closeMenu">
+        Contact Us
+      </NuxtLink>
+    </div>
   </nav>
 </template>
 
@@ -66,17 +85,21 @@ export default {
 <style scoped>
 .navbar {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding: 1rem 2rem;
-  background: linear-gradient(white, white);
-  color: white;
+  padding: 1rem 5%;
+  background: white;
   position: sticky;
   top: 0;
   z-index: 100;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
+.logo {
+  margin-right: 180px;
+}
 .logo-link {
   display: flex;
   align-items: center;
@@ -85,9 +108,9 @@ export default {
 }
 
 .logo-icon {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #0a3d62 0%, #0a3d62 100%);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -104,14 +127,7 @@ export default {
 .brand {
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(to right, #8b5cf6, #ec4899);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.highlight {
-  background: linear-gradient(to right, #ec4899, #f97316);
+  background: linear-gradient(to right, #0a3d62, #0a3d62);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -119,7 +135,7 @@ export default {
 
 .nav-links {
   display: flex;
-  gap: 1.5rem;
+  gap: 2rem;
   align-items: center;
 }
 
@@ -133,14 +149,11 @@ export default {
 }
 
 .nav-link:hover {
-  color: #6366f1;
-}
-
-.nav-link:hover .link-text::after {
-  transform: scaleX(1);
+  color: #0a3d62;
 }
 
 .link-text {
+  font-size: 0.8rem;
   position: relative;
 }
 
@@ -151,14 +164,20 @@ export default {
   left: 0;
   width: 100%;
   height: 2px;
-  background: linear-gradient(to right, #6366f1, #8b5cf6);
+  background: linear-gradient(to right, #0a3d62, #0a3d62);
   transform: scaleX(0);
   transform-origin: right;
   transition: transform 0.3s ease;
 }
 
+.nav-link:hover .link-text::after {
+  transform: scaleX(1);
+}
+
 .nav-link.active .link-text {
-  color: #6366f1;
+  font-size: 1rem;
+  color: #0a3d62;
+  font-weight: 600;
 }
 
 .nav-link.active .link-text::after {
@@ -171,29 +190,52 @@ export default {
   gap: 1.25rem;
 }
 
-.auth-btn {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  color: white;
-  border: none;
-  border-radius: 30px;
-  padding: 0.5rem 1.5rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(99, 102, 241, 0.3);
-}
-
-.auth-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 8px rgba(99, 102, 241, 0.4);
-}
-
 .mobile-menu-btn {
   display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.mobile-menu-btn svg {
+  width: 24px;
+  height: 24px;
+  stroke: #334155;
 }
 
 .mobile-menu {
   display: none;
+  flex-direction: column;
+  position: fixed;
+  top: 80px;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 1rem;
+  transform: translateY(-150%);
+  transition: transform 0.3s ease;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  z-index: 90;
+}
+
+.mobile-menu.open {
+  transform: translateY(0);
+}
+
+.mobile-nav-link {
+  padding: 1rem;
+  text-decoration: none;
+  color: #334155;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.mobile-nav-link:hover,
+.mobile-nav-link.active {
+  color: #0a3d62;
+  background: rgba(99, 102, 241, 0.05);
 }
 
 /* 响应式设计 */
@@ -202,76 +244,8 @@ export default {
     display: none;
   }
 
-  .auth-btn {
-    display: none;
-  }
-
-  .mobile-menu {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 80px;
-    left: 0;
-    right: 0;
-    background: #0f172a;
-    padding: 1rem;
-    transform: translateY(-100%);
-    transition: transform 0.3s ease;
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-    z-index: 90;
-  }
-
-  .mobile-menu.open {
-    transform: translateY(0);
-  }
-
-  .mobile-nav-link {
-    padding: 1rem;
-    text-decoration: none;
-    color: #334155;
-    font-weight: 500;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.2s ease;
-  }
-
-  .mobile-nav-link:hover {
-    color: white;
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .mobile-auth {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-    padding: 1rem 0;
-  }
-
-  .mobile-login-btn,
-  .mobile-signup-btn {
-    flex: 1;
-    padding: 0.75rem;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .mobile-login-btn {
-    background: transparent;
-    border: 1px solid #6366f1;
-    color: #6366f1;
-  }
-
-  .mobile-signup-btn {
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    border: none;
-    color: white;
-  }
-
-  .mobile-login-btn:hover,
-  .mobile-signup-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(99, 102, 241, 0.3);
+  .mobile-menu-btn {
+    display: block;
   }
 }
 
