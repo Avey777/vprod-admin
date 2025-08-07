@@ -56,7 +56,7 @@
       <NuxtLink to="/" class="mobile-nav-link" @click="closeMenu">
         About Us
       </NuxtLink>
-      <NuxtLink to="/" class="mobile-nav-link" @click="closeMenu">
+      <NuxtLink to="/contact" class="mobile-nav-link" @click="closeMenu">
         Contact Us
       </NuxtLink>
     </div>
@@ -85,7 +85,7 @@ export default {
 <style scoped>
 .navbar {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding: 1rem 5%;
   background: white;
@@ -97,6 +97,9 @@ export default {
   overflow-x: hidden;
 }
 
+.logo {
+  margin-right: 180px;
+}
 .logo-link {
   display: flex;
   align-items: center;
@@ -105,9 +108,9 @@ export default {
 }
 
 .logo-icon {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #0a3d62 0%, #0a3d62 100%);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -124,7 +127,7 @@ export default {
 .brand {
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(to right, #8b5cf6, #ec4899);
+  background: linear-gradient(to right, #0a3d62, #0a3d62);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -132,7 +135,7 @@ export default {
 
 .nav-links {
   display: flex;
-  gap: 1.5rem;
+  gap: 2rem;
   align-items: center;
 }
 
@@ -146,10 +149,11 @@ export default {
 }
 
 .nav-link:hover {
-  color: #6366f1;
+  color: #0a3d62;
 }
 
 .link-text {
+  font-size: 0.8rem;
   position: relative;
 }
 
@@ -160,7 +164,7 @@ export default {
   left: 0;
   width: 100%;
   height: 2px;
-  background: linear-gradient(to right, #6366f1, #8b5cf6);
+  background: linear-gradient(to right, #0a3d62, #0a3d62);
   transform: scaleX(0);
   transform-origin: right;
   transition: transform 0.3s ease;
@@ -171,7 +175,9 @@ export default {
 }
 
 .nav-link.active .link-text {
-  color: #6366f1;
+  font-size: 1rem;
+  color: #0a3d62;
+  font-weight: 600;
 }
 
 .nav-link.active .link-text::after {
@@ -228,7 +234,7 @@ export default {
 
 .mobile-nav-link:hover,
 .mobile-nav-link.active {
-  color: #6366f1;
+  color: #0a3d62;
   background: rgba(99, 102, 241, 0.05);
 }
 

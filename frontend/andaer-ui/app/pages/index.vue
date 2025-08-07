@@ -4,13 +4,17 @@
     <div class="banner">
       <div class="banner-image">
         <div class="banner-content">
-          <h1 class="banner-title">智能航拍新体验</h1>
+          <h1 class="banner-title">Future Flight Thrills</h1>
           <p class="banner-subtitle">
-            智能航拍无人机，带来专业级影像体验。全方位避障系统，超长续航，让创作无拘无束。
+            Future-Tech Flight — Pure Excitement Omnidirectional avoidance ·
+            Extended endurance · Intuitive control Every flight delivers
+            exhilarating thrills!
           </p>
         </div>
       </div>
     </div>
+    <!-- 智能飞行新境界
+    未来科技，畅享空中乐趣！全方位避障系统，超长续航，操控自如，让每一次飞行都充满惊喜 -->
 
     <!-- 四宫格布局 -->
     <div class="grid-section">
@@ -32,8 +36,11 @@
             "
           />
           <div class="grid-overlay">
-            <h3 class="grid-title">航拍无人机</h3>
-            <p class="grid-desc">专业级航拍解决方案，捕捉壮丽航拍画面</p>
+            <h3 class="grid-title">Aerial drone</h3>
+            <p class="grid-desc">
+              Professional level aerial photography solution, capturing
+              magnificent aerial images
+            </p>
           </div>
         </div>
 
@@ -52,10 +59,12 @@
               height: 100%;
               animation: float 6s infinite ease-in-out;
             "
-          ></div>
+          />
           <div class="grid-overlay">
-            <h3 class="grid-title">手持云台</h3>
-            <p class="grid-desc">稳定拍摄每一刻，创作更流畅影像</p>
+            <h3 class="grid-title">Handheld gimbal</h3>
+            <p class="grid-desc">
+              Stable shooting of every moment, creating smoother images
+            </p>
           </div>
         </div>
 
@@ -74,10 +83,12 @@
               height: 100%;
               animation: float 6s infinite ease-in-out;
             "
-          ></div>
+          />
           <div class="grid-overlay">
-            <h3 class="grid-title">少年科技</h3>
-            <p class="grid-desc">创新教育解决方案，培养未来科技人才</p>
+            <h3 class="grid-title">Play Technology</h3>
+            <p class="grid-desc">
+              Play high-tech drones and become future technology talents
+            </p>
           </div>
         </div>
 
@@ -96,10 +107,10 @@
               height: 100%;
               animation: float 6s infinite ease-in-out;
             "
-          ></div>
+          />
           <div class="grid-overlay">
-            <h3 class="grid-title">畅玩科技</h3>
-            <p class="grid-desc">智能导航，随心所欲</p>
+            <h3 class="grid-title">Enjoy Technology</h3>
+            <p class="grid-desc">Intelligent navigation, do as you please</p>
           </div>
         </div>
       </div>
@@ -107,7 +118,7 @@
 
     <!-- 五产品横向布局 -->
     <div class="products-section">
-      <h2 class="section-title">热销产品</h2>
+      <h2 class="section-title">Popular products</h2>
       <div class="products-container">
         <!-- 产品1 -->
         <div class="product-card">
@@ -121,18 +132,18 @@
                 width: 100%;
                 height: 100%;
               "
-            ></div>
+            />
           </div>
           <div class="product-info">
             <h3 class="product-name">DJI Mavic 3 Pro</h3>
             <ul class="product-features">
-              <li>哈苏三摄系统</li>
-              <li>43分钟续航</li>
-              <li>15公里图传</li>
-              <li>全向避障</li>
-              <li>5.1K 视频拍摄</li>
+              <li>Hasselblad triple camera system</li>
+              <li>43 minute battery life</li>
+              <li>15 kilometer map transmission</li>
+              <li>Omnidirectional obstacle avoidance</li>
+              <li>5.1K video shooting</li>
             </ul>
-            <div class="product-price">¥12,999起</div>
+            <div class="product-price">$12,999 up</div>
           </div>
         </div>
 
@@ -148,18 +159,18 @@
                 width: 100%;
                 height: 100%;
               "
-            ></div>
+            />
           </div>
           <div class="product-info">
             <h3 class="product-name">DJI Mini 3 Pro</h3>
             <ul class="product-features">
-              <li>轻于249克</li>
-              <li>4K HDR视频</li>
-              <li>三向避障</li>
-              <li>34分钟续航</li>
-              <li>大师镜头功能</li>
+              <li>Less than 249 grams</li>
+              <li>4K HDR video</li>
+              <li>Three way obstacle avoidance</li>
+              <li>34 minute battery life</li>
+              <li>Master lens function</li>
             </ul>
-            <div class="product-price">¥4,788起</div>
+            <div class="product-price">$4,788 up</div>
           </div>
         </div>
 
@@ -175,18 +186,18 @@
                 width: 100%;
                 height: 100%;
               "
-            ></div>
+            />
           </div>
           <div class="product-info">
             <h3 class="product-name">DJI Air 2S</h3>
             <ul class="product-features">
-              <li>1英寸传感器</li>
-              <li>5.4K视频拍摄</li>
-              <li>大师镜头功能</li>
-              <li>四向避障</li>
-              <li>31分钟续航</li>
+              <li>1-inch sensor</li>
+              <li>5.4K video shooting</li>
+              <li>Master lens function</li>
+              <li>Four way obstacle avoidance</li>
+              <li>31 minute battery life</li>
             </ul>
-            <div class="product-price">¥6,499起</div>
+            <div class="product-price">$6,499 up</div>
           </div>
         </div>
 
@@ -202,18 +213,18 @@
                 width: 100%;
                 height: 100%;
               "
-            ></div>
+            />
           </div>
           <div class="product-info">
             <h3 class="product-name">DJI Osmo Pocket 3</h3>
             <ul class="product-features">
-              <li>1英寸传感器</li>
-              <li>4K/120fps视频</li>
-              <li>智能跟随6.0</li>
-              <li>2英寸旋转屏</li>
-              <li>166分钟续航</li>
+              <li>1-inch sensor</li>
+              <li>4K/120fps video</li>
+              <li>Intelligent Follow 6.0</li>
+              <li>2-inch rotating screen</li>
+              <li>166 minute battery life</li>
             </ul>
-            <div class="product-price">¥3,999起</div>
+            <div class="product-price">$3,999 up</div>
           </div>
         </div>
 
@@ -229,16 +240,43 @@
                 width: 100%;
                 height: 100%;
               "
-            ></div>
+            />
           </div>
           <div class="product-info">
             <h3 class="product-name">DJI Avata Pro-View</h3>
             <ul class="product-features">
-              <li>沉浸式飞行体验</li>
-              <li>超广角4K视频</li>
-              <li>体感操控</li>
-              <li>全向避障</li>
-              <li>18分钟续航</li>
+              <li>Immersive flying experience</li>
+              <li>Ultra wide angle 4K video</li>
+              <li>motion sensing</li>
+              <li>Omnidirectional obstacle avoidance</li>
+              <li>18 minute battery life</li>
+            </ul>
+            <div class="product-price">¥8,499起</div>
+          </div>
+        </div>
+
+        <!-- 产品6 -->
+        <div class="product-card">
+          <div class="product-image">
+            <div
+              class="product-bg"
+              style="
+                background-image: url(&quot;/images/p5.png&quot;);
+                background-size: cover;
+                background-position: center;
+                width: 100%;
+                height: 100%;
+              "
+            />
+          </div>
+          <div class="product-info">
+            <h3 class="product-name">DJI Avata Pro-View</h3>
+            <ul class="product-features">
+              <li>Immersive flying experience</li>
+              <li>Ultra wide angle 4K video</li>
+              <li>motion sensing</li>
+              <li>Omnidirectional obstacle avoidance</li>
+              <li>18 minute battery life</li>
             </ul>
             <div class="product-price">¥8,499起</div>
           </div>
@@ -277,10 +315,10 @@ onMounted(() => {
 
 .banner {
   position: relative;
-  height: 80vh;
+  height: 95vh;
   min-height: 650px;
   overflow: hidden;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .banner-image {
@@ -328,14 +366,14 @@ onMounted(() => {
   font-family: "Montserrat", sans-serif;
   font-size: clamp(2.2rem, 5vw, 4.5rem);
   font-weight: 700;
-  margin-bottom: 15px;
+  margin-top: -500px; /*调整文案高度*/
   color: #ffffff;
 }
 
 .banner-subtitle {
   font-size: clamp(1.1rem, 2.5vw, 1.8rem);
   font-weight: 400;
-  margin-bottom: 30px;
+  margin-top: 30px;
   line-height: 1.6;
   max-width: 700px;
   margin-left: auto;
@@ -417,7 +455,7 @@ onMounted(() => {
   color: #333;
   z-index: 2;
   transition: transform 0.4s ease;
-  background: rgba(255, 255, 255, 0.9);
+  /*background: rgba(255, 255, 255, 0.5);*/
 }
 
 .grid-title {
@@ -441,9 +479,9 @@ onMounted(() => {
   display: flex;
   gap: 20px;
   overflow-x: auto;
-  padding: 0 0px 0px;
-  scrollbar-width: thin;
-  scrollbar-color: #ff6b00 transparent;
+  padding: 0 0px 50px 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   max-width: 100%;
 }
 
@@ -457,7 +495,7 @@ onMounted(() => {
 }
 
 .product-card {
-  width: 360px;
+  width: 400px;
   min-width: 320px;
   background: #fff;
   border-radius: 8px;
@@ -497,16 +535,18 @@ onMounted(() => {
 
 .product-features {
   list-style: none;
-  margin-bottom: 25px;
+  margin: 0 0 25px 0;
   flex-grow: 1;
+  padding: 0;
 }
 
 .product-features li {
   padding: 8px 0;
   font-size: 1rem;
   position: relative;
-  padding-left: 25px;
+  padding-left: 10px;
   color: #555;
+  left: 1;
 }
 
 .product-price {
