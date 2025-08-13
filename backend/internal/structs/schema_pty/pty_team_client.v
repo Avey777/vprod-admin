@@ -1,10 +1,11 @@
-module schema_party
+/* party(pty): 客户、供应商、合作伙伴 */
+module schema_pty
 
 import time
 
 @[comment: '团队应用关系表（多对多关系）']
-@[table: 'party_team_applications']
-pub struct PartyTeamApplication {
+@[table: 'pty_team_client']
+pub struct PtyTeamClient {
 pub:
 	id             string @[comment: '关系ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	owner_team_id  string @[comment: '应用所有者团队ID'; omitempty; required; sql_type: 'CHAR(36)']

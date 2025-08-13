@@ -1,10 +1,11 @@
-module schema_party
+/* party(pty): 客户、供应商、合作伙伴 */
+module schema_pty
 
 import time
 
 @[comment: '订阅申请表']
-@[table: 'subscribe_apply']
-pub struct SubscribeApply {
+@[table: 'pty_subscribe_apply']
+pub struct PtySubscribeApply {
 pub:
 	id          u64       @[auto_increment; comment: '主键ID'; primary; sql_type: 'BIGINT']
 	uuid        string    @[comment: 'uuid'; required; sql_type: 'VARCHAR(36)'; unique: 'uuid']

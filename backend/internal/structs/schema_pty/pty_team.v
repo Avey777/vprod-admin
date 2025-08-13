@@ -1,10 +1,11 @@
-module schema_party
+/* party(pty): 客户、供应商、合作伙伴 */
+module schema_pty
 
 import time
 
-@[table: 'party_teams']
+@[table: 'pty_teams']
 @[commnet: '团队表']
-pub struct PartyTeam {
+pub struct PtyTeam {
 pub:
 	id          string  @[comment: '团队ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	name        string  @[comment: '团队名称'; omitempty; required; sql_type: 'VARCHAR(255)'; unique: 'name']

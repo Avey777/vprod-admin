@@ -1,10 +1,11 @@
-module schema_party
+/* party(pty): 客户、供应商、合作伙伴 */
+module schema_pty
 
 import time
 
 @[commnet: '角色-门户授权表（多对多）']
-@[table: 'party_role_applications']
-pub struct PartyRoleApplication {
+@[table: 'pty_role_teamclient']
+pub struct PtyRoleTeamClient {
 pub:
 	id               string @[comment: '关系ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	role_id          string @[comment: '角色ID'; omitempty; required; sql_type: 'CHAR(36)']
