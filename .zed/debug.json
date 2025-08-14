@@ -1,12 +1,12 @@
 [
   {
-    "label": "Debug backend（GDB）",
+    "label": "Debug v -cc clang（GDB）",
     "adapter": "GDB",
     "mode": "debug",
     "request": "launch",
-    "program": "backend/main",
+    "program": "main",
     "args": ["-f", "etc/config_dev.toml"],
-    "cwd": "$ZED_WORKTREE_ROOT",
+    "cwd": "$ZED_WORKTREE_ROOT/backend",
     "subProcess": true,
     "redirectOutpot": true,
     "stop_on_entry": false,
@@ -14,6 +14,10 @@
       "console": "integratedTerminal"
       // "stopAtBeginningOfMainSubprogram": true
     },
-    "preLaunchTask": "v build" // 添加构建任务
+    // "build": "v build -cc clang -g" // 从tasks.json添加构建任务
+    "build": {
+      "command": "v wipe-cache && v -cc clang -g -no-parallel  -o main .",
+      "args": ["-f", "etc/config_dev.toml"]
+    }
   }
 ]

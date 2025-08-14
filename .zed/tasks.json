@@ -27,12 +27,10 @@
     // 在终端中运行任务时使用的shell
     "shell": "system",
     // 是否在生成的任务输出中显示任务摘要行，默认为`true`
-    "show_summary": true,
-    // 是否在生成的任务输出中显示命令行，默认为`true`
-    "show_output": true
+    "show_summary": true
   },
   {
-    "label": "v -cc clang -g run",
+    "label": "v run -cc clang -g",
     "tags": ["v-main"],
     // "command": "v wipe-cache && v -g -keepc -cg -showcc -show-c-output -no-parallel -enable-globals -d veb_livereload watch -d log_debug run main.v",
     "command": "v wipe-cache && v -cc clang -g -d veb_livereload watch  run main.v",
@@ -42,18 +40,18 @@
 
   /* v 构建命令 */
   {
-    "label": "v build -cc clang",
+    "label": "v build -cc clang -g",
     "tags": ["v-main"],
-    "command": "v -cc clang -no-parallel  -o main .",
+    "command": "v -cc clang -g -no-parallel  -o main .",
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
     "use_new_terminal": false,
     "reveal": "always"
   },
   {
-    "label": "v build -cc gcc",
+    "label": "v build -cc gcc -g",
     "tags": ["v-main"],
-    "command": "v -cc gcc -no-parallel  -o main .",
+    "command": "v -cc gcc -g -no-parallel  -o main .",
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
     "use_new_terminal": false,
