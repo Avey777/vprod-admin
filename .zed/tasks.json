@@ -8,7 +8,7 @@
     "args": ["-f", "etc/config_dev.toml"],
     // 命令的环境变量覆盖，会追加到终端设置中的环境变量
     "env": {},
-    // // 运行命令的工作目录，默认为当前项目根目录
+    // 运行命令的工作目录，默认为当前项目根目录
     "cwd": "$ZED_WORKTREE_ROOT/backend",
     //  是否使用新终端标签页或复用现有终端来运行进程，默认为`false`
     "use_new_terminal": false,
@@ -27,23 +27,31 @@
     // 在终端中运行任务时使用的shell
     "shell": "system",
     // 是否在生成的任务输出中显示任务摘要行，默认为`true`
-    "show_summary": true,
-    // 是否在生成的任务输出中显示命令行，默认为`true`
-    "show_output": true
+    "show_summary": true
   },
   {
-    "label": "v test",
-    "tags": ["v-test"],
-    "command": "v -stats -enable-globals test .",
+    "label": "v run -cc clang -g",
+    "tags": ["v-main"],
+    // "command": "v wipe-cache && v -g -keepc -cg -showcc -show-c-output -no-parallel -enable-globals -d veb_livereload watch -d log_debug run main.v",
+    "command": "v wipe-cache && v -cc clang -g -d veb_livereload watch  run main.v",
+    "args": ["-f", "etc/config_dev.toml"],
+    "cwd": "$ZED_WORKTREE_ROOT/backend"
+  },
+
+  /* v 构建命令 */
+  {
+    "label": "v build -cc clang -g",
+    "tags": ["v-main"],
+    "command": "v -cc clang -g -no-parallel  -o main .",
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
     "use_new_terminal": false,
     "reveal": "always"
   },
   {
-    "label": "v build",
+    "label": "v build -cc gcc -g",
     "tags": ["v-main"],
-    "command": "v -g -no-parallel -enable-globals -show-c-output -o main .",
+    "command": "v -cc gcc -g -no-parallel  -o main .",
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
     "use_new_terminal": false,
@@ -52,29 +60,21 @@
   {
     "label": "v build -prod",
     "tags": ["v-main"],
-    "command": "v -prod -no-parallel -enable-globals -show-c-output -o main .",
+    "command": "v -prod -o main .",
+    "args": [],
+    "cwd": "$ZED_WORKTREE_ROOT/backend",
+    "use_new_terminal": false,
+    "reveal": "always"
+  },
+
+  /* v 测试命令 */
+  {
+    "label": "v test",
+    "tags": ["v-test"],
+    "command": "v -stats -enable-globals test .",
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
     "use_new_terminal": false,
     "reveal": "always"
   }
 ]
-
-/*
-在终端中运行任务时使用的shell
-可接受3种值：
-1. (默认) 使用/etc/passwd中的系统默认终端配置
-     "shell": "system"
-2. 指定程序：
-     "shell": {
-       "program": "sh"
-     }
-3. 带参数的指定程序：
-    "shell": {
-        "with_arguments": {
-          "program": "/bin/bash",
-          "args": ["--login"]
-        }
-    }
-*/
-// "shell": "system",

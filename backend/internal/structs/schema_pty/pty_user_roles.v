@@ -1,8 +1,9 @@
+/* party(pty): 客户、供应商、合作伙伴 */
 module schema_sys
 
 @[comment: ' 用户-角色关联表（多对多）']
-@[table: 'sys_user_roles']
-pub struct SysUserRole {
+@[table: 'pty_user_roles']
+pub struct PtyUserRole {
 pub:
 	user_id string @[comment: '用户ID'; sql_type: 'CHAR(36)']
 	role_id string @[comment: '角色ID'; sql_type: 'CHAR(36)']

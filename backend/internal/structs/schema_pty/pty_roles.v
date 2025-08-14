@@ -1,10 +1,11 @@
-module schema_party
+/* party(pty): 客户、供应商、合作伙伴 */
+module schema_pty
 
 import time
 
 @[commnt: '角色表（关联团队）']
-@[table: 'sys_roles']
-pub struct SysRole {
+@[table: 'pty_roles']
+pub struct PtyRoles {
 pub:
 	id              string  @[immutable; omitempty; primary; sql_type: 'CHAR(36)']
 	name            string  @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Role name | 角色名']

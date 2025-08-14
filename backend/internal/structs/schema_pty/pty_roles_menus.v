@@ -1,16 +1,15 @@
-module schema_party
+/* party(pty): 客户、供应商、合作伙伴 */
+module schema_pty
 
 import time
 
-@[commnet: '团队用户角色关系表']
-@[table: 'party_user_roles']
-pub struct PartyUserRole {
+@[comment: '角色菜单关系表']
+@[table: 'pty_roles_menus']
+pub struct PtyRolesMenus {
 pub:
 	id      string @[comment: '关系ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
-	team_id string @[comment: '团队ID'; omitempty; required; sql_type: 'CHAR(36)']
-	user_id string @[comment: '用户ID'; omitempty; required; sql_type: 'CHAR(36)']
 	role_id string @[comment: '角色ID'; omitempty; required; sql_type: 'CHAR(36)']
-	// app_id      string    @[omitempty; required; sql_type: 'CHAR(36)'; comment: '应用ID']
+	menu_id string @[comment: '菜单ID'; omitempty; required; sql_type: 'CHAR(36)']
 
 	updater_id ?string    @[comment: '修改者ID'; omitempty; sql_type: 'CHAR(36)']
 	updated_at time.Time  @[comment: 'Update Time | 修改日期'; omitempty; sql_type: 'TIMESTAMP']

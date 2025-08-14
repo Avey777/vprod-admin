@@ -1,10 +1,11 @@
-module schema_tema
+/* party(pty): 客户、供应商、合作伙伴 */
+module schema_pty
 
 import time
 
 @[comment: '外部用户Token表']
-@[table: 'party_user_tokens']
-pub struct PartyUserToken {
+@[table: 'pty_user_token']
+pub struct PtyUserToken {
 pub:
 	id         string    @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomment: ' UUID']
 	user_id    string    @[omitempty; sql: 'user_id'; sql_type: 'CHAR(36)'; zcomment: ' User`s UUID | 用户的UUID']

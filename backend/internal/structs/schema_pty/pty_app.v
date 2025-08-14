@@ -1,34 +1,15 @@
-module schema_party
+/* party(pty): 客户、供应商、合作伙伴 */
+module schema_pty
 
 import time
 
-@[table: 'party_applications']
+@[table: 'pty_applications']
 @[comment: '应用表']
-pub struct PartyApplication {
+pub struct PtyApplications {
 pub:
-	id          string  @[comment: '应用ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
-	name        string  @[comment: '应用名称'; omitempty; required; sql_type: 'VARCHAR(255)'; unique: 'name']
-	app_key     string  @[comment: '应用Key'; omitempty; required; sql_type: 'VARCHAR(255)'; unique: 'app_key']
-	app_secret  string  @[comment: '应用Secret'; omitempty; required; sql_type: 'VARCHAR(255)']
-	description ?string @[comment: '应用描述'; omitempty; sql_type: 'VARCHAR(512)']
-	icon        ?string @[comment: '应用图标'; omitempty; sql_type: 'VARCHAR(512)']
-	status      u8      @[comment: '状态，0：正常，1：禁用'; default: 0; omitempty; sql_type: 'tinyint']
-	team_id     string  @[comment: '所属团队ID'; omitempty; required; sql_type: 'CHAR(36)']
-
-	updater_id ?string    @[comment: '修改者ID'; omitempty; sql_type: 'CHAR(36)']
-	updated_at time.Time  @[comment: 'Update Time | 修改日期'; omitempty; sql_type: 'TIMESTAMP']
-	creator_id ?string    @[comment: '创建者ID'; immutable; omitempty; sql_type: 'CHAR(36)']
-	created_at time.Time  @[comment: 'Create Time | 创建日期'; immutable; omitempty; sql_type: 'TIMESTAMP']
-	del_flag   u8         @[comment: '删除标记，0：未删除，1：已删除'; default: 0; omitempty; sql_type: 'tinyint(1)']
-	deleted_at ?time.Time @[comment: 'Delete Time | 删除日期'; omitempty; sql_type: 'TIMESTAMP']
-}
-
-@[table: 'applications']
-@[comment: '应用表']
-pub struct Application {
-pub:
-	owner                 string @[comment: '应用所有者'; primary; required; sql_type: 'VARCHAR(100)']
-	name                  string @[comment: '应用名称'; primary; required; sql_type: 'VARCHAR(100)']
+	id                    string @[comment: '应用ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
+	app_owner             string @[comment: '应用所有者'; primary; required; sql_type: 'VARCHAR(100)']
+	app_name              string @[comment: '应用名称'; primary; required; sql_type: 'VARCHAR(100)']
 	created_time          string @[comment: '创建时间'; omitempty; sql_type: 'VARCHAR(100)']
 	display_name          string @[comment: '显示名称'; omitempty; sql_type: 'VARCHAR(100)']
 	logo                  string @[comment: '应用Logo'; omitempty; sql_type: 'VARCHAR(100)']
@@ -56,10 +37,17 @@ pub:
 	terms_of_use            string   @[comment: '使用条款'; omitempty; sql_type: 'VARCHAR(100)']
 	signup_html             string   @[comment: '注册HTML'; omitempty; sql_type: 'MEDIUMTEXT']
 	signin_html             string   @[comment: '登录HTML'; omitempty; sql_type: 'MEDIUMTEXT']
+
+	updater_id ?string    @[comment: '修改者ID'; omitempty; sql_type: 'CHAR(36)']
+	updated_at time.Time  @[comment: 'Update Time | 修改日期'; omitempty; sql_type: 'TIMESTAMP']
+	creator_id ?string    @[comment: '创建者ID'; immutable; omitempty; sql_type: 'CHAR(36)']
+	created_at time.Time  @[comment: 'Create Time | 创建日期'; immutable; omitempty; sql_type: 'TIMESTAMP']
+	del_flag   u8         @[comment: '删除标记，0：未删除，1：已删除'; default: 0; omitempty; sql_type: 'tinyint(1)']
+	deleted_at ?time.Time @[comment: 'Delete Time | 删除日期'; omitempty; sql_type: 'TIMESTAMP']
 }
 
 // 应用表 (核心实体)
-@[table: 'applications']
+@[table: 'pty_applications']
 @[comment: '应用表']
 pub struct Application0 {
 pub:

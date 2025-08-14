@@ -1,10 +1,11 @@
-module schema_party
+/* party(pty): 客户、供应商、合作伙伴 */
+module schema_pty
 
 // import time
 
 @[comment: '客户端表']
-@[table: 'client']
-pub struct Client {
+@[table: 'pty_client']
+pub struct PtyClient {
 pub:
 	id                string @[auto; comment: '门户ID'; primary; sql_type: 'CHAR(20)']
 	application_owner string @[comment: '应用所有者'; foreign: 'applications.owner'; required]
