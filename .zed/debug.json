@@ -1,8 +1,7 @@
 [
   {
-    "label": "Debug v -cc clang（GDB）",
+    "label": "Debug v build -cc clang（GDB）",
     "adapter": "GDB",
-    "mode": "debug",
     //  - launch: Zed will launch the program if specified or shows a debug terminal with the right configuration
     //  - attach: Zed will attach to a running program to debug it or when the process_id is not specified we will show a process picker (only supported for node currently)
     "request": "launch",
@@ -26,7 +25,6 @@
   {
     "label": "Debug v run -cc clang（GDB）",
     "adapter": "GDB",
-    "mode": "debug",
     "request": "launch",
     "program": "main",
     "args": ["-f", "etc/config_dev.toml"],
