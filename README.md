@@ -8,15 +8,13 @@ v-admin
   backend                          # 单个服务目录，一般是某微服务名称
   ├── etc                                 # 静态配置文件目录
   │   └── example.yaml
+  ├── app_start.v                         # veb 服务
   ├── main.v                              # 程序启动入口文件
   └── internal                            # 单个服务内部文件，其可见范围仅限当前服务
       ├── config                          # 静态配置文件对应的结构体声明目录以及配置代码
       │   └── check.v
-      ├── handler                         # 可选，一般http服务会有这一层做路由管理，handler为固定后缀
-      │   ├── app_start.v
-      │   ├── app_struct.v
-      │   ├── routes_sys_admin.v
-      │   └── routes.v
+      ├── handler                         # 可选，一般http服务会有这一层做外部请求处理，handler为固定后缀
+      │   └── app_struct.v
       ├── i18n                            # 国际化(本地化)目录
       │   ├── locale
       │   │   ├── zh.json
@@ -30,6 +28,10 @@ v-admin
       │   ├── auth_middleware.v
       │   ├── logging_middleware.v
       │   └── xxx_middleware.v
+      ├── routes                         # http服务做路由管理，routes为固定后缀
+      │   ├── app_struct.v
+      │   ├── routes_sys_admin.v
+      │   └── routes.v
       ├── structs                         # 结构体存放目录
       │   └── xxx_structs.v
       └── svc                             # (service context)依赖注入目录，logic的依赖都要在这里进行显式注入

@@ -10,3 +10,9 @@ pub mut:
 	dbpool &dbpool.DatabasePool
 	config &conf.GlobalConfig
 }
+
+pub struct App {
+	veb.Middleware[Context]
+	veb.Controller
+	veb.StaticHandler
+}
