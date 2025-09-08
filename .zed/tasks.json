@@ -4,7 +4,7 @@
     "label": "v run",
     "tags": ["v-main"],
     // "command": "v wipe-cache && v -g -keepc -cg -showcc -show-c-output -no-parallel -enable-globals -d veb_livereload watch -d log_debug run main.v",
-    "command": "v wipe-cache && v -d veb_livereload watch  run main.v",
+    "command": "v wipe-cache && v -d veb_livereload watch  run .",
     "args": ["-f", "etc/config_dev.toml"],
     // 命令的环境变量覆盖，会追加到终端设置中的环境变量
     "env": {},
@@ -33,7 +33,7 @@
     "label": "v run -cc clang -g",
     "tags": ["v-main"],
     // "command": "v wipe-cache && v -g -keepc -cg -showcc -show-c-output -no-parallel -enable-globals -d veb_livereload watch -d log_debug run main.v",
-    "command": "v wipe-cache && v -cc clang -g -d veb_livereload watch  run main.v",
+    "command": "v wipe-cache && v -cc clang -g -d veb_livereload watch  run .",
     "args": ["-f", "etc/config_dev.toml"],
     "cwd": "$ZED_WORKTREE_ROOT/backend"
   },
