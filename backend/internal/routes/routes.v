@@ -1,4 +1,4 @@
-module handler
+module routes
 
 import log
 import internal.structs { Context }
@@ -8,33 +8,33 @@ import internal.middleware.dbpool
 import internal.middleware.conf
 
 // 根据条件编译，选择运行的服务
-pub fn (mut app App) register_handlers(conn &dbpool.DatabasePool, doc_conf &conf.GlobalConfig) {
+pub fn (mut app AliasApp) routes_ifdef(conn &dbpool.DatabasePool, doc_conf &conf.GlobalConfig) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	$if fms ? {
-		log.warn('register_handlers - Fms')
+		log.warn('routes_ifdef - Fms')
 	}
 	$if job ? {
-		log.warn('register_handlers - Job')
+		log.warn('routes_ifdef - Job')
 	}
 	$if mcms ? {
-		log.warn('register_handlers - Mcms')
+		log.warn('routes_ifdef - Mcms')
 	}
 	$if pay ? {
-		log.warn('register_handlers - Pay')
+		log.warn('routes_ifdef - Pay')
 	}
 	$if sys ? {
-		log.warn('register_handlers - Sys')
-		app.handler_sys_admin()
+		log.warn('routes_ifdef - Sys')
+		app.routes_sys_admin()
 	} $else {
-		log.warn('register_handlers - All')
-		app.handler_base(conn, doc_conf)
-		app.handler_sys_admin(conn, doc_conf)
+		log.warn('routes_ifdef - All')
+		app.routes_base(conn, doc_conf)
+		app.routes_sys_admin(conn, doc_conf)
 	}
 }
 
 // 封装泛型全局中间件
-fn (mut app App) register_routes[T, U](mut ctrl T, url_path string, conn &dbpool.DatabasePool, doc_conf &conf.GlobalConfig) {
+fn (mut app AliasApp) register_routes[T, U](mut ctrl T, url_path string, conn &dbpool.DatabasePool, doc_conf &conf.GlobalConfig) {
 	ctrl.use(middleware.cores_middleware_generic())
 	ctrl.use(middleware.logger_middleware_generic())
 	ctrl.use(middleware.config_middle(doc_conf))
@@ -45,7 +45,7 @@ fn (mut app App) register_routes[T, U](mut ctrl T, url_path string, conn &dbpool
 }
 
 // 封装泛型全局中间件,无token认证
-fn (mut app App) register_routes_no_token[T, U](mut ctrl T, url_path string, conn &dbpool.DatabasePool, doc_conf &conf.GlobalConfig) {
+fn (mut app AliasApp) register_routes_no_token[T, U](mut ctrl T, url_path string, conn &dbpool.DatabasePool, doc_conf &conf.GlobalConfig) {
 	ctrl.use(middleware.cores_middleware_generic())
 	ctrl.use(middleware.logger_middleware_generic())
 	ctrl.use(middleware.config_middle(doc_conf))
@@ -54,7 +54,7 @@ fn (mut app App) register_routes_no_token[T, U](mut ctrl T, url_path string, con
 	// app.register_controller[T,Context](url_path, mut ctrl) or { log.error('${err}') }
 }
 
-fn (mut app App) handler_base(conn &dbpool.DatabasePool, doc_conf &conf.GlobalConfig) {
+fn (mut app AliasApp) routes_base(conn &dbpool.DatabasePool, doc_conf &conf.GlobalConfig) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// 方式一: 直接使用中间件，适合对单个控制器单独使用中间件
 	mut base_app := &Base{}

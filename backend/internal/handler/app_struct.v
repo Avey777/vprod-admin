@@ -1,10 +1,5 @@
 module handler
 
-import veb
-import internal.structs { Context }
+import internal.structs { App }
 
-pub struct App {
-	veb.Middleware[Context]
-	veb.Controller
-	veb.StaticHandler
-}
+pub type HandlerApp = App

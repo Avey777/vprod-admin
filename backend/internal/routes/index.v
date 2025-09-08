@@ -1,4 +1,4 @@
-module handler
+module routes
 
 import veb
 import log
@@ -8,7 +8,7 @@ import internal.structs.schema_sys
 
 // 此方法将仅处理对 index 页面的GET请求 ｜ This method will only handle GET requests to the index page
 @['/'; get]
-pub fn (app &App) index(mut ctx Context) veb.Result {
+pub fn (app &AliasApp) index(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	dump(ctx.config)
 	dump(ctx.config.web.port)
@@ -16,7 +16,7 @@ pub fn (app &App) index(mut ctx Context) veb.Result {
 }
 
 @['/index2'; get]
-pub fn (app &App) index2(mut ctx Context) veb.Result {
+pub fn (app &AliasApp) index2(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	mut db, conn := ctx.dbpool.acquire() or { return ctx.text('获取连接失败: ${err}') }
 	defer {

@@ -1,10 +1,11 @@
-module handler
+module main
 
 import veb
 import log
-import internal.structs { Context }
+import internal.structs { App,Context }
 import internal.middleware
 import internal.middleware.conf
+import internal.routes{AliasApp}
 
 
 pub fn new_app() {
@@ -28,13 +29,13 @@ pub fn new_app() {
 	}
 /*******init_db_pool********/
 
-	mut app := &App{} // 实例化 App 结构体 并返回指针
+	mut app := &AliasApp{} // 实例化 App 结构体 并返回指针
 	app.use(middleware.config_middle(doc))
 	app.use(middleware.db_middleware(conn))
 
-	app.register_handlers(conn, doc) // veb.Controller  使用路由控制器 | handler/register_routes.v
+	app.routes_ifdef(conn, doc) // veb.Controller  使用路由控制器 | routes/routes_ifdef.v
 
-	veb.run_at[App, Context](mut app,
+	veb.run_at[AliasApp, Context](mut app,
 		host:               ''
 		port:               doc.web.port
 		family:             .ip6
