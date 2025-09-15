@@ -7,13 +7,12 @@ import time
 pub struct SysDepartment {
 pub:
 	id               string     @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
+	parent_id        string     @[comment: 'Parent department ID | 父级部门ID'; omitempty; sql_type: 'CHAR(36)']
 	name             string     @[comment: 'Department name | 部门名称'; sql_type: 'VARCHAR(255)']
-	ancestors        string     @[comment: 'Parents IDs | 父级列表'; omitempty; sql_type: 'VARCHAR(255)']
 	leader           ?string    @[comment: 'Department leader | 部门负责人'; omitempty; sql_type: 'VARCHAR(255)']
 	phone            ?string    @[comment: 'Leader`s phone number | 负责人电话'; omitempty; sql_type: 'VARCHAR(255)']
 	email            ?string    @[comment: 'Leader`s email | 部门负责人电子邮箱'; omitempty; sql_type: 'VARCHAR(255)']
 	remark           ?string    @[comment: 'Remark | 备注'; omitempty; sql_type: 'VARCHAR(255)']
-	parent_id        string     @[comment: 'Parent department ID | 父级部门ID'; omitempty; sql_type: 'CHAR(36)']
 	org_type         u32        @[comment: 'Department Type: 0->Regular | 组织类型: 0->普通机构'; default: 0; sql_type: 'int(32)']
 	country          ?string    @[comment: 'country | 国家'; omitempty; sql_type: 'VARCHAR(255)']
 	province_state   ?string    @[comment: 'Province/State | 省/州'; omitempty; sql_type: 'VARCHAR(255)']

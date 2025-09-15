@@ -37,7 +37,17 @@ pub fn (app &Base) init_sys(mut ctx Context) veb.Result {
 		create table schema_sys.SysCasbinRule
 		create table schema_sys.SysApi
 	} or { return ctx.text('error creating table:  ${err}') }
-	log.info('Database init_sys success')
+	log.info('schema_sys init_sys success')
+
+	sys_users := r"REPLACE INTO `vcore`.`sys_users` (`id`, `username`, `password`, `nickname`, `description`, `home_path`, `mobile`, `email`, `avatar`, `department_id`, `status`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`)
+	VALUES ('00000000-0000-0000-0000-000000000001', 'admin', '$2a$10${E0E6oRFnroxrPrDkRwA5s.AEiHNThGMdcA4HwPC1CBmP38tCn3De2}', 'administrator', '所有者', '/dashboard', NULL, NULL, '/avatar', '11111111-0000-0000-0000-000000000000', 0, NULL, '2025-07-25 11:11:34', NULL, '2025-07-25 11:11:34', 0, NULL);"
+	db.exec(sys_users) or { return ctx.json(json_error(500, '执行SQL失败: ${err}')) }
+	log.info('sys_users init_sys_data success')
+
+	department := r"REPLACE INTO `vcore`.`sys_departments` (`id`, `parent_id`,`name`, `leader`, `phone`, `email`, `remark`,  `org_type`, `country`, `province_state`, `city`, `district`, `detail_address`, `longitude`, `latitude`, `service_boundary`, `sort`, `status`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`)
+  VALUES ('11111111-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', 'root', NULL, NULL, NULL, 'Root Department ', 0, 'China', 'guangdong', 'shenzhen', NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, '2025-08-25 20:58:59', NULL, '2025-08-21 09:53:34', 0, NULL);"
+	db.exec(department) or { return ctx.json(json_error(500, '执行SQL失败: ${err}')) }
+	log.info('department init_sys_data success')
 
 	return ctx.json(json_success_optparams(message: 'sys database init Successfull'))
 }

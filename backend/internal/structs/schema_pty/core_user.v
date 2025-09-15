@@ -7,7 +7,6 @@ import time
 pub struct CoreUser {
 pub:
 	id            string  @[comment: 'UUID rand.uuid_v4()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
-	tenant_id     string  @[comment: 'Tenant ID | 租户ID'; immutable; sql: 'tenant_id'; sql_type: 'CHAR(36)']
 	username      string  @[comment: 'User`s login name | 登录名'; omitempty; required; sql: 'username'; sql_type: 'VARCHAR(255)'; unique: 'username']
 	password      string  @[comment: 'Password | 密码'; omitempty; required; sql: 'password'; sql_type: 'VARCHAR(255)']
 	password_salt string  @[comment: 'Password Salt | 密码盐'; omitempty; sql: 'password_salt'; sql_type: 'VARCHAR(255)']
