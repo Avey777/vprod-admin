@@ -2,12 +2,12 @@ module schema_core
 
 import time
 
+@[comment: '应用表:全局应用供租户订阅']
 @[table: 'core_applications']
-@[comment: '应用表']
 pub struct CoreApplication {
 pub:
 	id            string @[comment: '应用ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
-	project_id    string @[comment: '项目ID'; primary; required; sql_type: 'CHAR(36)']
+	project_id    string @[comment: '所属项目ID'; primary; required; sql_type: 'CHAR(36)']
 	name          string @[comment: '应用名称'; primary; required; sql_type: 'VARCHAR(100)']
 	logo          string @[comment: '应用Logo'; omitempty; sql_type: 'VARCHAR(255)']
 	homepage_path string @[comment: '应用主页Path'; omitempty; sql_type: 'VARCHAR(500)']

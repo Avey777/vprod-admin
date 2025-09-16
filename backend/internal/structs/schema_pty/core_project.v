@@ -2,8 +2,8 @@ module schema_core
 
 import time
 
+@[comment: '项目表: 全局项目聚合全局应用']
 @[table: 'core_projects']
-@[comment: '项目表']
 pub struct CoreProject {
 pub:
 	id           string @[comment: '项目ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']

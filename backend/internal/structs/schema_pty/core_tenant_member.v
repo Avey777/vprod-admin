@@ -3,7 +3,7 @@ module schema_core
 import time
 
 @[table: 'core_tenant_member']
-@[comment: '团队成员表']
+@[comment: '租户成员表']
 pub struct CoreTeamMember {
 pub:
 	tenant_id string   @[comment: 'Tenant ID | 租户ID'; immutable; sql: 'tenant_id'; sql_type: 'CHAR(36)']

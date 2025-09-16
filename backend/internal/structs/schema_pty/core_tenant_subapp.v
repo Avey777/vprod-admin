@@ -1,15 +1,13 @@
-/* party(pty): 客户、供应商、合作伙伴 */
-module schema_pty
+module schema_core
 
 import time
 
-@[comment: '角色菜单关系表']
-@[table: 'pty_roles_menus']
-pub struct PtyRolesMenus {
+@[table: 'core_tenant_subscribe_application']
+@[comment: '租户订阅应用表']
+pub struct CoreTenantSubscribeApplication {
 pub:
-	id      string @[comment: '关系ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
-	role_id string @[comment: '角色ID'; omitempty; required; sql_type: 'CHAR(36)']
-	menu_id string @[comment: '菜单ID'; omitempty; required; sql_type: 'CHAR(36)']
+	tenant_id      string @[comment: 'Tenant ID | 租户ID'; immutable; sql: 'tenant_id'; sql_type: 'CHAR(36)']
+	application_id string @[comment: '应用ID | 应用ID'; immutable; sql: 'app_id'; sql_type: 'CHAR(36)']
 
 	updater_id ?string    @[comment: '修改者ID'; omitempty; sql_type: 'CHAR(36)']
 	updated_at time.Time  @[comment: 'Update Time | 修改日期'; omitempty; sql_type: 'TIMESTAMP']

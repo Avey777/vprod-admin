@@ -1,11 +1,10 @@
-/* party(pty): 客户、供应商、合作伙伴 */
-module schema_pty
+module schema_core
 
 import time
 
-@[table: 'pty_team_menus']
-@[comment: '菜单表']
-pub struct PtyTeamMenu {
+@[comment: '应用菜单表']
+@[table: 'core_team_menus']
+pub struct CoreTeamMenu {
 pub:
 	id        string  @[comment: '菜单ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	name      string  @[comment: '菜单名称'; omitempty; required; sql_type: 'VARCHAR(255)']

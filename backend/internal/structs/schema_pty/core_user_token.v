@@ -1,11 +1,10 @@
-/* party(pty): 客户、供应商、合作伙伴 */
 module schema_pty
 
 import time
 
-@[table: 'pty_team_token']
-@[comment: '团队Token表']
-pub struct PtyTeamToken {
+@[comment: '外部用户Token表']
+@[table: 'pty_user_token']
+pub struct PtyUserToken {
 pub:
 	id         string    @[immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; zcomment: ' UUID']
 	user_id    string    @[omitempty; sql: 'user_id'; sql_type: 'CHAR(36)'; zcomment: ' User`s UUID | 用户的UUID']
@@ -13,7 +12,6 @@ pub:
 	token      string    @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Token string | Token 字符串']
 	source     string    @[omitempty; sql_type: 'VARCHAR(255)'; zcomment: 'Log in source such as GitHub | Token 来源 （本地为core, 第三方如github等）']
 	expired_at time.Time @[omitempty; sql_type: 'TIMESTAMP'; zcomment: ' Expire time | 过期时间']
-	app_id     string    @[comment: '应用ID'; omitempty; required; sql_type: 'CHAR(36)']
 	status     u8        @[comment: '状态，0：正常，1：禁用'; default: 0; omitempty; sql_type: 'tinyint']
 
 	updater_id ?string    @[comment: '修改者ID'; omitempty; sql_type: 'CHAR(36)']
