@@ -4,7 +4,7 @@ import time
 
 @[comment: '项目表: 全局项目聚合全局应用']
 @[table: 'core_projects']
-pub struct CoreProject {
+pub struct CoreProjects {
 pub:
 	id           string @[comment: '项目ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	name         string @[comment: '项目名称'; primary; required; sql_type: 'VARCHAR(100)']

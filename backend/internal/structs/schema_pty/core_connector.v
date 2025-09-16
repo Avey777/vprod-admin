@@ -4,7 +4,7 @@ import time
 
 @[table: 'core_connectors']
 @[comment: '连接器表']
-pub struct CoreConnector {
+pub struct CoreConnectors {
 pub:
 	id          string @[comment: '连接器ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	name        string @[comment: '连接器名称'; primary; required; sql_type: 'VARCHAR(100)']

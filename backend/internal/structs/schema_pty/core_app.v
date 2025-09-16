@@ -4,7 +4,7 @@ import time
 
 @[comment: '应用表:全局应用供租户订阅']
 @[table: 'core_applications']
-pub struct CoreApplication {
+pub struct CoreApplications {
 pub:
 	id            string @[comment: '应用ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	project_id    string @[comment: '所属项目ID'; primary; required; sql_type: 'CHAR(36)']
