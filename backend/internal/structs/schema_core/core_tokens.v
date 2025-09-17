@@ -6,7 +6,7 @@ import time
 @[comment: 'Token表']
 pub struct CoreToken {
 pub:
-	id         string    @[comment: ' UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
+	id         string    @[comment: ' UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
 	user_id    string    @[comment: ' User`s UUID | 用户的UUID'; omitempty; sql: 'user_id'; sql_type: 'CHAR(36)']
 	username   string    @[comment: 'Username | 用户名'; default: '"unknown"'; omitempty; sql_type: 'VARCHAR(255)']
 	token      string    @[comment: 'Token string | Token 字符串'; omitempty; sql_type: 'VARCHAR(255)']

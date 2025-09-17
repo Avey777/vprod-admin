@@ -6,8 +6,8 @@ import time
 @[table: 'core_projects']
 pub struct CoreProjects {
 pub:
-	id           string @[comment: '项目ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
-	name         string @[comment: '项目名称'; primary; required; sql_type: 'VARCHAR(100)']
+	id           string @[comment: '项目ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
+	name         string @[comment: '项目名称'; primary; required; sql_type: 'VARCHAR(100)'; unique]
 	display_name string @[comment: '显示项目名称'; omitempty; sql_type: 'VARCHAR(100)']
 	logo         string @[comment: '项目Logo'; omitempty; sql_type: 'VARCHAR(100)']
 	description  string @[comment: '项目描述'; omitempty; sql_type: 'VARCHAR(100)']

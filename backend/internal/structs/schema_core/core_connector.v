@@ -8,8 +8,8 @@ import time
 @[comment: '连接器表']
 pub struct CoreConnectors {
 pub:
-	id           string @[comment: '连接器ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
-	provider     string @[comment: '连接器标识和类型: google, github, wechat'; primary; required; sql_type: 'VARCHAR(100)']
+	id           string @[comment: '连接器ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
+	provider     string @[comment: '连接器标识,认证提供商: google, github, wechat'; primary; required; sql_type: 'VARCHAR(100)']
 	display_name string @[comment: '连接器显示名称'; primary; required; sql_type: 'VARCHAR(100)']
 	logo         string @[comment: '连接器Logo'; omitempty; sql_type: 'VARCHAR(255)']
 	type         string @[comment: '类型: Email and SMS connectors, Social connectors'; primary; required; sql_type: 'VARCHAR(100)']

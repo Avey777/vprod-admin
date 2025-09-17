@@ -6,7 +6,7 @@ import time
 @[comment: '应用菜单表']
 pub struct CoreApplicationMenus {
 pub:
-	id                    string  @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
+	id                    string  @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
 	parent_id             ?string @[comment: ' Parent menu ID | 父菜单ID'; immutable; primary; sql: 'parent_id'; sql_type: 'CHAR(36)']
 	application_id        string  @[comment: ' Application ID | 应用ID'; immutable; primary; sql: 'application_id'; sql_type: 'CHAR(36)']
 	menu_level            u64     @[comment: 'Menu level | 菜单层级'; omitempty; sql_type: 'int']

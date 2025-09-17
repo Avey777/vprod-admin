@@ -6,7 +6,7 @@ import time
 @[table: 'core_tenants']
 pub struct CoreTenants {
 pub:
-	id       string @[comment: '租户id  UUID rand.uuid_v7()'; immutable; primary; required; sql: 'id'; sql_type: 'CHAR(36)']
+	id       string @[comment: '租户id  UUID rand.uuid_v7()'; immutable; primary; required; sql: 'id'; sql_type: 'CHAR(36)'; unique]
 	user_id  string @[comment: 'core_user 租户所有者id'; required; sql_type: 'VARCHAR(100)']
 	logo_url string @[comment: '租户logo地址'; sql_type: 'VARCHAR(500)']
 	name     string @[comment: '租户名称'; default: '"我的团队"'; omitempty; required; sql_type: 'VARCHAR(100)']
