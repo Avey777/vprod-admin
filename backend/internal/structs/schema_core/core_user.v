@@ -17,7 +17,7 @@ pub:
 	phone         ?string @[comment: 'Mobile number | 手机号'; omitempty; sql_type: 'VARCHAR(255)']
 	email         ?string @[comment: 'Email | 邮箱号'; omitempty; sql_type: 'VARCHAR(255)']
 	avatar        ?string @[comment: 'Permanent Avatar | 永久头像路径'; omitempty; sql_type: 'VARCHAR(512)']
-	status        u8      @[comment: '状态，0：正常，1：禁用'; default: 0; omitempty; sql_type: 'tinyint']
+	status        u8      @[comment: '状态，0：正常，1：禁用'; default: 0; omitempty; sql_type: 'tinyint(20)']
 
 	language     string  @[comment: '语言'; omitempty; sql_type: 'VARCHAR(255)']
 	id_card_type u8      @[comment: '证件类型，0：身份证，1：护照，2：军官证，3：其他'; default: 0; omitempty; sql_type: 'tinyint']

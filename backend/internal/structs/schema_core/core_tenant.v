@@ -12,7 +12,7 @@ pub:
 	name     string @[comment: '租户名称'; default: '"我的团队"'; omitempty; required; sql_type: 'VARCHAR(100)']
 	type     u8     @[comment: '租户类型, 0:个人空间, 1:团队空间'; default: 0; required; sql_type: 'VARCHAR(20)']
 	slug     string @[comment: '用于URL标识'; required; sql_type: 'VARCHAR(100)']
-	status   u8     @[comment: '租户状态, 0:pending, 1:active, 2:suspended'; default: 0; sql_type: 'VARCHAR(20)']
+	status   u8     @[comment: '租户状态, 0:pending, 1:active, 2:suspended'; default: 0; sql_type: 'tinyint(20)']
 
 	updater_id ?string    @[comment: '修改者ID'; omitempty; sql_type: 'CHAR(36)']
 	updated_at time.Time  @[comment: 'Update Time | 修改日期'; omitempty; sql_type: 'TIMESTAMP']

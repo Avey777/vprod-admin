@@ -7,10 +7,10 @@ import time
 pub struct CoreUserConnectors {
 pub:
 	id               string @[comment: '连接器ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
-	user_id          string @[comment: '用户ID'; immutable; primary; sql: 'user_id'; sql_type: 'CHAR(36)'; unique]
-	connector_id     string @[comment: '连接器ID'; immutable; primary; sql: 'connector_id'; sql_type: 'CHAR(36)'; unique]
-	provider_user_id string @[comment: ' 第三方系统中的用户ID'; immutable; primary; sql: 'provider_user_id'; sql_type: 'VARCHAR(100)']
-	profile          string @[comment: '存储用户资料快照（用户名、头像等）'; immutable; primary; sql: 'json'; sql_type: 'JSONB']
+	user_id          string @[comment: '用户ID'; immutable; sql: 'user_id'; sql_type: 'CHAR(36)']
+	connector_id     string @[comment: '连接器ID'; immutable; sql: 'connector_id'; sql_type: 'CHAR(36)']
+	provider_user_id string @[comment: ' 第三方系统中的用户ID'; immutable; sql: 'provider_user_id'; sql_type: 'VARCHAR(36)']
+	profile          string @[comment: '存储用户资料快照（用户名、头像等）'; immutable; sql: 'profile'; sql_type: 'json']
 
 	updater_id ?string    @[comment: 'sys 修改者ID'; omitempty; sql_type: 'CHAR(36)']
 	updated_at time.Time  @[comment: 'Update Time | 修改日期'; omitempty; sql_type: 'TIMESTAMP']

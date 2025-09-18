@@ -9,6 +9,7 @@ import internal.structs { Context }
 fn (app &Base) init_all(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
+	app.init_core(mut ctx)
 	app.init_fms(mut ctx)
 	app.init_job(mut ctx)
 	app.init_mcms(mut ctx)

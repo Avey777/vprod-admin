@@ -13,9 +13,9 @@ pub:
 	display_name string @[comment: '连接器显示名称'; primary; required; sql_type: 'VARCHAR(100)']
 	logo         string @[comment: '连接器Logo'; omitempty; sql_type: 'VARCHAR(255)']
 	type         string @[comment: '类型: Email and SMS connectors, Social connectors'; primary; required; sql_type: 'VARCHAR(100)']
-	config       string @[comment: '连接器配置:json格式'; required; sql_type: 'JSONB']
+	config       string @[comment: '连接器配置:json格式'; required; sql_type: 'json']
 	description  string @[comment: '连接器描述'; omitempty; sql_type: 'VARCHAR(500)']
-	status       u8     @[comment: '连接器状态, 0:active, 1:inactive'; default: 0; sql_type: 'VARCHAR(20)']
+	status       u8     @[comment: '连接器状态, 0:active, 1:inactive'; default: 0; sql_type: 'tinyint(20)']
 
 	updater_id ?string    @[comment: 'sys 修改者ID'; omitempty; sql_type: 'CHAR(36)']
 	updated_at time.Time  @[comment: 'Update Time | 修改日期'; omitempty; sql_type: 'TIMESTAMP']

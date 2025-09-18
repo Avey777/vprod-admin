@@ -12,7 +12,7 @@ pub:
 	token      string    @[comment: 'Token string | Token 字符串'; omitempty; sql_type: 'VARCHAR(255)']
 	source     string    @[comment: 'Log in source such as GitHub | Token 来源 （本地为core, 第三方如github等）'; omitempty; sql_type: 'VARCHAR(255)']
 	expired_at time.Time @[comment: ' Expire time | 过期时间'; omitempty; sql_type: 'TIMESTAMP']
-	status     u8        @[comment: '状态，0：正常，1：禁用'; default: 0; omitempty; sql_type: 'tinyint']
+	status     u8        @[comment: '状态，0：正常，1：禁用'; default: 0; omitempty; sql_type: 'tinyint(20)']
 
 	updater_id ?string    @[comment: '修改者ID'; omitempty; sql_type: 'CHAR(36)']
 	updated_at time.Time  @[comment: 'Update Time | 修改日期'; omitempty; sql_type: 'TIMESTAMP']

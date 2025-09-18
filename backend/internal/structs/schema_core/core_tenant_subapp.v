@@ -9,7 +9,7 @@ pub:
 	id             string @[comment: 'UUID; 应用订阅ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
 	tenant_id      string @[comment: 'Tenant ID | 租户ID'; immutable; sql: 'tenant_id'; sql_type: 'CHAR(36)']
 	application_id string @[comment: 'Application ID | 订阅的应用ID'; immutable; sql_type: 'CHAR(36)']
-	status         string @[comment: '应用订阅状态; 0 未订阅，1 已订阅，2 已取消，3 已过期'; immutable; sql_type: 'CHAR(36)']
+	status         u8     @[comment: '应用订阅状态; 0 未订阅，1 已订阅，2 已取消，3 已过期'; immutable; sql_type: 'tinyint(20)']
 
 	updater_id ?string    @[comment: '修改者ID'; omitempty; sql_type: 'CHAR(36)']
 	updated_at time.Time  @[comment: 'Update Time | 修改日期'; omitempty; sql_type: 'TIMESTAMP']
