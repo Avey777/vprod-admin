@@ -1,7 +1,5 @@
 module schema_core
 
-import time
-
 @[table: 'core_tenant_roles']
 @[comment: '租户角色表']
 pub struct CoreTenantRoles {
