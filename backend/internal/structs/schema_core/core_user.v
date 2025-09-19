@@ -19,7 +19,8 @@ pub:
 	avatar        ?string @[comment: 'Permanent Avatar | 永久头像路径'; omitempty; sql_type: 'VARCHAR(512)']
 	status        u8      @[comment: '状态，0：正常，1：禁用'; default: 0; omitempty; sql_type: 'tinyint(20)']
 
-	language     string  @[comment: '语言'; omitempty; sql_type: 'VARCHAR(255)']
+	language     string  @[comment: '语言';default: 'English'; omitempty; sql_type: 'VARCHAR(255)']
+	shiqu        string  @[comment: 'Shiqu'; default: 'UTC +00:00'; omitempty; sql_type: 'VARCHAR(255)']
 	id_card_type u8      @[comment: '证件类型，0：身份证，1：护照，2：军官证，3：其他'; default: 0; omitempty; sql_type: 'tinyint']
 	id_card      ?string @[comment: '证件号码'; omitempty; sql_type: 'VARCHAR(255)']
 	tag          ?string @[comment: '标签'; omitempty; sql_type: 'VARCHAR(255)']
@@ -27,7 +28,7 @@ pub:
 	gender       u8      @[comment: '性别，0：男，1：女，2：未知'; default: 0; omitempty; sql_type: 'tinyint']
 	birthday     ?string @[comment: '生日'; omitempty; sql_type: 'VARCHAR(255)']
 
-	education          u8      @[comment: '学历，0：小学，1：初中，2：高中，3：大专，4：本科，5：硕士，6：博士'; default: 0; omitempty; sql_type: 'tinyint']
+	education          u8      @[comment: '学历，0:未知，1：小学，2：初中，3：高中，4：大专，5：本科，6：硕士，7：博士'; default: 0; omitempty; sql_type: 'tinyint']
 	score              u32     @[comment: '分数'; default: 0; omitempty; sql_type: 'INT']
 	ranking            u32     @[comment: '排名'; default: 0; omitempty; sql_type: 'INT']
 	is_online          bool    @[comment: '是否在线'; default: false; omitempty; sql_type: 'TINYINT']
