@@ -4,17 +4,11 @@ import veb
 import log
 import common.api { json_error, json_success_optparams }
 import internal.structs { Context }
-// import internal.config { db_mysql }
 import internal.structs.schema_sys
 
-@['/init/sys_database'; get]
-fn (app &Base) init_sys(mut ctx Context) veb.Result {
+@['/init/init_sys'; get]
+pub fn (app &Base) init_sys(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-
-	// mut db := db_mysql() // or { return ctx.json(json_error(1, 'failed to connect to database')) }
-	// defer {
-	// 	db.close() or {panic}
-	// }
 
 	db, conn := ctx.dbpool.acquire() or {
 		return ctx.json(json_error(500, '获取的连接无效: ${err}'))
@@ -43,7 +37,22 @@ fn (app &Base) init_sys(mut ctx Context) veb.Result {
 		create table schema_sys.SysCasbinRule
 		create table schema_sys.SysApi
 	} or { return ctx.text('error creating table:  ${err}') }
-	log.info('Database init sys success')
+	log.info('schema_sys init_sys success')
+
+	sys_users := r"REPLACE INTO `sys_users`
+	  VALUES ('00000000-0000-0000-0000-000000000001', 'admin', '$2a$10${E0E6oRFnroxrPrDkRwA5s.AEiHNThGMdcA4HwPC1CBmP38tCn3De2}', 'administrator', '所有者', '/dashboard', NULL, NULL, '/avatar', '11111111-0000-0000-0000-000000000000', 0, NULL, '2025-07-25 11:11:34', NULL, '2025-07-25 11:11:34', 0, NULL);"
+	db.exec(sys_users) or { return ctx.json(json_error(500, '执行SQL失败: ${err}')) }
+	log.info('sys_users init_sys_data success')
+
+	department := r"REPLACE INTO `sys_departments`
+	  VALUES ('11111111-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', 'root', NULL, NULL, NULL, 'Root Department ', 0, 'China', 'guangdong', 'shenzhen', NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, '2025-08-25 20:58:59', NULL, '2025-08-21 09:53:34', 0, NULL);"
+	db.exec(department) or { return ctx.json(json_error(500, '执行SQL失败: ${err}')) }
+	log.info('department init_sys_data success')
+
+	roles := r"REPLACE INTO `sys_roles`
+	  VALUES ('00000000-1111-0000-0000-000000000000', 'admin', '001', '/dashboard', NULL, 0, 1, NULL, 0, NULL, '2025-07-25 11:16:05', NULL, '2025-07-25 11:16:00', 0, NULL);"
+	db.exec(roles) or { return ctx.json(json_error(500, '执行SQL失败: ${err}')) }
+	log.info('role init_sys_data success')
 
 	return ctx.json(json_success_optparams(message: 'sys database init Successfull'))
 }

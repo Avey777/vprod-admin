@@ -5,7 +5,6 @@ import log
 import orm
 import time
 import x.json2
-
 import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
@@ -15,12 +14,14 @@ fn (app &User) user_by_id(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := user_by_id_resp(mut ctx,req) or { return ctx.json(api.json_error_500(err.msg()) ) }
+	mut result := user_by_id_resp(mut ctx, req) or {
+		return ctx.json(api.json_error_500(err.msg()))
+	}
 
-	return ctx.json(api.json_success_200(result) )
+	return ctx.json(api.json_success_200(result))
 }
 
-fn user_by_id_resp(mut ctx Context,req json2.Any) !map[string]Any {
+fn user_by_id_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	user_id := req.as_map()['userId'] or { '' }.str()
@@ -33,7 +34,7 @@ fn user_by_id_resp(mut ctx Context,req json2.Any) !map[string]Any {
 	}
 
 	mut sys_user := orm.new_query[schema_sys.SysUser](db)
-	result := sys_user.select('id = ?', user_id)!.query()!
+	result := sys_user.select()!.where('id = ?', user_id)!.query()!
 
 	mut datalist := []map[string]Any{} // map空数组初始化
 	for row in result {
@@ -73,12 +74,14 @@ fn user_by_id_resp(mut ctx Context,req json2.Any) !map[string]Any {
 		// mut user_info := sql db {select from schema_sys.SysUser  where id == user_id limit 1}!
 		mut user_info := sys_user.select('department_id')!.where('id = ?', user_id)!.query()!
 		mut dpt_id := user_info[0].department_id or { '' }
-
+		if dpt_id == '' {
+			return error('dpt_id is empty')
+		}
 		mut sys_department := orm.new_query[schema_sys.SysDepartment](db)
 		department_info := sys_department.select('name')!.where('id = ?', dpt_id)!.query()!
 
 		data['departmentName'] = department_info[0].name
-		//*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
+		// //*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
 		data['creator_id'] = row.creator_id or { '' }
 		data['updater_id'] = row.updater_id or { '' }
 		data['created_at'] = row.created_at.format_ss()

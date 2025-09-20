@@ -1,12 +1,13 @@
-module schema_tema
+module schema_base
 
 import time
 
-@[table: 'ed_base_area']
-pub struct EdBaseArea {
+@[comment: '国家/地区下辖行政区域表: adm_div']
+@[table: 'base_administrative_division']
+pub struct BaseAdministrativeDivision {
 pub:
 	id                  string  @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
-	parent_country_id   string  @[comment: 'Country ID | 国家id'; required; sql: 'parent_country_id'; sql_type: 'CHAR(36)']
+	parent_country_id   string  @[comment: 'Country ID | 国家/地区 id'; required; sql: 'parent_country_id'; sql_type: 'CHAR(36)']
 	parent_adm_id       string  @[comment: 'Parent adm area ID | 父级行政id'; required; sql: 'parent_adm_id'; sql_type: 'CHAR(36)']
 	sys_adm_name        string  @[comment: 'System name local | 行政地区简称（系统字段）'; required; sql: 'sys_adm_name'; sql_type: 'VARCHAR(255)']
 	sys_adm_code        string  @[comment: 'System adm code | 行政代码(系统字段)'; required; sql: 'sys_adm_code'; sql_type: 'VARCHAR(255)']
