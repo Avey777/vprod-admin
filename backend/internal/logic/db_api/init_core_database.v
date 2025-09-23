@@ -20,20 +20,20 @@ pub fn (app &Base) init_core(mut ctx Context) veb.Result {
 	}
 
 	sql db {
-		create table schema_core.CoreApplications
-		create table schema_core.CoreApplicationMenus
-		create table schema_core.CoreConnectors
-		create table schema_core.CoreProjects
-		create table schema_core.CoreRoleAppMenus
-		create table schema_core.CoreRoleTenantMenus
-		create table schema_core.CoreTenantRoles
-		create table schema_core.CoreTenants
+		create table schema_core.CoreApplication
+		create table schema_core.CoreApplicationMenu
+		create table schema_core.CoreConnector
+		create table schema_core.CoreProject
+		create table schema_core.CoreRoleAppMenu
+		create table schema_core.CoreRoleTenantMenu
+		create table schema_core.CoreTenantRole
+		create table schema_core.CoreTenant
 		create table schema_core.CoreTenantMember
-		create table schema_core.CoreTenantMenus
+		create table schema_core.CoreTenantMenu
 		create table schema_core.CoreTenantSubscribeApplication
 		create table schema_core.CoreToken
 		create table schema_core.CoreUser
-		create table schema_core.CoreUserConnectors
+		create table schema_core.CoreUserConnector
 	} or { return ctx.text('error creating table:  ${err}') }
 	log.info('schema_core init_core success')
 
