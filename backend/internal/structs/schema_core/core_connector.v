@@ -4,9 +4,9 @@ import time
 
 // Github  Google QQ WeChat Facebook DingTalk Weibo Gitee LinkedIn Wecom Lark Gitlab Apple AzureAD Slack
 
-@[table: 'core_connectors']
+@[table: 'core_connector']
 @[comment: '连接器表']
-pub struct CoreConnectors {
+pub struct CoreConnector {
 pub:
 	id           string @[comment: '连接器ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
 	provider     string @[comment: '连接器标识,认证提供商: google, github, wechat'; primary; required; sql_type: 'VARCHAR(100)']

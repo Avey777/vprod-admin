@@ -3,8 +3,8 @@ module schema_core
 import time
 
 @[comment: '租户表: 租户/组织/团队']
-@[table: 'core_tenants']
-pub struct CoreTenants {
+@[table: 'core_tenant']
+pub struct CoreTenant {
 pub:
 	id       string @[comment: '租户id  UUID rand.uuid_v7()'; immutable; primary; required; sql: 'id'; sql_type: 'CHAR(36)'; unique]
 	user_id  string @[comment: 'core_user 租户所有者id'; required; sql_type: 'CHAR(36)']

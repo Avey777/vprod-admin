@@ -1,23 +1,23 @@
 module db_api
 
 pub const sys_users = r"
-REPLACE INTO `vcore`.`sys_users` (`id`, `username`, `password`, `nickname`, `description`, `home_path`, `mobile`, `email`, `avatar`, `department_id`, `status`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
+REPLACE INTO `sys_users` (`id`, `username`, `password`, `nickname`, `description`, `home_path`, `mobile`, `email`, `avatar`, `department_id`, `status`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
   ('00000000-0000-0000-0000-000000000001', 'admin', '$2a$10${E0E6oRFnroxrPrDkRwA5s.AEiHNThGMdcA4HwPC1CBmP38tCn3De2}', 'administrator', '所有者', '/dashboard', NULL, NULL, '/avatar', '11111111-0000-0000-0000-000000000000', 0, NULL, '2025-07-25 11:11:34', NULL, '2025-07-25 11:11:34', 0, NULL);
 "
 
 pub const sys_department = r"
-REPLACE INTO `vcore`.`sys_departments` (`id`, `parent_id`, `name`, `leader`, `phone`, `email`, `remark`, `org_type`, `country`, `province_state`, `city`, `district`, `detail_address`, `longitude`, `latitude`, `service_boundary`, `sort`, `status`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
+REPLACE INTO `sys_departments` (`id`, `parent_id`, `name`, `leader`, `phone`, `email`, `remark`, `org_type`, `country`, `province_state`, `city`, `district`, `detail_address`, `longitude`, `latitude`, `service_boundary`, `sort`, `status`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
   ('11111111-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', 'root', NULL, NULL, NULL, 'Root Department ', 0, 'China', 'guangdong', 'shenzhen', NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, '2025-08-25 20:58:59', NULL, '2025-08-21 09:53:34', 0, NULL);
 "
 
 pub const sys_roles = r"
-REPLACE INTO `sys_roles` VALUES
+REPLACE INTO `sys_roles` (`id`, `name`, `code`, `default_router`, `remark`, `sort`, `data_scope`, `custom_dept_ids`, `status`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
 	('00000000-1111-0000-0000-000000000000', 'admin', '001', '/dashboard', NULL, 0, 1, NULL, 0, NULL, '2025-07-25 11:16:05', NULL, '2025-07-25 11:16:00', 0, NULL);
 "
 
 // REPLACE INTO `sys_apis` VALUES
 pub const sys_api = r"
-REPLACE INTO `vcore`.`sys_apis` (`id`, `path`, `description`, `api_group`, `service_name`, `method`, `is_required`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
+REPLACE INTO `sys_apis` (`id`, `path`, `description`, `api_group`, `service_name`, `method`, `is_required`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
   ('00000000-0000-0000-0000-000000000001', '/user/login', 'apiDesc.userLogin', 'user', 'Sys', 'POST', 1, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
   ('00000000-0000-0000-0000-000000000002', '/user/register', 'apiDesc.userRegister', 'user', 'Sys', 'POST', 1, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
   ('00000000-0000-0000-0000-000000000003', '/user/create', 'apiDesc.createUser', 'user', 'Sys', 'POST', 0, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),

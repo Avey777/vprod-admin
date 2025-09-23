@@ -2,7 +2,7 @@ module schema_sys
 
 import time
 
-@[table: 'sys_configurations']
+@[table: 'sys_configuration']
 @[comment: '配置表']
 pub struct SysConfiguration {
 pub:
