@@ -6,7 +6,7 @@ import time
 @[table: 'core_user']
 pub struct CoreUser {
 pub:
-	id            string  @[comment: 'UUID rand.uuid_v4()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
+	id            string  @[comment: 'UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
 	username      string  @[comment: 'User`s login name | 登录名'; omitempty; required; sql: 'username'; sql_type: 'VARCHAR(255)'; unique: 'username']
 	password      string  @[comment: 'Password | 密码'; omitempty; required; sql: 'password'; sql_type: 'VARCHAR(255)']
 	password_salt string  @[comment: 'Password Salt | 密码盐'; omitempty; sql: 'password_salt'; sql_type: 'VARCHAR(255)']
@@ -19,8 +19,8 @@ pub:
 	avatar        ?string @[comment: 'Permanent Avatar | 永久头像路径'; omitempty; sql_type: 'VARCHAR(512)']
 	status        u8      @[comment: '状态，0：正常，1：禁用'; default: 0; omitempty; sql_type: 'tinyint(20)']
 
-	language     string  @[comment: '语言';default: 'English'; omitempty; sql_type: 'VARCHAR(255)']
-	shiqu        string  @[comment: 'Shiqu'; default: 'UTC +00:00'; omitempty; sql_type: 'VARCHAR(255)']
+	language     string  @[comment: '语言'; default: '"English"'; omitempty; sql_type: 'VARCHAR(255)']
+	shiqu        string  @[comment: 'Shiqu'; default: '"UTC +00:00"'; omitempty; sql_type: 'VARCHAR(255)']
 	id_card_type u8      @[comment: '证件类型，0：身份证，1：护照，2：军官证，3：其他'; default: 0; omitempty; sql_type: 'tinyint']
 	id_card      ?string @[comment: '证件号码'; omitempty; sql_type: 'VARCHAR(255)']
 	tag          ?string @[comment: '标签'; omitempty; sql_type: 'VARCHAR(255)']

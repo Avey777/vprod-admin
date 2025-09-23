@@ -41,7 +41,7 @@ pub fn (app &Base) init_sys(mut ctx Context) veb.Result {
 	log.info('schema_sys init_sys success')
 
 	log.info('insert sys data')
-	sql_commands := [sys_users, sys_department, sys_roles]
+	sql_commands := [sys_user, sys_department, sys_role, sys_api]
 	for cmd in sql_commands {
 		db.exec(cmd) or { return ctx.json(json_error(500, '执行 ${cmd} SQL失败: ${err}')) }
 		log.info('${cmd} init_sys_data success')
