@@ -2,6 +2,7 @@ module schema_sys
 
 import time
 
+@[unique_key: 'id,user_id']
 @[table: 'sys_token']
 @[comment: 'Token表']
 pub struct SysToken {

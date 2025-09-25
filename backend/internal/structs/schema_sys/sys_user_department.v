@@ -1,6 +1,7 @@
 module schema_sys
 
 @[comment: '用户部门关联表']
+@[unique_key: 'user_id,department_id']
 @[table: 'sys_user_department']
 pub struct SysUserDepartment {
 pub:

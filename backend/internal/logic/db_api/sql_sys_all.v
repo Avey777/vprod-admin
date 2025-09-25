@@ -41,7 +41,7 @@ REPLACE INTO `sys_user_role` (`user_id`, `role_id`) VALUES
 "
 
 pub const sys_user_department = r"
-REPLACE INTO `vSys`.`sys_user_department` (`user_id`, `department_id`) VALUES
+REPLACE INTO `sys_user_department` (`user_id`, `department_id`) VALUES
   ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001');
 "
 

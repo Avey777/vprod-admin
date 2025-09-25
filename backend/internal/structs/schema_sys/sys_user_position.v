@@ -1,6 +1,7 @@
 module schema_sys
 
 @[comment: '用户职位关联表']
+@[unique_key: 'user_id,position_id']
 @[table: 'sys_user_position']
 pub struct SysUserPosition {
 pub:
