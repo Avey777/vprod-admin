@@ -2,9 +2,9 @@ module schema_core
 
 import time
 
-@[table: 'core_user_connectors']
+@[table: 'core_user_connector']
 @[comment: '用户连接器表']
-pub struct CoreUserConnectors {
+pub struct CoreUserConnector {
 pub:
 	id               string @[comment: '连接器ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
 	user_id          string @[comment: '用户ID'; immutable; sql: 'user_id'; sql_type: 'CHAR(36)']

@@ -5,7 +5,6 @@ module schema_base
 2.计算的区时=已知区时－（已知区时的时区-要计算区时的时区（注：东时区为正，西时区为负）；
 3.区时定义：本时区的中央经线的地方时。(区时是整数的)
 */
-import time
 
 @[table: 'base_time_utc']
 @[comment: '时区表']

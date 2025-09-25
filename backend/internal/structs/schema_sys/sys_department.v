@@ -2,7 +2,8 @@ module schema_sys
 
 import time
 
-@[table: 'sys_departments']
+@[table: 'sys_department']
+@[unique_key: 'id,parent_id']
 @[comment: '部门表']
 pub struct SysDepartment {
 pub:

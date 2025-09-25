@@ -69,18 +69,18 @@ fn user_by_id_resp(mut ctx Context, req json2.Any) !map[string]Any {
 		data['home_path'] = row.home_path
 		data['mobile'] = row.mobile or { '' }
 		data['email'] = row.email or { '' }
-		data['department_id'] = row.department_id or { '' }
+		// data['department_id'] = row.department_id or { '' }
 		//*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		// mut user_info := sql db {select from schema_sys.SysUser  where id == user_id limit 1}!
-		mut user_info := sys_user.select('department_id')!.where('id = ?', user_id)!.query()!
-		mut dpt_id := user_info[0].department_id or { '' }
-		if dpt_id == '' {
-			return error('dpt_id is empty')
-		}
-		mut sys_department := orm.new_query[schema_sys.SysDepartment](db)
-		department_info := sys_department.select('name')!.where('id = ?', dpt_id)!.query()!
+		// mut user_info := sys_user.select('department_id')!.where('id = ?', user_id)!.query()!
+		// mut dpt_id := user_info[0].department_id or { '' }
+		// if dpt_id == '' {
+		// 	return error('dpt_id is empty')
+		// }
+		// mut sys_department := orm.new_query[schema_sys.SysDepartment](db)
+		// department_info := sys_department.select('name')!.where('id = ?', dpt_id)!.query()!
 
-		data['departmentName'] = department_info[0].name
+		// data['departmentName'] = department_info[0].name
 		// //*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
 		data['creator_id'] = row.creator_id or { '' }
 		data['updater_id'] = row.updater_id or { '' }

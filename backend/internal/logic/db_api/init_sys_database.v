@@ -22,9 +22,11 @@ pub fn (app &Base) init_sys(mut ctx Context) veb.Result {
 	sql db {
 		create table schema_sys.SysUser
 		create table schema_sys.SysUserRole
+		create table schema_sys.SysUserDepartment
 		create table schema_sys.SysUserPosition
 		create table schema_sys.SysToken
 		create table schema_sys.SysRole
+		create table schema_sys.SysRoleApi
 		create table schema_sys.SysRoleMenu
 		create table schema_sys.SysPosition
 		create table schema_sys.SysOauthProvider
@@ -39,20 +41,13 @@ pub fn (app &Base) init_sys(mut ctx Context) veb.Result {
 	} or { return ctx.text('error creating table:  ${err}') }
 	log.info('schema_sys init_sys success')
 
-	sys_users := r"REPLACE INTO `sys_users`
-	  VALUES ('00000000-0000-0000-0000-000000000001', 'admin', '$2a$10${E0E6oRFnroxrPrDkRwA5s.AEiHNThGMdcA4HwPC1CBmP38tCn3De2}', 'administrator', '所有者', '/dashboard', NULL, NULL, '/avatar', '11111111-0000-0000-0000-000000000000', 0, NULL, '2025-07-25 11:11:34', NULL, '2025-07-25 11:11:34', 0, NULL);"
-	db.exec(sys_users) or { return ctx.json(json_error(500, '执行SQL失败: ${err}')) }
-	log.info('sys_users init_sys_data success')
-
-	department := r"REPLACE INTO `sys_departments`
-	  VALUES ('11111111-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', 'root', NULL, NULL, NULL, 'Root Department ', 0, 'China', 'guangdong', 'shenzhen', NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, '2025-08-25 20:58:59', NULL, '2025-08-21 09:53:34', 0, NULL);"
-	db.exec(department) or { return ctx.json(json_error(500, '执行SQL失败: ${err}')) }
-	log.info('department init_sys_data success')
-
-	roles := r"REPLACE INTO `sys_roles`
-	  VALUES ('00000000-1111-0000-0000-000000000000', 'admin', '001', '/dashboard', NULL, 0, 1, NULL, 0, NULL, '2025-07-25 11:16:05', NULL, '2025-07-25 11:16:00', 0, NULL);"
-	db.exec(roles) or { return ctx.json(json_error(500, '执行SQL失败: ${err}')) }
-	log.info('role init_sys_data success')
+	log.info('insert sys data')
+	sql_commands := [sys_user, sys_token, sys_department, sys_position, sys_role, sys_api, sys_menu,
+		sys_user_department, sys_user_position, sys_user_role, sys_role_api, sys_role_menu]
+	for cmd in sql_commands {
+		db.exec(cmd) or { return ctx.json(json_error(500, '执行 ${cmd} SQL失败: ${err}')) }
+		log.info('${cmd} init_sys_data success')
+	}
 
 	return ctx.json(json_success_optparams(message: 'sys database init Successfull'))
 }

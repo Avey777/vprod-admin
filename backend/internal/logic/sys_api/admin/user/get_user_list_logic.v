@@ -92,7 +92,6 @@ fn user_list_resp(mut ctx Context, req json2.Any) !map[string]Any {
 		data['status'] = int(row.status)
 		data['description'] = row.description or { '' }
 		data['home_path'] = row.home_path
-		data['department_id'] = row.department_id or { '' }
 		//*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		// mut user_position := sql db {select from schema_sys.SysUserPosition where user_id == row.id}!
 		mut user_position := sys_user_position.select()!.where('user_id = ?', row.id)!.limit(1)!.query()!

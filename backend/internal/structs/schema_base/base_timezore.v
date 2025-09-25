@@ -6,7 +6,6 @@ module schema_base
 它会定期更新以反映政治机构对时区边界、UTC 偏移量和夏令时规则所做的更改。
 数据来源：https://www.iana.org/time-zones
 */
-import time
 
 @[table: 'base_time_zone']
 @[comment: '时区表']

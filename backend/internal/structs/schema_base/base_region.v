@@ -3,8 +3,8 @@ module schema_base
 import time
 
 @[comment: '国家/地区表']
-@[table: 'base_regions']
-pub struct BaseRegions {
+@[table: 'base_region']
+pub struct BaseRegion {
 pub:
 	id                   string  @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	sys_name             string  @[comment: 'Name local | 地区&国家简称（系统实际使用字段）'; required; sql: 'sys_name'; sql_type: 'VARCHAR(255)']

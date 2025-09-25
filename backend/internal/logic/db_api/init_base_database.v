@@ -20,7 +20,7 @@ pub fn (app &Base) init_base(mut ctx Context) veb.Result {
 	}
 
 	sql db {
-		create table schema_base.BaseRegions
+		create table schema_base.BaseRegion
 		create table schema_base.BaseAdministrativeDivision
 	} or { return ctx.text('error creating table:  ${err}') }
 	log.info('schema_core init_core success')

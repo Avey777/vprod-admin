@@ -3,7 +3,7 @@ module schema_sys
 import time
 
 @[comment: '认证发送日志: SMS/Email']
-@[table: 'sys_mfa_logs']
+@[table: 'sys_mfa_log']
 pub struct SysMFAlog {
 pub:
 	id            string @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
