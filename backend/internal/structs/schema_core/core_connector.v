@@ -4,8 +4,8 @@ import time
 
 // Github  Google QQ WeChat Facebook DingTalk Weibo Gitee LinkedIn Wecom Lark Gitlab Apple AzureAD Slack
 
+@[comment: 'Oauth提供商表/连接器表']
 @[table: 'core_connector']
-@[comment: '连接器表']
 pub struct CoreConnector {
 pub:
 	id           string @[comment: '连接器ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]

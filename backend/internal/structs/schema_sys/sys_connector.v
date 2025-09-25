@@ -2,9 +2,9 @@ module schema_sys
 
 import time
 
-@[table: 'sys_oauth_provider']
-@[comment: 'Oauth提供商表']
-pub struct SysOauthProvider {
+@[comment: 'Oauth提供商表/连接器表']
+@[table: 'sys_connector']
+pub struct SysConnector {
 pub:
 	id            string @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	name          string @[comment: 'The provider`s name | 提供商名称'; omitempty; sql_type: 'VARCHAR(64)']
