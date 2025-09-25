@@ -4,6 +4,6 @@ module schema_sys
 @[table: 'sys_role_menu']
 pub struct SysRoleMenu {
 pub:
-	role_id string @[comment: '角色ID'; primary; sql_type: 'CHAR(36)']
-	menu_id string @[comment: '菜单ID'; primary; sql_type: 'CHAR(36)']
+	role_id string @[comment: '角色ID'; sql_type: 'CHAR(36)']
+	menu_id string @[comment: '菜单ID'; sql_type: 'CHAR(36)']
 }

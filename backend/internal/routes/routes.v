@@ -33,13 +33,24 @@ pub fn (mut app AliasApp) routes_ifdef(conn &dbpool.DatabasePool, doc_conf &conf
 	}
 }
 
-// 封装泛型全局中间件
-fn (mut app AliasApp) register_routes[T, U](mut ctrl T, url_path string, conn &dbpool.DatabasePool, doc_conf &conf.GlobalConfig) {
+// 封装泛型sys全局中间件
+fn (mut app AliasApp) register_routes_sys[T, U](mut ctrl T, url_path string, conn &dbpool.DatabasePool, doc_conf &conf.GlobalConfig) {
 	ctrl.use(middleware.cores_middleware_generic())
 	ctrl.use(middleware.logger_middleware_generic())
 	ctrl.use(middleware.config_middle(doc_conf))
-	ctrl.use(middleware.authority_middleware()) // 需要token认证通过
 	ctrl.use(middleware.db_middleware(conn))
+	ctrl.use(middleware.authority_middleware()) // sys鉴权使用,需要token认证通过,需要在db_middleware之后
+	app.register_controller[T, U](url_path, mut ctrl) or { log.error('${err}') }
+	// app.register_controller[T,Context](url_path, mut ctrl) or { log.error('${err}') }
+}
+
+// 封装泛型core全局中间件
+fn (mut app AliasApp) register_routes_core[T, U](mut ctrl T, url_path string, conn &dbpool.DatabasePool, doc_conf &conf.GlobalConfig) {
+	ctrl.use(middleware.cores_middleware_generic())
+	ctrl.use(middleware.logger_middleware_generic())
+	ctrl.use(middleware.config_middle(doc_conf))
+	ctrl.use(middleware.db_middleware(conn))
+	ctrl.use(middleware.authority_middleware_core()) // Tenant租户鉴权专用,需要token认证通过,需要在db_middleware之后
 	app.register_controller[T, U](url_path, mut ctrl) or { log.error('${err}') }
 	// app.register_controller[T,Context](url_path, mut ctrl) or { log.error('${err}') }
 }

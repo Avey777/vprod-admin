@@ -30,20 +30,21 @@ fn (mut app AliasApp) routes_sys_admin(conn &dbpool.DatabasePool, doc_conf &conf
 		doc_conf)
 
 	// 必须通过token_jwt 认证
-	app.register_routes[Admin, Context](mut &Admin{}, '/sys_api/admin', conn, doc_conf)
-	app.register_routes[User, Context](mut &User{}, '/sys_api/admin/user', conn, doc_conf)
-	app.register_routes[Token, Context](mut &Token{}, '/sys_api/admin/token', conn, doc_conf)
-	app.register_routes[Role, Context](mut &Role{}, '/sys_api/admin/role', conn, doc_conf)
-	app.register_routes[Position, Context](mut &Position{}, '/sys_api/admin/position',
+	app.register_routes_sys[Admin, Context](mut &Admin{}, '/sys_api/admin', conn, doc_conf)
+	app.register_routes_sys[User, Context](mut &User{}, '/sys_api/admin/user', conn, doc_conf)
+	app.register_routes_sys[Token, Context](mut &Token{}, '/sys_api/admin/token', conn,
+		doc_conf)
+	app.register_routes_sys[Role, Context](mut &Role{}, '/sys_api/admin/role', conn, doc_conf)
+	app.register_routes_sys[Position, Context](mut &Position{}, '/sys_api/admin/position',
 		conn, doc_conf)
-	app.register_routes[Menu, Context](mut &Menu{}, '/sys_api/admin/menu', conn, doc_conf)
-	app.register_routes[Dictionary, Context](mut &Dictionary{}, '/sys_api/admin/dictionary',
+	app.register_routes_sys[Menu, Context](mut &Menu{}, '/sys_api/admin/menu', conn, doc_conf)
+	app.register_routes_sys[Dictionary, Context](mut &Dictionary{}, '/sys_api/admin/dictionary',
 		conn, doc_conf)
-	app.register_routes[DictionaryDetail, Context](mut &DictionaryDetail{}, '/sys_api/admin/dictionarydetail',
+	app.register_routes_sys[DictionaryDetail, Context](mut &DictionaryDetail{}, '/sys_api/admin/dictionarydetail',
 		conn, doc_conf)
-	app.register_routes[Department, Context](mut &Department{}, '/sys_api/admin/department',
+	app.register_routes_sys[Department, Context](mut &Department{}, '/sys_api/admin/department',
 		conn, doc_conf)
-	app.register_routes[Configuration, Context](mut &Configuration{}, '/sys_api/admin/configuration',
+	app.register_routes_sys[Configuration, Context](mut &Configuration{}, '/sys_api/admin/configuration',
 		conn, doc_conf)
-	app.register_routes[Api, Context](mut &Api{}, '/sys_api/admin/api', conn, doc_conf)
+	app.register_routes_sys[Api, Context](mut &Api{}, '/sys_api/admin/api', conn, doc_conf)
 }
