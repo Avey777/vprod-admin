@@ -19,10 +19,10 @@ pub fn authority_jwt_verify(mut ctx Context) bool {
 		ctx.request_error('Missing or invalid authentication token')
 		return false
 	}
-	token := auth_header.all_after('Bearer').trim_space()
-	log.debug(token)
+	req_token := auth_header.all_after('Bearer').trim_space()
+	log.debug(req_token)
 
-	verify := jwt.jwt_verify(secret, token)
+	verify := jwt.jwt_verify(secret, req_token)
 	if verify == false {
 		ctx.res.status_code = 401
 		ctx.request_error('Authorization error')
@@ -35,6 +35,7 @@ pub fn authority_jwt_verify(mut ctx Context) bool {
 //从 Token 获取用户信息（实际应查询数据库或缓存）
 fn get_user_from_token(token string) {
 	// 使用 JWT 解析或查询数据库来验证 token 并获取用户信息
+	//
 }
 
 // 初始化中间件并设置 handler ,并返回中间件选项

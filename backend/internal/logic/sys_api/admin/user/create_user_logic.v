@@ -41,19 +41,18 @@ fn create_user_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	client_hash := encrypt.bcrypt_hash(password) or { return error('Failed bcrypt_hash : ${err}') }
 
 	users := schema_sys.SysUser{
-		id:            user_id
-		avatar:        req.as_map()['avatar'] or { '' }.str()
-		department_id: req.as_map()['department_id'] or { '' }.str()
-		description:   req.as_map()['description'] or { '' }.str()
-		email:         req.as_map()['email'] or { '' }.str()
-		home_path:     req.as_map()['home_path'] or { '/dashboard' }.str()
-		mobile:        req.as_map()['mobile'] or { '' }.str()
-		nickname:      req.as_map()['nickname'] or { '' }.str()
-		password:      client_hash
-		status:        req.as_map()['status'] or { 0 }.u8()
-		username:      req.as_map()['username'] or { '' }.str()
-		created_at:    req.as_map()['created_at'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
-		updated_at:    req.as_map()['updated_at'] or { time.now() }.to_time()!
+		id:          user_id
+		avatar:      req.as_map()['avatar'] or { '' }.str()
+		description: req.as_map()['description'] or { '' }.str()
+		email:       req.as_map()['email'] or { '' }.str()
+		home_path:   req.as_map()['home_path'] or { '/dashboard' }.str()
+		mobile:      req.as_map()['mobile'] or { '' }.str()
+		nickname:    req.as_map()['nickname'] or { '' }.str()
+		password:    client_hash
+		status:      req.as_map()['status'] or { 0 }.u8()
+		username:    req.as_map()['username'] or { '' }.str()
+		created_at:  req.as_map()['created_at'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
+		updated_at:  req.as_map()['updated_at'] or { time.now() }.to_time()!
 	}
 
 	mut user_positions := []schema_sys.SysUserPosition{cap: position_ids.len}

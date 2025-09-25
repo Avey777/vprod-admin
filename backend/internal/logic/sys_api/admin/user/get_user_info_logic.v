@@ -4,7 +4,6 @@ import veb
 import log
 import orm
 import x.json2
-
 import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
@@ -14,9 +13,9 @@ fn (app &User) user_info(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := user_info_resp(mut ctx,req) or { return ctx.json(api.json_error_500(err.msg()) ) }
+	mut result := user_info_resp(mut ctx, req) or { return ctx.json(api.json_error_500(err.msg())) }
 
-	return ctx.json(api.json_success_200(result) )
+	return ctx.json(api.json_success_200(result))
 }
 
 fn user_info_resp(mut ctx Context, req json2.Any) !map[string]Any {
@@ -66,13 +65,13 @@ fn user_info_resp(mut ctx Context, req json2.Any) !map[string]Any {
 		data['home_path'] = row.home_path
 		//*->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 		// mut user_info := sql db {select from schema_sys.SysUser  where id == user_id limit 1}!
-		mut user_info := sys_user.select('department_id')!.where('id = ?', user_id)!.query()!
-		mut dpt_id := user_info[0].department_id or { '' }
+		// mut user_info := sys_user.select('department_id')!.where('id = ?', user_id)!.query()!
+		// mut dpt_id := user_info[0].department_id or { '' }
 
-		mut sys_department := orm.new_query[schema_sys.SysDepartment](db)
-		department_info := sys_department.select('name')!.where('id = ?', dpt_id)!.query()!
+		// mut sys_department := orm.new_query[schema_sys.SysDepartment](db)
+		// department_info := sys_department.select('name')!.where('id = ?', dpt_id)!.query()!
 
-		data['department_info'] = department_info[0].name
+		// data['department_info'] = department_info[0].name
 		//*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-*/
 
 		datalist << data //追加data到maplist 数组

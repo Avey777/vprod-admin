@@ -1,18 +1,53 @@
 module db_api
 
 pub const sys_user = r"
-REPLACE INTO `sys_user` (`id`, `username`, `password`, `nickname`, `description`, `home_path`, `mobile`, `email`, `avatar`, `department_id`, `status`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
-  ('00000000-0000-0000-0000-000000000001', 'admin', '$2a$10${E0E6oRFnroxrPrDkRwA5s.AEiHNThGMdcA4HwPC1CBmP38tCn3De2}', 'administrator', '所有者', '/dashboard', NULL, NULL, '/avatar', '11111111-0000-0000-0000-000000000000', 0, NULL, '2025-07-25 11:11:34', NULL, '2025-07-25 11:11:34', 0, NULL);
+REPLACE INTO `sys_user` (`id`, `username`, `password`, `nickname`, `description`, `home_path`, `mobile`, `email`, `avatar`, `is_root`, `status`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
+  ('00000000-0000-0000-0000-000000000001', 'admin', '$2a$10${E0E6oRFnroxrPrDkRwA5s.AEiHNThGMdcA4HwPC1CBmP38tCn3De2}', 'administrator', '所有者', '/dashboard', NULL, NULL, '/avatar', 1 , 0, NULL, '2025-07-25 11:11:34', NULL, '2025-07-25 11:11:34', 0, NULL);
+"
+
+pub const sys_token = r"
+REPLACE INTO `sys_token` (`id`, `user_id`, `username`, `token`, `source`, `expired_at`, `status`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
+  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'admin', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImN0eSI6IiJ9.eyJpc3MiOiJ2cHJvZC13b3Jrc3Bhc2UiLCJzdWIiOiIwMTk2YjczNi1mODA3LTczZjAtODczMS03YTA4YzBlZDc1ZWEiLCJhdWQiOlsiYXBpLXNlcnZpY2UiLCJ3ZWJhcHAiXSwibmJmIjoxNzQ4OTQ1Mjc4LCJleHAiOjIwMDgxNDUyNzgsImlhdCI6MTc0ODk0NTI3OCwianRpIjoiNTkwN2FmM2EtM2Y1YS00MDg2LWFhZWItNjhlY2EyODNkOGQyIiwicm9sZXMiOlsiYWRtaW4iLCJlZGl0b3IiXSwidGVhbV9pZCI6IiIsImFwcF9pZCI6IiIsInBvcnRhbF9pZCI6IiIsImNsaWVudF9pcCI6IjE5Mi4xNjguMS4xMDAiLCJkZXZpY2VfaWQiOiJkZXZpY2UteHl6In0.6vJKEZi-oKmX0LPx63Y80Fph6MJZnywK2Q98Ioq4clA', 'core_user', '2035-12-31 00:54:47', 1, NULL, '2025-12-31 00:54:47', NULL, '2025-12-31 00:54:47', 0, NULL);
 "
 
 pub const sys_department = r"
 REPLACE INTO `sys_department` (`id`, `parent_id`, `name`, `leader`, `phone`, `email`, `remark`, `org_type`, `country`, `province_state`, `city`, `district`, `detail_address`, `longitude`, `latitude`, `service_boundary`, `sort`, `status`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
-  ('11111111-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', 'root', NULL, NULL, NULL, 'Root Department ', 0, 'China', 'guangdong', 'shenzhen', NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, '2025-08-25 20:58:59', NULL, '2025-08-21 09:53:34', 0, NULL);
+  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'root', NULL, NULL, NULL, 'Root Department ', 0, 'China', 'guangdong', 'shenzhen', NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, '2025-08-25 20:58:59', NULL, '2025-08-21 09:53:34', 0, NULL);
+"
+
+pub const sys_position = r"
+REPLACE INTO `sys_position` (`id`, `name`, `code`, `remark`, `sort`, `status`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
+  ('00000000-0000-0000-0000-000000000001', 'root', '0001', 'ROOT', 0, 0, NULL, '2025-09-25 09:56:32', NULL, '2025-09-25 09:56:38', 0, NULL);
 "
 
 pub const sys_role = r"
 REPLACE INTO `sys_role` (`id`, `name`, `code`, `default_router`, `remark`, `sort`, `data_scope`, `custom_dept_ids`, `status`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
-	('00000000-1111-0000-0000-000000000000', 'admin', '001', '/dashboard', NULL, 0, 1, NULL, 0, NULL, '2025-07-25 11:16:05', NULL, '2025-07-25 11:16:00', 0, NULL);
+	('00000000-0000-0000-0000-000000000001', 'admin', '001', '/dashboard', NULL, 0, 1, NULL, 0, NULL, '2025-07-25 11:16:05', NULL, '2025-07-25 11:16:00', 0, NULL);
+"
+
+pub const sys_role_api = r"
+REPLACE INTO `sys_role_api` (`role_id`, `api_id`) VALUES
+  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001');
+"
+
+pub const sys_role_menu = r"
+REPLACE INTO `sys_role_menu` (`role_id`, `menu_id`) VALUES
+  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001');
+"
+
+pub const sys_user_role = r"
+REPLACE INTO `sys_user_role` (`user_id`, `role_id`) VALUES
+  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001');
+"
+
+pub const sys_user_department = r"
+REPLACE INTO `vcore`.`sys_user_department` (`user_id`, `department_id`) VALUES
+  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001');
+"
+
+pub const sys_user_position = r"
+REPLACE INTO `sys_user_position` (`user_id`, `position_id`) VALUES
+  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001');
 "
 
 // REPLACE INTO `sys_api` VALUES
@@ -156,4 +191,33 @@ REPLACE INTO `sys_api` (`id`, `path`, `description`, `api_group`, `service_name`
   ('00000000-0000-0000-0000-000000000136', '/sms_provider', 'apiDesc.getSmsProviderById', 'sms_provider', 'Mcms', 'POST', 0, NULL, '2024-11-18 00:54:15', NULL, '2024-11-18 00:54:15', 0, NULL),
   ('00000000-0000-0000-0000-000000000137', '/sms/send', 'apiDesc.sendSms', 'message_sender', 'Mcms', 'POST', 0, NULL, '2024-11-18 00:54:15', NULL, '2024-11-18 00:54:15', 0, NULL),
   ('00000000-0000-0000-0000-000000000138', '/email/send', 'apiDesc.sendEmail', 'message_sender', 'Mcms', 'POST', 0, NULL, '2024-11-18 00:54:15', NULL, '2024-11-18 00:54:15', 0, NULL);
+"
+
+pub const sys_menu = r"
+REPLACE INTO `sys_menu` (`id`, `parent_id`, `menu_level`, `menu_type`, `path`, `name`, `redirect`, `component`, `disabled`, `service_name`, `permission`, `title`, `icon`, `hide_menu`, `hide_breadcrumb`, `ignore_keep_alive`, `hide_tab`, `frame_src`, `carry_param`, `hide_children_in_menu`, `affix`, `dynamic_level`, `real_path`, `sort`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
+ ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 1, 1, '/dashboard', 'Dashboard', '', '/dashboard/workbench/index', 0, 'Core', NULL, 'route.dashboard', 'ant-design:home-outlined', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 0, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
+ ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', 1, 0, '/system', 'SystemManagement', '', 'LAYOUT', 0, 'Core', NULL, 'route.systemManagementTitle', 'ant-design:tool-outlined', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 999, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
+ ('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000002', 2, 1, '/menu', 'MenuManagement', '', '/sys/menu/index', 0, 'Core', NULL, 'route.menuManagementTitle', 'ant-design:bars-outlined', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 1, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
+ ('00000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000002', 2, 1, '/role', 'RoleManagement', '', '/sys/role/index', 0, 'Core', NULL, 'route.roleManagementTitle', 'ant-design:user-outlined', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 2, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
+ ('00000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000002', 2, 1, '/user', 'UserManagement', '', '/sys/user/index', 0, 'Core', NULL, 'route.userManagementTitle', 'ant-design:user-outlined', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 3, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
+ ('00000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000002', 2, 1, '/department', 'DepartmentManagement', '', '/sys/department/index', 0, 'Core', NULL, 'route.departmentManagement', 'ic:outline-people-alt', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 4, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
+ ('00000000-0000-0000-0000-000000000007', '00000000-0000-0000-0000-000000000002', 2, 1, '/api', 'APIManagement', '', '/sys/api/index', 0, 'Core', NULL, 'route.apiManagementTitle', 'ant-design:api-outlined', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 5, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
+ ('00000000-0000-0000-0000-000000000008', '00000000-0000-0000-0000-000000000002', 2, 1, '/dictionary', 'DictionaryManagement', '', '/sys/dictionary/index', 0, 'Core', NULL, 'route.dictionaryManagementTitle', 'ant-design:book-outlined', 0, 0, 0, 0, '', 0, 1, 0, 20, '', 6, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
+ ('00000000-0000-0000-0000-000000000009', '00000000-0000-0000-0000-000000000001', 1, 0, '/other', 'OtherPages', '', 'LAYOUT', 0, 'Core', NULL, 'route.otherPages', 'ant-design:question-circle-outlined', 1, 0, 0, 0, '', 0, 0, 0, 20, '', 1000, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
+ ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000008', 2, 1, '/dictionary/detail/:dictionaryId', 'DictionaryDetail', '', '/sys/dictionaryDetail/index', 0, 'Core', NULL, 'route.dictionaryDetailManagementTitle', 'ant-design:align-left-outlined', 1, 0, 0, 0, '', 0, 0, 0, 20, '', 1, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
+ ('00000000-0000-0000-0000-000000000011', '00000000-0000-0000-0000-000000000009', 1, 1, '/profile', 'Profile', '', '/sys/profile/index', 0, 'Core', NULL, 'route.userProfileTitle', 'ant-design:profile-outlined', 1, 0, 0, 0, '', 0, 0, 0, 20, '', 3, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
+ ('00000000-0000-0000-0000-000000000012', '00000000-0000-0000-0000-000000000002', 2, 1, '/oauth', 'OauthManagement', '', '/sys/oauth/index', 0, 'Core', NULL, 'route.oauthManagement', 'ant-design:unlock-filled', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 6, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
+ ('00000000-0000-0000-0000-000000000013', '00000000-0000-0000-0000-000000000002', 2, 1, '/token', 'TokenManagement', '', '/sys/token/index', 0, 'Core', NULL, 'route.tokenManagement', 'ant-design:lock-outlined', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 7, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
+ ('00000000-0000-0000-0000-000000000014', '00000000-0000-0000-0000-000000000002', 2, 1, '/position', 'PositionManagement', '', '/sys/position/index', 0, 'Core', NULL, 'route.positionManagement', 'ic:twotone-work-outline', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 8, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
+ ('00000000-0000-0000-0000-000000000015', '00000000-0000-0000-0000-000000000001', 2, 1, '/task', 'TaskManagement', '', '/sys/task/index', 0, 'Job', NULL, 'route.taskManagement', 'ic:baseline-access-alarm', 1, 0, 0, 0, '', 0, 0, 0, 20, '', 8, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
+ ('00000000-0000-0000-0000-000000000016', '00000000-0000-0000-0000-000000000002', 2, 1, '/configuration', 'ConfigurationManagement', '', '/sys/configuration/index', 0, 'Core', NULL, 'route.configurationManagement', 'carbon:data-2', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 9, NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL),
+ ('00000000-0000-0000-0000-000000000017', '00000000-0000-0000-0000-000000000001', 1, 1, '/fms_dir', 'FileManagementDirectory', '', 'LAYOUT', 0, 'Fms', NULL, 'route.fileManagement', 'ant-design:folder-open-outlined', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 3, NULL, '2024-11-18 00:54:06', NULL, '2024-11-18 00:54:06', 0, NULL),
+ ('00000000-0000-0000-0000-000000000018', '00000000-0000-0000-0000-000000000017', 2, 1, '/fms/file', 'FileManagement', '', '/fms/file/index', 0, 'Fms', NULL, 'route.fileManagement', 'ant-design:folder-open-outlined', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 1, NULL, '2024-11-18 00:54:06', NULL, '2024-11-18 00:54:06', 0, NULL),
+ ('00000000-0000-0000-0000-000000000019', '00000000-0000-0000-0000-000000000017', 2, 1, '/fms/file_tag', 'FileTagManagement', '', '/fms/fileTag/index', 0, 'Fms', NULL, 'route.fileTagManagement', 'ant-design:book-outlined', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 2, NULL, '2024-11-18 00:54:06', NULL, '2024-11-18 00:54:06', 0, NULL),
+ ('00000000-0000-0000-0000-000000000020', '00000000-0000-0000-0000-000000000017', 2, 1, '/fms/storage_provider', 'StorageProviderManagement', '', '/fms/storageProvider/index', 0, 'Fms', NULL, 'route.storageProviderManagement', 'mdi:cloud-outline', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 3, NULL, '2024-11-18 00:54:06', NULL, '2024-11-18 00:54:06', 0, NULL),
+ ('00000000-0000-0000-0000-000000000021', '00000000-0000-0000-0000-000000000017', 2, 1, '/fms/cloud_file', 'CloudFileManagement', '', '/fms/cloudFile/index', 0, 'Fms', NULL, 'route.cloudFileManagement', 'ant-design:folder-open-outlined', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 4, NULL, '2024-11-18 00:54:06', NULL, '2024-11-18 00:54:06', 0, NULL),
+ ('00000000-0000-0000-0000-000000000022', '00000000-0000-0000-0000-000000000017', 2, 1, '/fms/cloud_file_tag', 'CloudFileTagManagement', '', '/fms/cloudFileTag/index', 0, 'Fms', NULL, 'route.cloudFileTagManagement', 'ant-design:book-outlined', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 5, NULL, '2024-11-18 00:54:06', NULL, '2024-11-18 00:54:06', 0, NULL),
+ ('00000000-0000-0000-0000-000000000023', '00000000-0000-0000-0000-000000000001', 1, 1, '/mcms_dir', 'MessageCenterManagement', '', 'LAYOUT', 0, 'Mcms', NULL, 'route.messageCenterManagement', 'clarity:email-line', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 4, NULL, '2024-11-18 00:54:15', NULL, '2024-11-18 00:54:15', 0, NULL),
+ ('00000000-0000-0000-0000-000000000024', '00000000-0000-0000-0000-000000000023', 2, 2, '/mcms_email_provider', 'EmailProviderManagement', '', '/mcms/emailProvider/index', 0, 'Mcms', NULL, 'route.emailProviderManagement', 'clarity:email-line', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 1, NULL, '2024-11-18 00:54:15', NULL, '2024-11-18 00:54:15', 0, NULL),
+ ('00000000-0000-0000-0000-000000000025', '00000000-0000-0000-0000-000000000023', 2, 2, '/mcms_sms_provider', 'SmsProviderManagement', '', '/mcms/smsProvider/index', 0, 'Mcms', NULL, 'route.smsProviderManagement', 'clarity:mobile-line', 0, 0, 0, 0, '', 0, 0, 0, 20, '', 2, NULL, '2024-11-18 00:54:15', NULL, '2024-11-18 00:54:15', 0, NULL);
 "
