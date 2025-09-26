@@ -103,7 +103,7 @@ fn get_userapilist_from_token(mut ctx Context, req_token string) ![]string {
 	log.debug('api_id: ${api_id_list}')
 
 	sys_api := sql db {
-		select from schema_sys.SysApi where id in api_id_list
+		select from schema_sys.SysApi where id in api_id_list || is_required == 1
 	}!
 	if sys_api.len < 1 {
 		return error('Api not found')
