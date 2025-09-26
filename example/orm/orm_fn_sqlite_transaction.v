@@ -35,16 +35,6 @@ fn main() {
 		create table User1
 	} or { panic(err) }
 
-	// sql db {
-	// 	insert user1 into User
-	// 	insert user2 into User
-	// } or { panic(err) }
-
-	// mut result := sql db {
-	// 	select from User
-	// } or { panic(err) }
-	// dump(result)
-
 	mut qb := orm.new_query[User1](db)
 
 	db.begin()!
@@ -54,6 +44,6 @@ fn main() {
 
 	result1 := qb.select('id', 'names')!
 		.query()!
-	// qb.where('id != ?','000')!
+	// qb.where('id != ?','001')!
 	dump(result1)
 }
