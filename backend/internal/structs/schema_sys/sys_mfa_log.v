@@ -6,7 +6,7 @@ import time
 @[table: 'sys_mfa_log']
 pub struct SysMFAlog {
 pub:
-	id            string @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
+	id            string @[comment: 'UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	verify_source string @[comment: 'Verify source | 验证源:手机号/邮箱号/'; sql_type: 'VARCHAR(255)']
 	method        string @[comment: 'Configuration method |  方法: SMS/Email'; sql_type: 'VARCHAR(255)']
 	code          string @[comment: 'Attempt code |  验证码'; sql_type: 'VARCHAR(255)']

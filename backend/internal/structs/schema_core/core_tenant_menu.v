@@ -6,7 +6,7 @@ import time
 @[comment: '租户菜单表']
 pub struct CoreTenantMenu {
 pub:
-	id                    string  @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
+	id                    string  @[comment: 'UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
 	parent_id             ?string @[comment: ' Parent menu ID | 父菜单ID'; immutable; primary; sql: 'parent_id'; sql_type: 'CHAR(36)']
 	tenant_id             string  @[comment: ' Tenant ID | 租户ID'; immutable; primary; sql: 'tenant_id'; sql_type: 'CHAR(36)']
 	menu_level            u64     @[comment: 'Menu level | 菜单层级'; omitempty; sql_type: 'int']

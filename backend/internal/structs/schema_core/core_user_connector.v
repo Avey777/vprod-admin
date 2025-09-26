@@ -6,7 +6,7 @@ import time
 @[comment: '用户连接器表']
 pub struct CoreUserConnector {
 pub:
-	id               string @[comment: '连接器ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
+	id               string @[comment: '连接器ID, UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
 	user_id          string @[comment: '用户ID'; immutable; sql: 'user_id'; sql_type: 'CHAR(36)']
 	connector_id     string @[comment: '连接器ID'; immutable; sql: 'connector_id'; sql_type: 'CHAR(36)']
 	provider_user_id string @[comment: ' 第三方系统中的用户ID'; immutable; sql: 'provider_user_id'; sql_type: 'CHAR(36)']

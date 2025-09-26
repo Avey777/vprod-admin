@@ -6,7 +6,7 @@ import time
 @[comment: '租户订阅应用表']
 pub struct CoreTenantSubscribeApplication {
 pub:
-	id             string @[comment: 'UUID; 应用订阅ID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
+	id             string @[comment: '应用订阅ID, UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
 	tenant_id      string @[comment: 'Tenant ID | 租户ID'; immutable; sql: 'tenant_id'; sql_type: 'CHAR(36)']
 	application_id string @[comment: 'Application ID | 订阅的应用ID'; immutable; sql_type: 'CHAR(36)']
 	status         u8     @[comment: '应用订阅状态; 0 未订阅，1 已订阅，2 已取消，3 已过期'; immutable; sql_type: 'tinyint(20)']

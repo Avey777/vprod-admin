@@ -6,7 +6,7 @@ import time
 @[table: 'sys_menu']
 pub struct SysMenu {
 pub:
-	id                    string  @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
+	id                    string  @[comment: 'UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	parent_id             ?string @[comment: ' Parent menu ID | 父菜单ID'; immutable; sql: 'parent_id'; sql_type: 'CHAR(36)']
 	menu_level            u64     @[comment: 'Menu level | 菜单层级'; omitempty; sql_type: 'int']
 	menu_type             u64     @[comment: 'Menu type | 菜单类型 （菜单或目录）0 目录 1 菜单'; omitempty; sql_type: 'int']

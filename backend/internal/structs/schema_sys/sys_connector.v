@@ -6,7 +6,7 @@ import time
 @[table: 'sys_connector']
 pub struct SysConnector {
 pub:
-	id            string @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
+	id            string @[comment: 'UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	name          string @[comment: 'The provider`s name | 提供商名称'; omitempty; sql_type: 'VARCHAR(64)']
 	client_id     string @[comment: 'The client id | 客户端 id'; omitempty; sql_type: 'CHAR(64)']
 	client_secret string @[comment: 'The client secret | 客户端密钥'; omitempty; sql_type: 'VARCHAR(255)']

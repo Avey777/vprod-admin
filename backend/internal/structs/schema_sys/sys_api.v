@@ -6,7 +6,7 @@ import time
 @[comment: 'API表']
 pub struct SysApi {
 pub:
-	id           string  @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'VARCHAR(36)']
+	id           string  @[comment: 'UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'VARCHAR(36)']
 	path         string  @[comment: 'API path | API 路径'; omitempty; sql_type: 'VARCHAR(255)']
 	description  ?string @[comment: 'API description | API 描述'; omitempty; sql_type: 'VARCHAR(255)']
 	api_group    string  @[comment: 'API group | API 分组'; omitempty; sql_type: 'VARCHAR(255)']
