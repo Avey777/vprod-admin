@@ -4,9 +4,8 @@ import veb
 import log
 import orm
 import x.json2
-
 import internal.structs.schema_sys
-import common.api { json_success, json_error }
+import common.api
 import internal.structs { Context }
 
 // Delete dictionarydetail | 删除dictionarydetail
@@ -16,13 +15,13 @@ fn (app &DictionaryDetail) delete_dictionarydetail(mut ctx Context) veb.Result {
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
 	mut result := delete_dictionarydetail_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()) )
+		return ctx.json(api.json_error_500(err.msg()))
 	}
 
-	return ctx.json(api.json_success_200(result) )
+	return ctx.json(api.json_success_200(result))
 }
 
-fn delete_dictionarydetail_resp(mut ctx Context,req json2.Any) !map[string]Any {
+fn delete_dictionarydetail_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }

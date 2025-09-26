@@ -7,7 +7,6 @@ import orm
 import time
 import rand
 import x.json2
-
 import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
@@ -21,10 +20,10 @@ fn (app &Authentication) login_by_sms_logic(mut ctx Context) veb.Result {
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
 	mut result := login_by_account_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()) )
+		return ctx.json(api.json_error_500(err.msg()))
 	}
 
-	return ctx.json(api.json_success_200(result) )
+	return ctx.json(api.json_success_200(result))
 }
 
 fn login_by_sms_resp(mut ctx Context, req json2.Any) !map[string]Any {

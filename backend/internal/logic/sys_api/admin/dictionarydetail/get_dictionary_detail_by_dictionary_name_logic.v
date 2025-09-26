@@ -5,7 +5,6 @@ import log
 import time
 import orm
 import x.json2
-
 import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
@@ -16,12 +15,14 @@ fn (app &DictionaryDetail) dictionarydetail_by_dictionary_name(mut ctx Context) 
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := dictionarydetail_by_id_resp(mut ctx, req) or { return ctx.json(api.json_error_500(err.msg()) ) }
+	mut result := dictionarydetail_by_id_resp(mut ctx, req) or {
+		return ctx.json(api.json_error_500(err.msg()))
+	}
 
-	return ctx.json(api.json_success_200(result) )
+	return ctx.json(api.json_success_200(result))
 }
 
-fn dictionarydetail_by_dictionary_name_resp(mut ctx Context,req json2.Any) !map[string]Any {
+fn dictionarydetail_by_dictionary_name_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	dictionary_name := req.as_map()['id'] or { '' }.str()
