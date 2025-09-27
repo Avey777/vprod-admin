@@ -6,7 +6,6 @@ import log
 import time
 import orm
 import x.json2
-
 import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
@@ -19,9 +18,9 @@ fn (app &MFA) email_list(mut ctx Context) veb.Result {
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := email_resp(mut ctx, req) or { return ctx.json(api.json_error_500(err.msg()) ) }
+	mut result := email_resp(mut ctx, req) or { return ctx.json(api.json_error_500(err.msg())) }
 
-	return ctx.json(api.json_success_200(result) )
+	return ctx.json(api.json_success_200(result))
 }
 
 // 模块级常量（编译时初始化） - panic只会发生在编译阶段
@@ -29,7 +28,7 @@ const email_re = regex.regex_opt(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2
 	panic('Invalid email regex pattern')
 }
 
-fn email_resp(mut ctx Context,req json2.Any) !map[string]Any {
+fn email_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	mut req_email := req.as_map()['email'] or { '' }.str()
 	if req_email == '' {

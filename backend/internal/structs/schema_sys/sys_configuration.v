@@ -6,7 +6,7 @@ import time
 @[comment: '配置表']
 pub struct SysConfiguration {
 pub:
-	id       string  @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
+	id       string  @[comment: 'UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	name     string  @[comment: 'Configurarion name | 配置名称'; sql_type: 'VARCHAR(255)']
 	key      string  @[comment: 'Configuration key | 配置的键名'; sql_type: 'VARCHAR(255)']
 	value    string  @[comment: 'Configuraion value | 配置的值'; sql_type: 'VARCHAR(255)']

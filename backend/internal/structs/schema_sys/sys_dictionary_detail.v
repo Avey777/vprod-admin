@@ -6,7 +6,7 @@ import time
 @[comment: '字典详情表']
 pub struct SysDictionaryDetail {
 pub:
-	id            string @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
+	id            string @[comment: 'UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	title         string @[comment: 'The title shown in the ui | 展示名称 （建议配合i18n）'; omitempty; sql_type: 'VARCHAR(255)']
 	key           string @[comment: 'key | 键'; omitempty; sql_type: 'VARCHAR(255)']
 	value         string @[comment: 'value | 值'; omitempty; sql_type: 'VARCHAR(255)']

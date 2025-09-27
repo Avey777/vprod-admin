@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>页面未找到 - V-Admin</title>
+        <meta name="description" content="短链接不存在或已失效" />
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="/index" class="logo">V-Admin</a>
+                <ul class="nav-links">
+                    <li><a href="/index">首页</a></li>
+                    <li><a href="/sys_api/admin/">后台</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <body>
+        <div id="header-container"></div>
+
+        <main class="error-section" role="main">
+            <div class="container">
+                <article class="error-content" aria-labelledby="error-title">
+                    <div class="error-icon" aria-hidden="true">🔍</div>
+                    <h1 id="error-title" class="error-title">短链接不存在</h1>
+
+                    <p class="error-message">
+                        抱歉，您访问的链接不存在或已失效。<br />
+                        请检查链接是否正确，或联系提供方获取新的链接。
+                    </p>
+
+                    <div class="error-code" role="status">
+                        <strong>错误代码:</strong> 404
+                    </div>
+
+                    <nav class="action-buttons" aria-label="错误页面操作">
+                        <a
+                            href="/index"
+                            class="btn btn-primary"
+                            aria-label="返回网站首页"
+                        >
+                            返回首页
+                        </a>
+                        <button
+                            onclick="history.back()"
+                            class="btn btn-secondary"
+                        >
+                            返回上页
+                        </button>
+                    </nav>
+
+                    <aside
+                        class="suggestions"
+                        aria-labelledby="suggestions-heading"
+                    >
+                        <h3 id="suggestions-heading">可能的原因</h3>
+                        <ul>
+                            <li>已过期或被删除</li>
+                            <li>地址输入错误</li>
+                            <li>服务暂时不可用</li>
+                            <li>已被禁用或限制访问</li>
+                        </ul>
+                    </aside>
+                </article>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <a
+                href="http://127.0.0.1:9009/sys_api/admin/login"
+                style="color: white; text-decoration: none"
+                >Powered by v-admin</a
+            >
+        </footer>
+
+        <!-- 可选：添加错误追踪 -->
+        <script>
+            console.error(
+                "404 Error: Short link not found",
+                window.location.href,
+            );
+
+            // 加载公共部分
+            function loadComponent(elementId, filePath) {
+                fetch(filePath)
+                    .then((response) => response.text())
+                    .then((html) => {
+                        document.getElementById(elementId).innerHTML = html;
+                    })
+                    .catch((error) =>
+                        console.error(`加载 ${filePath} 失败:`, error),
+                    );
+            }
+
+            // 页面加载完成后插入组件
+            document.addEventListener("DOMContentLoaded", function () {
+                loadComponent("header-container", "header.html");
+                // loadComponent("footer-container", "footer.html");
+            });
+        </script>
+    </body>
+</html>

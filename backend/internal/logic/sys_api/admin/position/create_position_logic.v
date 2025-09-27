@@ -6,7 +6,6 @@ import orm
 import time
 import x.json2
 import rand
-
 import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
@@ -17,12 +16,14 @@ fn (app &Position) create_position(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := create_position_resp(mut ctx, req) or { return ctx.json(api.json_error_500(err.msg()) ) }
+	mut result := create_position_resp(mut ctx, req) or {
+		return ctx.json(api.json_error_500(err.msg()))
+	}
 
-	return ctx.json(api.json_success_200(result) )
+	return ctx.json(api.json_success_200(result))
 }
 
-fn create_position_resp(mut ctx Context,req json2.Any) !map[string]Any {
+fn create_position_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }

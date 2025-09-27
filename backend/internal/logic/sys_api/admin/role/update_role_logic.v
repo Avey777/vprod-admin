@@ -5,7 +5,6 @@ import log
 import orm
 import time
 import x.json2
-
 import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
@@ -16,9 +15,11 @@ fn (app &Role) update_role(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json2.raw_decode(ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := update_role_resp(mut ctx,req) or { return ctx.json(api.json_error_500(err.msg()) ) }
+	mut result := update_role_resp(mut ctx, req) or {
+		return ctx.json(api.json_error_500(err.msg()))
+	}
 
-	return ctx.json(api.json_success_200(result) )
+	return ctx.json(api.json_success_200(result))
 }
 
 fn update_role_resp(mut ctx Context, req json2.Any) !map[string]Any {

@@ -7,7 +7,7 @@ import time
 @[comment: '部门表']
 pub struct SysDepartment {
 pub:
-	id               string     @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
+	id               string     @[comment: 'UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	parent_id        string     @[comment: 'Parent department ID | 父级部门ID'; omitempty; sql_type: 'CHAR(36)']
 	name             string     @[comment: 'Department name | 部门名称'; sql_type: 'VARCHAR(255)']
 	leader           ?string    @[comment: 'Department leader | 部门负责人'; omitempty; sql_type: 'VARCHAR(255)']

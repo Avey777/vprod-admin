@@ -4,10 +4,9 @@ import veb
 import log
 import common.api { json_success }
 import internal.structs { Context }
-// import internal.config
-// import internal.structs.schema_sys
+import os
 
-@['/router'; get]
+@['/'; get; post]
 fn (app &Admin) index(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 

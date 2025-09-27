@@ -6,7 +6,7 @@ import time
 @[table: 'sys_role']
 pub struct SysRole {
 pub:
-	id              string  @[immutable; omitempty; primary; sql_type: 'CHAR(36)']
+	id              string  @[comment: 'UUID rand.uuid_v7()'; immutable; omitempty; primary; sql_type: 'CHAR(36)']
 	name            string  @[comment: 'Role name | 角色名'; omitempty; sql_type: 'VARCHAR(255)']
 	code            string  @[comment: 'Role code for permission control in front end | 角色码，用于前端权限控制'; omitempty; sql_type: 'VARCHAR(255)']
 	default_router  string  @[comment: 'Default menu : dashboard | 默认登录页面'; default: '"/dashboard"'; omitempty; sql_type: 'VARCHAR(255)']

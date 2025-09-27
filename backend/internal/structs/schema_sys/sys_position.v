@@ -6,7 +6,7 @@ import time
 @[comment: '职位表']
 pub struct SysPosition {
 pub:
-	id     string  @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
+	id     string  @[comment: 'UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	name   string  @[comment: 'Position Name | 职位名称'; omitempty; sql_type: 'VARCHAR(255)']
 	code   string  @[comment: 'The code of position | 职位编码'; omitempty; sql_type: 'VARCHAR(255)']
 	remark ?string @[comment: 'Remark | 备注'; omitempty; sql_type: 'VARCHAR(255)']

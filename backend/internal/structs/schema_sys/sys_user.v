@@ -6,7 +6,7 @@ import time
 @[table: 'sys_user']
 pub struct SysUser {
 pub:
-	id          string  @[comment: 'UUID rand.uuid_v4()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
+	id          string  @[comment: 'UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	username    string  @[comment: 'User`s login name | 登录名'; omitempty; required; sql: 'username'; sql_type: 'VARCHAR(255)'; unique: 'username']
 	password    string  @[comment: 'Password | 密码'; omitempty; required; sql: 'password'; sql_type: 'VARCHAR(255)']
 	nickname    string  @[comment: 'Nickname | 昵称'; omitempty; sql_type: 'VARCHAR(255)'; unique: 'nickname']
