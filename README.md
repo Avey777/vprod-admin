@@ -13,7 +13,7 @@ v-admin
   │   └── example.yaml
   ├── app_start.v                         # veb 服务
   ├── main.v                              # 程序启动入口文件
-  └── internal                            # 单个服务内部文件，其可见范围仅限当前服务
+  └── internal                            # 所有服务内部文件
       ├── config                          # 静态配置文件对应的结构体声明目录以及配置代码
       │   └── check.v
       ├── handler                         # 可选，一般http服务会有这一层做外部请求处理，handler为固定后缀
