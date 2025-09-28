@@ -32,6 +32,7 @@ pub fn new_app() {
 	mut app := &AliasApp{} // 实例化 App 结构体 并返回指针
 	app.use(middleware.config_middle(doc))
 	app.use(middleware.db_middleware(conn))
+	app.serve_static('/static', 'static') or { log.warn('静态文件服务配置失败: ${err}') }
 
 	app.routes_ifdef(conn, doc) // veb.Controller  使用路由控制器 | routes/routes_ifdef.v
 

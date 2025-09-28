@@ -14,25 +14,19 @@ pub fn (mut app AliasApp) index(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success(200, 'req success', ''))
 }
 
-@['/error/403'; get; post]
+@['/static/403'; get; post]
 fn (mut app AliasApp) index_403(mut ctx Context) veb.Result {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-
 	file_path := os.join_path(os.getwd(), 'static/403.html')
-	log.debug('尝试读取文件: ${file_path}')
-	log.debug('当前工作目录: ${os.getwd()}')
-	log.debug('文件是否存在: ${os.exists(file_path)}')
-
-	content := os.read_file(file_path) or {
-		log.error('无法读取文件: ${file_path}, 错误: ${err}')
-
-		// 列出当前目录文件来调试
-		files := os.ls(os.getwd()) or { [] }
-		log.error('当前目录文件列表: ${files}')
-
+	html_content := os.read_file(file_path) or {
 		return ctx.html('<h1>403 Forbidden</h1><p>错误页面未找到</p>')
 	}
 
-	log.debug('成功读取文件，长度: ${content.len}')
-	return ctx.html(content)
+	// 读取CSS文件并内联
+	css_path := os.join_path(os.getwd(), 'static/styles.css')
+	css_content := os.read_file(css_path) or { '' }
+
+	// 将CSS内联到HTML中
+	final_html := html_content.replace('</head>', '<style>${css_content}</style></head>')
+
+	return ctx.html(final_html)
 }
