@@ -2,4 +2,8 @@ module routes
 
 import internal.structs { App }
 
-pub type AliasApp = App
+pub struct AliasApp {
+	App
+}
+
+// pub type AliasApp = App
