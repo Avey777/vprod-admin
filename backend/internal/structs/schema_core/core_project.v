@@ -2,7 +2,7 @@ module schema_core
 
 import time
 
-@[comment: '项目表: 全局项目聚合全局应用']
+@[comment: '项目表: 全局项目聚合全局应用; 项目(Project) 或 系统 (System) 或 平台 (Platform)']
 @[table: 'core_project']
 pub struct CoreProject {
 pub:
