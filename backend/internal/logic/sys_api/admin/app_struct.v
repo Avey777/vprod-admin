@@ -1,8 +1,7 @@
 module admin
 
-import veb
-import internal.structs { Context }
+import internal.structs { App }
 
 pub struct Admin {
-	veb.Middleware[Context]
+	App
 }
