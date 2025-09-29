@@ -14,18 +14,18 @@ instance > organize/tanent/team > project> app > client
                       |
                       |
                       |
-                    项目1 (Project) ← 仅用于归类应用
+                    项目1 (Project) ← 仅用于归类应用  → 项目(Project) 或 系统 (System) 或 平台 (Platform)
                       |
                       |
         -----------------------------------
-        |                                 |
-      订阅应用1 (Application 1)                订阅应用2 (Application 2)    ← 团队角色1 (管理员) → 绑定应用X, 应用Y
+        |                                 |   → 应用 (Application) 或 子系统 (Subsystem) 或 业务域 (Business Domain)
+      订阅应用1 (Application 1)                订阅应用2 (Application 2)      ← 团队角色1 (管理员) → 绑定应用X, 应用Y
         |                                 |
         |                                 |
 -------------------               -------------------
 |       |        |               |        |        |
 Web    App    小程序            Web     API      ...
-(客户端)  (客户端) (客户端)    (客户端)(终端客户端入口)
+(客户端)  (客户端) (客户端)    (客户端)(终端客户端入口)       →客户端 (Client) 或 终端 (Terminal) 或 前端 (Frontend)
 ```
 
 1. 用户可以属于多个团队（多对多）
