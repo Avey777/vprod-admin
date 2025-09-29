@@ -36,7 +36,6 @@ pub fn authority_jwt_verify(mut ctx Context) bool {
 	if !user_api_list.contains('*') && ctx.req.url !in user_api_list {
 		ctx.res.status_code = 403
 		ctx.request_error("You don't have permission to perform this action")
-		ctx.redirect('/error/403')
 		return false
 	}
 	// <<<<< 验证用户权限 <<<<<
