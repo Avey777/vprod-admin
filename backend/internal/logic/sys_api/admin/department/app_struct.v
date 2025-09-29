@@ -1,8 +1,7 @@
 module department
 
-import veb
 import time
-import internal.structs { Context }
+import internal.structs { App }
 
 type F64 = f64
 type Any = string
@@ -19,5 +18,5 @@ type Any = string
 	| []map[string]Any
 
 pub struct Department {
-	veb.Middleware[Context]
+	App
 }

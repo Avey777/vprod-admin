@@ -1,8 +1,7 @@
 module db_api
 
-import veb
-import internal.structs { Context }
+import internal.structs { App }
 
 pub struct Base {
-	veb.Middleware[Context]
+	App
 }

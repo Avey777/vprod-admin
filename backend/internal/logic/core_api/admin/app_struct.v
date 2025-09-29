@@ -1,8 +1,7 @@
 module tenant
 
-import veb
-import internal.structs { Context }
+import internal.structs { App }
 
 pub struct Tenant {
-	veb.Middleware[Context]
+	App
 }
