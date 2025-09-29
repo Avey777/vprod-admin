@@ -36,6 +36,10 @@ fn user_by_id_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	mut sys_user := orm.new_query[schema_sys.SysUser](db)
 	result := sys_user.select()!.where('id = ?', user_id)!.query()!
 
+	if result.len == 0 {
+		return error('User not found')
+	}
+
 	mut datalist := []map[string]Any{} // map空数组初始化
 	for row in result {
 		mut data := map[string]Any{} // map初始化
