@@ -80,7 +80,7 @@ pub fn parse_data() !GlobalConfig {
 }
 
 pub fn read_toml() !toml.Doc {
-	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	// 提供默认路径和备用路径
 	mut path := find_toml() or { return error('指定的配置文件不存在') }
@@ -91,7 +91,7 @@ pub fn read_toml() !toml.Doc {
 
 // 需找配置文件
 pub fn find_toml() !string {
-	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	// 1. 首先处理通过 -f 参数指定的配置文件
 	custom_path := config_toml()
@@ -128,15 +128,15 @@ pub fn find_toml() !string {
 		if os.exists(path) {
 			return path
 		}
-		log.warn('配置文件未找到-跳过继续: ${path}')
+		log.debug('配置文件未找到-跳过继续: ${path}')
 	}
 	// 4. 所有路径都尝试失败
-	return error('所有路径都尝试失败')
+	return error('配置文件未找到,所有路径都尝试失败')
 }
 
 //指定配置文件 [v run . -f etc/config_dev.toml]
 pub fn config_toml() string {
-	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut cf_toml := os.join_path('')
 	args := os.args[1..]
@@ -149,6 +149,6 @@ pub fn config_toml() string {
 			break
 		}
 	}
-	log.info('toml配置文件路径：${cf_toml}')
+	log.debug('toml配置文件路径：${cf_toml}')
 	return cf_toml
 }

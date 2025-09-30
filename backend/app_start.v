@@ -12,16 +12,16 @@ pub fn new_app() {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 /*******init_config_loader********/
-	log.info('init_config_loader()')
+	log.debug('init_config_loader()')
 	mut loader := conf.new_config_loader()
 	doc := loader.get_config() or { panic('Failed to load config: ${err}') }
-	dump(doc)
+	log.debug('${doc}')
 /********init_config_loader*******/
 
 /*******init_db_pool********/
-	log.info('init_db_pool()')
+	log.debug('init_db_pool()')
 	mut conn := middleware.init_db_pool(doc) or {
-		log.info('初始化失败: ${err}')
+		log.warn('db_pool 初始化失败: ${err}')
 		return
 	}
 	defer {
@@ -32,7 +32,6 @@ pub fn new_app() {
 	mut app := &AliasApp{} // 实例化 App 结构体 并返回指针
 	app.use(middleware.config_middle(doc))
 	app.use(middleware.db_middleware(conn))
-	app.serve_static('/static', 'static') or { log.warn('静态文件服务配置失败: ${err}') }
 
 	app.routes_ifdef(conn, doc) // veb.Controller  使用路由控制器 | routes/routes_ifdef.v
 

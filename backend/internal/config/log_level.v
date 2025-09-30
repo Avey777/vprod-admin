@@ -5,6 +5,8 @@ import toml
 
 // 配置文件设置日志级别
 pub fn log_set_sevel(doc toml.Doc) ! {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
 	log_level_str := doc.value('logging.log_level').string()
 	log.warn(log_level_str)
 	// 将字符串转换为log.Level枚举值
