@@ -29,7 +29,10 @@ pub fn new_app() {
 	}
 /*******init_db_pool********/
 
-	mut app := &AliasApp{} // 实例化 App 结构体 并返回指针
+	mut app := &AliasApp{
+	  started: chan bool{cap: 1}  // 关键：正确初始化通道
+	} // 实例化 App 结构体 并返回指针
+
 	app.use(middleware.config_middle(doc))
 	app.use(middleware.db_middleware(conn))
 

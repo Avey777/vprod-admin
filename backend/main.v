@@ -5,12 +5,14 @@ module main
 import internal.config
 
 fn main() {
-	// 显示 v-admin 专属启动 Banner
 	banner()
-	config.check_all()! //启动前配置检查
+	config.check_all()!
 
-	new_app()
+	server_thread := spawn new_app() // 启动服务器并处理错误
+	/* 这里主线程可以做一些其他事情 */
+	server_thread.wait() // 等待服务器线程完成并处理错误
 }
+
 
 // lsof -i :9009
 // sudo kill -9 $(lsof -t -i :9009)
