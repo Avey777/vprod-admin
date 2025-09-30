@@ -7,6 +7,7 @@ import internal.middleware.conf
 
 pub fn check_all() ! {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
 	check_config_toml()! //检查配置文件是否存在
 	doc := conf.read_toml() or { return }
 	log_set_sevel(doc) or { return } //设置日志级别
@@ -15,7 +16,7 @@ pub fn check_all() ! {
 
 //检查配置文件是否存在
 fn check_config_toml() ! {
-	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	default_path := os.join_path(@VMODROOT, 'config_template.toml')
 
 	// 只调用一次 find_toml()
