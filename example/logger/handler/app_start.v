@@ -4,10 +4,9 @@ import veb
 import log
 // import config
 // import rand
-import structs {Context}
+import structs { Context }
 
 const cors_origin = ['*', 'xx.com']
-
 
 pub struct App {
 	veb.Middleware[Context]
@@ -15,7 +14,7 @@ pub struct App {
 	veb.StaticHandler
 }
 
-pub fn new_app() {
+pub fn app_start() {
 	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut app := &App{}
