@@ -1,3 +1,4 @@
+#!/usr/bin/v run
 module main
 
 import db.mysql
@@ -67,8 +68,7 @@ pub fn (mut p DatabasePoolImpl[T]) acquire() !(T, &pool.ConnectionPoolable) {
 	conn := p.inner.get()!
 	// 安全类型转换
 
-	return conn as mysql.DB , conn
-
+	return conn as mysql.DB, conn
 }
 
 // 释放连接
@@ -81,7 +81,6 @@ pub fn (mut p DatabasePoolImpl[T]) close() {
 	p.inner.close()
 }
 
-
 const config = DbConfig{
 	host:     'mysql2.sqlpub.com'
 	port:     3307
@@ -91,8 +90,8 @@ const config = DbConfig{
 }
 
 fn main() {
-  mut db_pool := new_mysql_pool[mysql.DB](config)!
+	mut db_pool := new_mysql_pool[mysql.DB](config)!
 	defer { db_pool.close() }
-	// dump(db_pool)
+	dump(db_pool)
 	// assert typeof(db_pool).name == '&dbpool.DatabaseMysqlPool'
 }

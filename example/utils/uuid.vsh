@@ -1,4 +1,4 @@
-
+#!/usr/bin/v run
 
 import rand
 import benchmark

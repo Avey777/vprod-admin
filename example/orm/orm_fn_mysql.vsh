@@ -1,4 +1,4 @@
-module main
+#!/usr/bin/v run
 
 import db.mysql
 import time
@@ -27,7 +27,7 @@ pub:
 
 fn main() {
 	mut db := db_mysql() or { panic('failed to connect to database') }
-	defer { db.close() }
+	defer { db.close() or {} }
 
 	mut result := sql db {
 		select from User_3

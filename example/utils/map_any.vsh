@@ -1,3 +1,4 @@
+#!/usr/bin/v run
 
 type Any0 = string | int | f64 | bool | []map[string]Any0
 
