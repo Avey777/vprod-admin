@@ -1,24 +1,17 @@
-module handler
+module main
 
 import veb
 import log
-// import config
-// import rand
 import structs { Context }
+import routes { AliasApp }
 
 const cors_origin = ['*', 'xx.com']
-
-pub struct App {
-	veb.Middleware[Context]
-	veb.Controller
-	veb.StaticHandler
-}
 
 pub fn app_start() {
 	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	mut app := &App{}
-	register_routes(mut app)
+	mut app := &AliasApp{}
+	app.register_routes()
 
 	app.use(veb.cors[Context](veb.CorsOptions{
 		origins:         cors_origin
@@ -26,17 +19,10 @@ pub fn app_start() {
 	}))
 
 	port := 9009
-	veb.run_at[App, Context](mut app,
+	veb.run_at[AliasApp, Context](mut app,
 		host:               ''
 		port:               port
 		family:             .ip6
 		timeout_in_seconds: 30
 	) or { panic(err) }
-}
-
-@['/get'; get]
-pub fn (app &App) index(mut ctx Context) veb.Result {
-	// log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-
-	return ctx.json('req success')
 }

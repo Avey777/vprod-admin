@@ -2,7 +2,6 @@ module main
 
 import os
 import log
-import handler { app_start }
 
 fn main() {
 	mut l := log.Log{}
