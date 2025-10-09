@@ -1,10 +1,14 @@
-module handler
+module routes
 
 import log
 import admin
-import structs { Context }
+import structs { App, Context }
 
-pub fn register_routes(mut app App) {
+pub struct AliasApp {
+	App
+}
+
+pub fn (mut app AliasApp) register_routes() {
 	app.use(handler: before_request)
 	mut admin_app := &admin.Admin{}
 
