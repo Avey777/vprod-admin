@@ -1,9 +1,9 @@
-module main
+#!/usr/bin/v run
 
 import veb
 
 struct Context {
-	veb.Context
+	veb.Context#!/usr/bin/v run
 }
 
 struct App {

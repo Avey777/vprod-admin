@@ -1,3 +1,5 @@
+#!/usr/bin/v run
+
 import os
 
 fn main() {

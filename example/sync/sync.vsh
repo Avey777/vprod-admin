@@ -1,4 +1,4 @@
-module main
+#!/usr/bin/v run
 
 import sync
 import time
