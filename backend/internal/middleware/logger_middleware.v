@@ -45,6 +45,6 @@ pub fn logger_middleware(mut ctx Context) bool {
 pub fn logger_middleware_generic() veb.MiddlewareOptions[Context] {
 	return veb.MiddlewareOptions[Context]{
 		handler: logger_middleware // 显式初始化 handler 字段
-		after:   true              // 显式初始化 after 字段
+		after:   true              // 请求处理后执行
 	}
 }

@@ -25,7 +25,7 @@ pub fn cores_middleware(mut ctx Context) bool {
 pub fn cores_middleware_generic() veb.MiddlewareOptions[Context] {
 	return veb.MiddlewareOptions[Context]{
 		handler: cores_middleware // 显式初始化 handler 字段
-		after:   false                // 显式初始化 after 字段
+		after:   false            // 请求处理前执行
 	}
 }
 
