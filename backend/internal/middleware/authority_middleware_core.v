@@ -45,9 +45,9 @@ fn authority_jwt_verify_core(mut ctx Context) bool {
 	user_api_map := authorize_and_fetch_apis(mut ctx, req_token, tenant_id) or { return false }
 
 	if subapp_id != '' && subapp_id !in user_api_map.keys() {
-	  if user_api_map['*'] != ['*'] && ctx.req.url in user_api_map['tenant'] {
+		if user_api_map['*'] != ['*'] && ctx.req.url in user_api_map['tenant'] {
 			return true
-	  }
+		}
 		ctx.res.status_code = 403
 		ctx.request_error("You don't have permission to perform this action")
 		return false
