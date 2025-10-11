@@ -7,7 +7,7 @@ import common.jwt
 import log
 
 //认证中间件
-pub fn authority_jwt_verify(mut ctx Context) bool {
+fn authority_jwt_verify(mut ctx Context) bool {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	secret := ctx.get_custom_header('secret') or { '' }
@@ -118,6 +118,6 @@ fn get_userapilist_from_token(mut ctx Context, req_token string) ![]string {
 pub fn authority_middleware() veb.MiddlewareOptions[Context] {
 	return veb.MiddlewareOptions[Context]{
 		handler: authority_jwt_verify // 显式初始化 handler 字段
-		after:   false                // 显式初始化 after 字段
+		after:   false                // 请求处理前执行
 	}
 }
