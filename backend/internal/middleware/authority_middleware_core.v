@@ -15,6 +15,13 @@ fn authority_jwt_verify_core(mut ctx Context) bool {
 
 	tenant_id := ctx.get_custom_header('tenant_id') or { '' }
 	log.debug(tenant_id)
+	if tenant_id == '' {
+		ctx.request_error('Missing or invalid tenant_id')
+		return false
+	}
+
+	subapp_id := ctx.get_custom_header('subapp_id') or { '' }
+	log.debug(subapp_id)
 
 	auth_header := ctx.get_header(.authorization) or { '' }
 	log.debug(auth_header)
@@ -35,8 +42,18 @@ fn authority_jwt_verify_core(mut ctx Context) bool {
 	}
 
 	// >>>>> 验证用户权限 >>>>>
-	user_api_list := authorize_and_fetch_apis(mut ctx, req_token, tenant_id) or { return false }
-	if user_api_list['*'] != ['*'] && ctx.req.url !in user_api_list {
+	user_api_map := authorize_and_fetch_apis(mut ctx, req_token, tenant_id) or { return false }
+
+	if subapp_id != '' && subapp_id !in user_api_map.keys() {
+	  if user_api_map['*'] != ['*'] && ctx.req.url in user_api_map['tenant'] {
+			return true
+	  }
+		ctx.res.status_code = 403
+		ctx.request_error("You don't have permission to perform this action")
+		return false
+	}
+
+	if ctx.req.url !in user_api_map[subapp_id] {
 		ctx.res.status_code = 403
 		ctx.request_error("You don't have permission to perform this action")
 		return false
