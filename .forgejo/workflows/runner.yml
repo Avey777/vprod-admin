@@ -14,18 +14,20 @@ jobs:
     steps:
       - name: Debug workspace
         run: |
-          set -x
           pwd
           ls -la
           ls -la /workspace
-          ls -la /workspace/vlang-zh
-          ls -la /workspace/vlang-zh/vprod-admin
       - run: echo "🎉 The job was automatically triggered by a ${{ runner.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Forgejo!"
       - run: echo "🔎 The name of your branch is ${{ runner.ref }} and your repository is ${{ runner.repository }}."
       - name: Check out repository code
         uses: actions/checkout@v4
       - run: echo "💡 The ${{ runner.repository }} repository has been cloned to the runner."
+      - name: Debug workspace
+        run: |
+          pwd
+          ls -la
+          ls -la /workspace
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       - name: List files in the repository
         run: |
