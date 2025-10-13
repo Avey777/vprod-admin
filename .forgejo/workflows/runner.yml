@@ -24,9 +24,11 @@ jobs:
           ls ${{ runner.workspace }}
       - name: Install development libraries
         run: |
-          apt-get update
-          apt-get install -y libxi-dev libxcursor-dev libgl-dev libasound2-dev
-          apt-get install -y libatomic1
+          apk add --no-cache \
+            libatomic \
+            musl-dev \
+            mariadb-connector-c-dev \
+            build-base
       # - name: Install v language
       #   run: |
       #     cd /opt && \
