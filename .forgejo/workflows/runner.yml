@@ -12,7 +12,6 @@ jobs:
     container:
       image: thevlang/vlang:latest
     steps:
-      # - run: mkdir -p /app
       - run: pwd
       - run: echo "🎉 The job was automatically triggered by a ${{ runner.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Forgejo!"
@@ -32,6 +31,7 @@ jobs:
             mariadb-connector-c-dev \
             build-base
       - run: pwd
+      - run: ls -a
       - name: echo "v test"
         working-directory: backend
         run: v -stats test .
