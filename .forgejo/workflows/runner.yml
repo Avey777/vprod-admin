@@ -10,7 +10,7 @@ jobs:
   Explore-Actions:
     runs-on: ubuntu-latest
     container:
-      image: thevlang/vlang:latest
+      image: thevlang/vlang:alpine-dev
     steps:
       - name: Debug workspace
         run: |
