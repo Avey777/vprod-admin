@@ -8,8 +8,7 @@ on:
       - reopened
 jobs:
   Explore-Gitea-Actions:
-    runs-on: docker
-    # runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ gitea.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Gitea!"
