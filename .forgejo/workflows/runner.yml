@@ -9,6 +9,8 @@ on:
 jobs:
   Explore-Actions:
     runs-on: ubuntu-latest
+    container:
+      image: thevlang/vlang:latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ runner.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Forgejo!"
@@ -25,13 +27,13 @@ jobs:
           apt-get update
           apt-get install -y libxi-dev libxcursor-dev libgl-dev libasound2-dev
           apt-get install -y libatomic1
-      - name: Install v language
-        run: |
-          cd /opt && \
-          git clone https://github.com/vlang/v && \
-          cd v && \
-          make && \
-          ./v symlink
+      # - name: Install v language
+      #   run: |
+      #     cd /opt && \
+      #     git clone https://github.com/vlang/v && \
+      #     cd v && \
+      #     make && \
+      #     ./v symlink
       - name: Return to main project directory
         run: cd $RUNNER_WORKSPACE/backend
       - name: echo "v test"
