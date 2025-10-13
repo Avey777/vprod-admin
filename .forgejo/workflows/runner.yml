@@ -8,7 +8,7 @@ on:
       - reopened
 jobs:
   Explore-Actions:
-    runs-on: racknerd
+    runs-on: docker
     container:
       image: thevlang/vlang:alpine-dev
     steps:
