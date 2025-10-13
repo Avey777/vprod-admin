@@ -24,7 +24,7 @@ pub fn (app &Base) init_core(mut ctx Context) veb.Result {
 		create table schema_core.CoreApplicationMenu
 		create table schema_core.CoreConnector
 		create table schema_core.CoreProject
-		create table schema_core.CoreRoleAppMenu
+		create table schema_core.CoreRoleSubAppMenu
 		create table schema_core.CoreRoleTenantMenu
 		create table schema_core.CoreTenantRole
 		create table schema_core.CoreTenant
