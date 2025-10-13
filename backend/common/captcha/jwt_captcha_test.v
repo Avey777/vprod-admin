@@ -1,7 +1,7 @@
 module captcha
 
 fn test_captcha_generate() {
-	token, captcha_image, captcha_text := captcha_generate()
+	token, captcha_image, captcha_text := captcha_generate()!
 	dump(token)
 	dump('${captcha_image[..50]}...')
 	dump(captcha_text)
@@ -14,7 +14,7 @@ fn test_captcha_generate() {
 }
 
 fn test_captcha_verify() {
-	token, _, captcha_text := captcha_generate()
+	token, _, captcha_text := captcha_generate()!
 	dump(token)
 	dump(captcha_text)
 	verify := captcha_verify(token, captcha_text)
