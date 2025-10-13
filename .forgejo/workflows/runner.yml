@@ -37,6 +37,6 @@ jobs:
             mariadb-connector-c-dev \
             build-base
       - name: echo "v test"
-        working-directory: vlang-zh/vprod-admin/backend
+        working-directory: /workspace/vlang-zh/vprod-admin/vlang-zh/vprod-admin/backend
         run: v -stats test .
       - run: echo "🍏 This job's status is ${{ job.status }}."
