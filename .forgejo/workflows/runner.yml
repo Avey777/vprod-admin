@@ -29,15 +29,7 @@ jobs:
             musl-dev \
             mariadb-connector-c-dev \
             build-base
-      # - name: Install v language
-      #   run: |
-      #     cd /opt && \
-      #     git clone https://github.com/vlang/v && \
-      #     cd v && \
-      #     make && \
-      #     ./v symlink
-      - name: Return to main project directory
-        run: cd $RUNNER_WORKSPACE/backend
       - name: echo "v test"
+        working-directory: $GITEA_WORKSPACE/backend
         run: /usr/local/bin/v -stats test .
       - run: echo "🍏 This job's status is ${{ job.status }}."
