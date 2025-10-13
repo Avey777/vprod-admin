@@ -2,8 +2,8 @@ module schema_core
 
 import time
 
-@[comment: '租户订阅应用表 | core_tenant_subscribe_application']
-@[table: 'core_tenant_sub_app']
+@[comment: '租户订阅应用表 | core_tenant_subscribe-application']
+@[table: 'core_tenant_subapp']
 pub struct CoreTenantSubApp {
 pub:
 	id             string @[comment: '应用订阅ID, UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]

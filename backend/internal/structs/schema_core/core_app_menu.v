@@ -2,9 +2,9 @@ module schema_core
 
 import time
 
-@[table: 'core_application_menu']
 @[comment: '应用菜单表']
-pub struct CoreApplicationMenu {
+@[table: 'core_app_menu']
+pub struct CoreAppMenu {
 pub:
 	id                    string  @[comment: 'UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
 	parent_id             ?string @[comment: 'Parent menu ID | 父菜单ID'; immutable; primary; sql: 'parent_id'; sql_type: 'CHAR(36)']

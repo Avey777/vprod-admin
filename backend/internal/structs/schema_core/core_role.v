@@ -2,8 +2,8 @@ module schema_core
 
 import time
 
-@[table: 'core_tenant_role']
 @[comment: '租户角色表']
+@[table: 'core_role']
 pub struct CoreRole {
 pub:
 	id             string  @[comment: '租户角色ID,UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
