@@ -3,8 +3,7 @@ run-name: ${{ runner.actor }} is testing out Forgejo Actions 🚀
 on:
   push:
     branches:
-      # - "main"
-      - "*"
+      - "main"
 jobs:
   Deploy-Actions:
     runs-on: docker
