@@ -32,6 +32,6 @@ jobs:
             build-base
       - run: pwd
       - name: echo "v test"
-        working-directory: /backend
+        working-directory: backend
         run: v -stats test .
       - run: echo "🍏 This job's status is ${{ job.status }}."
