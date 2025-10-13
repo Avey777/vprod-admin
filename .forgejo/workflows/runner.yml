@@ -1,5 +1,5 @@
-name: Gitea Actions vprod
-run-name: ${{ gitea.actor }} is testing out Gitea Actions 🚀
+name: Forgejo Actions v-workspace
+run-name: ${{ runner.actor }} is testing out Forgejo Actions 🚀
 on:
   pull_request:
     types:
@@ -22,9 +22,9 @@ jobs:
           ls ${{ runner.workspace }}
       - name: Install development libraries
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libxi-dev libxcursor-dev libgl-dev libasound2-dev
-          sudo apt-get install -y libatomic1
+          apt-get update
+          apt-get install -y libxi-dev libxcursor-dev libgl-dev libasound2-dev
+          apt-get install -y libatomic1
       - name: Install v language
         run: |
           cd /opt && \
