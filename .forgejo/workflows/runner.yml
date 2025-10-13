@@ -8,7 +8,7 @@ on:
       - reopened
 jobs:
   Explore-Actions:
-    runs-on: ubuntu-latest
+    runs-on: docker
     container:
       image: thevlang/vlang:alpine-dev
     steps:
