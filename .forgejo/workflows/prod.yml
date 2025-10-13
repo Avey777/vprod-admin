@@ -4,9 +4,9 @@ on:
   push:
     branches:
       # - "main"
-      - "***"
+      - "*"
 jobs:
-  Explore-Actions:
+  Deploy-Actions:
     runs-on: docker
     container:
       image: thevlang/vlang:alpine-dev
