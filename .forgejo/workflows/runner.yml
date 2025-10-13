@@ -18,7 +18,7 @@ jobs:
           ls -la
           ls -la /workspace
           ls -la /workspace/vlang-zh
-
+          ls -la /workspace/vlang-zh/vprod-admin
       - run: echo "🎉 The job was automatically triggered by a ${{ runner.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Forgejo!"
       - run: echo "🔎 The name of your branch is ${{ runner.ref }} and your repository is ${{ runner.repository }}."
