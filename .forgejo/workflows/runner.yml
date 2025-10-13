@@ -23,7 +23,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
       - run: echo "💡 The ${{ runner.repository }} repository has been cloned to the runner."
-      - name: Debug workspace
+      - name: Show workspace
         run: |
           pwd
           ls -la
