@@ -31,7 +31,6 @@ pub fn (app &Base) init_sys(mut ctx Context) veb.Result {
 		create table schema_sys.SysPosition
 		create table schema_sys.SysConnector
 		create table schema_sys.SysMenu
-		create table schema_sys.SysMFAlog
 		create table schema_sys.SysDictionaryDetail
 		create table schema_sys.SysDictionary
 		create table schema_sys.SysDepartment

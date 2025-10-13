@@ -3,8 +3,8 @@ module schema_core
 import time
 
 @[comment: '应用客户端表; 客户端 (Client) 或 终端 (Terminal) 或 前端 (Frontend)']
-@[table: 'core_application_client']
-pub struct CoreApplicationClient {
+@[table: 'core_app_client']
+pub struct CoreAppClient {
 pub:
 	id             string @[comment: 'UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
 	project_id     string @[comment: 'Project ID | 项目ID'; immutable; sql: 'project_id'; sql_type: 'CHAR(36)']
