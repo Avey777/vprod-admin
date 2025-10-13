@@ -12,6 +12,7 @@ jobs:
     container:
       image: thevlang/vlang:latest
     steps:
+      - run: mkdir -p /app
       - run: echo "🎉 The job was automatically triggered by a ${{ runner.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Forgejo!"
       - run: echo "🔎 The name of your branch is ${{ runner.ref }} and your repository is ${{ runner.repository }}."
@@ -29,7 +30,8 @@ jobs:
             musl-dev \
             mariadb-connector-c-dev \
             build-base
+      - run: ls
       - name: echo "v test"
-        working-directory: $GITEA_WORKSPACE/backend
-        run: /usr/local/bin/v -stats test .
+        working-directory: /backend
+        run: v -stats test .
       - run: echo "🍏 This job's status is ${{ job.status }}."
