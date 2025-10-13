@@ -33,7 +33,7 @@ jobs:
           make && \
           ./v symlink
       - name: Return to main project directory
-        run: cd $GITEA_WORKSPACE
+        run: cd $GITEA_WORKSPACE/backend
       - name: echo "v test"
         run: /usr/local/bin/v -stats test .
       - run: echo "🍏 This job's status is ${{ job.status }}."
