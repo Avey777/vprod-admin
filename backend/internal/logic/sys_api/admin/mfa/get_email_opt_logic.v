@@ -1,12 +1,12 @@
 module mfa
 
-import rand
+// import rand
 import veb
 import log
-import time
-import orm
+// import time
+// import orm
 import x.json2
-import internal.structs.schema_sys
+// import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
 import regex
@@ -40,22 +40,22 @@ fn email_resp(mut ctx Context, req json2.Any) !map[string]Any {
 
 	token_opt, opt_num := opt.opt_generate()
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
-	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
-	}
+	// db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	// defer {
+	// 	ctx.dbpool.release(conn) or {
+	// 		log.warn('Failed to release connection ${@LOCATION}: ${err}')
+	// 	}
+	// }
 
-	infos := schema_sys.SysMFAlog{
-		id:            rand.uuid_v7()
-		verify_source: req_email
-		method:        'Email'
-		code:          opt_num.str()
-		created_at:    req.as_map()['created_at'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
-	}
-	mut sys_info := orm.new_query[schema_sys.SysMFAlog](db)
-	sys_info.insert(infos)!
+	// infos := schema_sys.SysMFAlog{
+	// 	id:            rand.uuid_v7()
+	// 	verify_source: req_email
+	// 	method:        'Email'
+	// 	code:          opt_num.str()
+	// 	created_at:    req.as_map()['created_at'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
+	// }
+	// mut sys_info := orm.new_query[schema_sys.SysMFAlog](db)
+	// sys_info.insert(infos)!
 
 	mut data := map[string]Any{}
 	data['code'] = opt_num
