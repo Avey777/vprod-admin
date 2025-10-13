@@ -30,7 +30,7 @@ jobs:
             musl-dev \
             mariadb-connector-c-dev \
             build-base
-      - run: ls
+      - run: pwd
       - name: echo "v test"
         working-directory: /backend
         run: v -stats test .
