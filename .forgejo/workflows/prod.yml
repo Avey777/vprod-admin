@@ -1,33 +1,42 @@
-name: Gitea Actions vprod
-run-name: ${{ gitea.actor }} is testing out Gitea Actions 🚀
+name: Forgejo Actions v-workspace
+run-name: ${{ runner.actor }} is testing out Forgejo Actions 🚀
 on:
   push:
     branches:
-      - "main"
+      # - "main"
+      - "***"
 jobs:
-  Explore-Gitea-Actions:
-    runs-on: ubuntu-latest
+  Explore-Actions:
+    runs-on: docker
+    container:
+      image: thevlang/vlang:alpine-dev
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ gitea.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Gitea!"
-      - run: echo "🔎 The name of your branch is ${{ gitea.ref }} and your repository is ${{ gitea.repository }}."
+      - name: Debug workspace
+        run: |
+          pwd
+          ls -la /workspace
+      - run: echo "🎉 The job was automatically triggered by a ${{ runner.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Forgejo!"
+      - run: echo "🔎 The name of your branch is ${{ runner.ref }} and your repository is ${{ runner.repository }}."
       - name: Check out repository code
         uses: actions/checkout@v4
-      - run: echo "💡 The ${{ gitea.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
+      - run: echo "💡 The ${{ runner.repository }} repository has been cloned to the runner."
+      - name: Show workspace
         run: |
-          ls ${{ gitea.workspace }}
+          pwd
+          ls -la
+          ls -la /workspace
+      - run: echo "🖥️ The workflow is now ready to deploy your code on the runner."
       - name: Delete Container
         run: |
-          docker rm -f v_prod
-          docker rmi -f avey777/vprod
+          docker rm -f v-admin
+          docker rmi -f avey777/vadmin
       - name: Docker build
         run: |
-          docker buildx build -f Dockerfile-docker -t avey777/vprod .
+          docker buildx build -f Dockerfile-docker -t avey777/vadmin .
       - name: Run Container
         run: |
-          docker run --name=v_prod --restart=unless-stopped -p 9009:9009 -e CONFIG_PATH=/app/vprod/config.toml -v /opt/vprod/config.toml:/app/vprod/config.toml -d avey777/vprod
+          docker run --name=v-admin --restart=unless-stopped -p 9009:9009 -e CONFIG_PATH=backend/etc/config.toml -v /opt/vprod/config.toml:/workspace/vprod-admin/config.toml -d avey777/vprod-admin
       - name: Clean Docker cache
         run: |
           docker builder prune -f
