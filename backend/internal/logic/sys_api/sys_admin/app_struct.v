@@ -1,7 +1,7 @@
-module tenant
+module sys_admin
 
 import internal.structs { App }
 
-pub struct Tenant {
+pub struct Admin {
 	App
 }

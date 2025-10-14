@@ -14,6 +14,10 @@ pub fn (mut app AliasApp) routes_ifdef(conn &dbpool.DatabasePool, doc_conf &conf
 	$if fms ? {
 		log.warn('routes_ifdef - Fms')
 	}
+	$if core ? {
+		log.warn('routes_ifdef - Core')
+		app.routes_core_admin(conn, doc_conf)
+	}
 	$if job ? {
 		log.warn('routes_ifdef - Job')
 	}
@@ -30,6 +34,7 @@ pub fn (mut app AliasApp) routes_ifdef(conn &dbpool.DatabasePool, doc_conf &conf
 		log.warn('routes_ifdef - All')
 		app.routes_base(conn, doc_conf)
 		app.routes_sys_admin(conn, doc_conf)
+		app.routes_core_admin(conn, doc_conf)
 	}
 }
 

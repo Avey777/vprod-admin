@@ -1,4 +1,4 @@
-module admin
+module sys_admin
 
 import veb
 import log

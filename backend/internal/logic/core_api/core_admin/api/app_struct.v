@@ -1,7 +1,7 @@
-module admin
+module api
 
 import internal.structs { App }
 
-pub struct Admin {
+pub struct Api {
 	App
 }
