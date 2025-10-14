@@ -12,7 +12,6 @@ mut:
 }
 
 pub fn new_conn_pool[T](conf DBconfig, size int) !&ConnectionPoolGeneric[T] {
-
 	$if T is mysql.DB {
 		mysql_conf := conf as mysql.Config
 		mut pool := &ConnectionPoolGeneric[mysql.DB]{
@@ -54,6 +53,6 @@ pub fn (mut pool ConnectionPoolGeneric[T]) release(conn T) {
 pub fn (mut pool ConnectionPoolGeneric[T]) close() {
 	for _ in 0 .. pool.connections.len {
 		mut conn := <-pool.connections or { break }
-		conn.close() or {panic}
+		conn.close() or { panic }
 	}
 }
