@@ -5,7 +5,7 @@ import veb
 import log
 // import time
 // import orm
-import x.json2
+import x.json2 as json
 // import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
@@ -17,7 +17,7 @@ fn (app &MFA) email_list(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
-	req := json2.decode[json2.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
 	mut result := email_resp(mut ctx, req) or { return ctx.json(api.json_error_500(err.msg())) }
 
 	return ctx.json(api.json_success_200(result))
@@ -28,7 +28,7 @@ const email_re = regex.regex_opt(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2
 	panic('Invalid email regex pattern')
 }
 
-fn email_resp(mut ctx Context, req json2.Any) !map[string]Any {
+fn email_resp(mut ctx Context, req json.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	mut req_email := req.as_map()['email'] or { '' }.str()
 	if req_email == '' {

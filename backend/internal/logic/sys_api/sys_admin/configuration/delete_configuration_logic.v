@@ -3,7 +3,7 @@ module configuration
 import veb
 import log
 import orm
-import x.json2
+import x.json2 as json
 import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
@@ -13,7 +13,7 @@ import internal.structs { Context }
 fn (app &Configuration) delete_configuration(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json2.decode[json2.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
 	mut result := delete_configuration_resp(mut ctx, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
@@ -21,7 +21,7 @@ fn (app &Configuration) delete_configuration(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn delete_configuration_resp(mut ctx Context, req json2.Any) !map[string]Any {
+fn delete_configuration_resp(mut ctx Context, req json.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
