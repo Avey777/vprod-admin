@@ -14,7 +14,7 @@ fn (app &Position) position_by_id(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
-	req := json2.raw_decode(ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	req := json2.decode[json2.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
 	mut result := position_by_id_resp(mut ctx, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
