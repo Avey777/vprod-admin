@@ -1,7 +1,7 @@
 module utils
 
 import log
-import x.json2
+import x.json2 as json
 
 fn test_encode_any() {
 	log.info('${@METHOD}  ${@MOD}.${@FILE_LINE}')
@@ -14,7 +14,7 @@ fn test_encode_any() {
 	req_params['offerDetailParam'] = offer_detail_param
 
 	json_str := encode_any(req_params).json_str()
-	json_map := json2.decode[json2.Any](json_str) or {
+	json_map := json.decode[json.Any](json_str) or {
 		eprintln('Failed to decode JSON')
 		return
 	}.as_map()

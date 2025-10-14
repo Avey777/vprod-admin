@@ -18,7 +18,7 @@ pub fn db_middleware(conn &dbpool.DatabasePool) veb.MiddlewareOptions[Context] {
 }
 
 // 初始化数据库连接池
-pub fn init_db_pool( doc &conf.GlobalConfig) !&dbpool.DatabasePool {
+pub fn init_db_pool(doc &conf.GlobalConfig) !&dbpool.DatabasePool {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut config_db := dbpool.DatabaseConfig{
@@ -29,7 +29,7 @@ pub fn init_db_pool( doc &conf.GlobalConfig) !&dbpool.DatabasePool {
 		dbname:   doc.dbconf.dbname
 		// ssl_ca:   doc.value('dbconf.ssl_ca').string()
 		// flag: .client_ssl | .client_ssl_verify_server_cert
-		/*pool 配置*/
+		//*pool 配置*/
 		max_conns:      doc.dbconf.max_conns
 		min_idle_conns: doc.dbconf.min_idle_conns
 		max_lifetime:   doc.dbconf.max_lifetime * time.minute

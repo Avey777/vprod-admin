@@ -1,11 +1,10 @@
-// JWT标准声明 (Standard Claims) https://datatracker.ietf.org/doc/html/rfc7519#section-4.1
 module opt
+// JWT标准声明 (Standard Claims) https://datatracker.ietf.org/doc/html/rfc7519#section-4.1
 
 import crypto.hmac
 import crypto.sha256
 import encoding.base64
-import json
-// import x.json2
+import x.json2 as json
 import time
 import rand
 
@@ -60,7 +59,7 @@ pub fn opt_verify(token string, opt_num string) bool {
 	}
 	// 2. 验证头部
 	// header_str := base64.url_decode_str(parts[0]) // or { return false }
-	headers := json.decode(JwtHeader,base64.url_decode_str(parts[0])) or { return false }
+	headers := json.decode[JwtHeader](base64.url_decode_str(parts[0])) or { return false }
 	if headers.alg != 'HS256' || headers.typ != 'JWT' {
 		return false
 	}
@@ -73,7 +72,7 @@ pub fn opt_verify(token string, opt_num string) bool {
 	}
 	// 解码payload
 	// c := base64.url_decode_str(parts[1]) // or { return false }
-	payload := json.decode(JwtPayload,base64.url_decode_str(parts[1])) or { return false }
+	payload := json.decode[JwtPayload](base64.url_decode_str(parts[1])) or { return false }
 
 	// 4. 时间验证
 	now := time.now().unix()
