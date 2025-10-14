@@ -6,7 +6,7 @@ import log
 import orm
 import time
 import rand
-import x.json2
+import x.json2 as json
 import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
@@ -18,7 +18,7 @@ import common.opt
 fn (app &Authentication) login_by_email_logic(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json2.decode[json2.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
 	mut result := login_by_account_resp(mut ctx, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
@@ -26,7 +26,7 @@ fn (app &Authentication) login_by_email_logic(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn login_by_email_resp(mut ctx Context, req json2.Any) !map[string]Any {
+fn login_by_email_resp(mut ctx Context, req json.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -74,7 +74,7 @@ fn login_by_email_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	return data
 }
 
-fn email_token_jwt_generate(mut ctx Context, req json2.Any) string {
+fn email_token_jwt_generate(mut ctx Context, req json.Any) string {
 	secret := ctx.get_custom_header('secret') or { '' }
 
 	mut payload := jwt.JwtPayload{

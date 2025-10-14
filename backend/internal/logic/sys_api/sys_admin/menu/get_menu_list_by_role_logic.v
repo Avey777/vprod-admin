@@ -4,7 +4,7 @@ import veb
 import log
 import time
 import orm
-import x.json2
+import x.json2 as json
 import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
@@ -15,7 +15,7 @@ fn (app &Menu) role_menu_list(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
-	req := json2.decode[json2.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
 	dump('4646466')
 	mut result := role_menu_list_resp(mut ctx, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
@@ -24,7 +24,7 @@ fn (app &Menu) role_menu_list(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn role_menu_list_resp(mut ctx Context, req json2.Any) !map[string]Any {
+fn role_menu_list_resp(mut ctx Context, req json.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	page := req.as_map()['page'] or { 1 }.int()

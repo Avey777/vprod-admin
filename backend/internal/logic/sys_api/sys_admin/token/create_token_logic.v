@@ -5,7 +5,7 @@ import log
 import orm
 import time
 import rand
-import x.json2
+import x.json2 as json
 import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
@@ -16,7 +16,7 @@ import common.jwt
 fn (app &Token) create_token(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json2.decode[json2.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
 	mut result := create_token_resp(mut ctx, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
@@ -24,7 +24,7 @@ fn (app &Token) create_token(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn create_token_resp(mut ctx Context, req json2.Any) !map[string]Any {
+fn create_token_resp(mut ctx Context, req json.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -51,7 +51,7 @@ fn create_token_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	return map[string]Any{}
 }
 
-fn token_jwt_generate(mut ctx Context, req json2.Any) string {
+fn token_jwt_generate(mut ctx Context, req json.Any) string {
 	// secret := req.as_map()['Secret'] or { '' }.str()
 	secret := ctx.get_custom_header('secret') or { '' }
 

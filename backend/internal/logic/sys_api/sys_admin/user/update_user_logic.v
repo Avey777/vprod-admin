@@ -4,7 +4,7 @@ import veb
 import log
 import orm
 import time
-import x.json2
+import x.json2 as json
 import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
@@ -13,7 +13,7 @@ import internal.structs { Context }
 fn (app &User) update_user_id(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json2.decode[json2.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
 	mut result := update_user_resp(mut ctx, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
@@ -21,7 +21,7 @@ fn (app &User) update_user_id(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn update_user_resp(mut ctx Context, req json2.Any) !map[string]Any {
+fn update_user_resp(mut ctx Context, req json.Any) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -32,8 +32,8 @@ fn update_user_resp(mut ctx Context, req json2.Any) !map[string]Any {
 	}
 
 	user_id := req.as_map()['user_id'] or { '' }.str()
-	position_ids := req.as_map()['position_ids'] or { []json2.Any{} }.arr()
-	rule_ids := req.as_map()['rule_ids'] or { []json2.Any{} }.arr()
+	position_ids := req.as_map()['position_ids'] or { []json.Any{} }.arr()
+	rule_ids := req.as_map()['rule_ids'] or { []json.Any{} }.arr()
 	avatar := req.as_map()['avatar'] or { '' }.str()
 	department_id := req.as_map()['department_id'] or { '' }.str()
 	description := req.as_map()['description'] or { '' }.str()
