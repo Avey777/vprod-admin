@@ -2,23 +2,22 @@ module main
 
 import veb
 import log
-import internal.structs { App,Context }
+import internal.structs { Context }
 import internal.middleware
 import internal.middleware.conf
-import internal.routes{AliasApp}
-
+import internal.routes { AliasApp }
 
 pub fn new_app() {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-/*******init_config_loader********/
+	//*******init_config_loader********/
 	log.debug('init_config_loader()')
 	mut loader := conf.new_config_loader()
 	doc := loader.get_config() or { panic('Failed to load config: ${err}') }
 	log.debug('${doc}')
-/********init_config_loader*******/
+	//********init_config_loader*******/
 
-/*******init_db_pool********/
+	//*******init_db_pool********/
 	log.debug('init_db_pool()')
 	mut conn := middleware.init_db_pool(doc) or {
 		log.warn('db_pool 初始化失败: ${err}')
@@ -27,10 +26,10 @@ pub fn new_app() {
 	defer {
 		conn.close()
 	}
-/*******init_db_pool********/
+	//*******init_db_pool********/
 
 	mut app := &AliasApp{
-	  started: chan bool{cap: 1}  // 关键：正确初始化通道
+		started: chan bool{cap: 1} // 关键：正确初始化通道
 	} // 实例化 App 结构体 并返回指针
 
 	app.use(middleware.config_middle(doc))

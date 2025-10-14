@@ -1,11 +1,10 @@
-// JWT标准声明 (Standard Claims) https://datatracker.ietf.org/doc/html/rfc7519#section-4.1
 module jwt
 
+// JWT标准声明 (Standard Claims) https://datatracker.ietf.org/doc/html/rfc7519#section-4.1
 import crypto.hmac
 import crypto.sha256
 import encoding.base64
-import json
-import x.json2
+import x.json2 as json
 import time
 
 // JWT 头部固定使用HS256算法 [使用这种方式，编译器会产生c错误]
@@ -34,7 +33,7 @@ pub fn jwt_verify(secret string, token string) bool {
 
 	// 2. 验证头部
 	// header_str := base64.url_decode_str(parts[0]) // or { return false }
-	headers := json2.decode[JwtHeader](base64.url_decode_str(parts[0])) or { return false }
+	headers := json.decode[JwtHeader](base64.url_decode_str(parts[0])) or { return false }
 	if headers.alg != 'HS256' || headers.typ != 'JWT' {
 		return false
 	}
@@ -49,7 +48,7 @@ pub fn jwt_verify(secret string, token string) bool {
 
 	// 解码payload
 	// payload_str := base64.url_decode_str(parts[1]) // or { return false }
-	payload := json2.decode[JwtPayload](base64.url_decode_str(parts[1])) or { return false }
+	payload := json.decode[JwtPayload](base64.url_decode_str(parts[1])) or { return false }
 
 	// 4. 时间验证
 	now := time.now().unix()
