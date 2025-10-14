@@ -1,6 +1,6 @@
 module opt
-// JWT标准声明 (Standard Claims) https://datatracker.ietf.org/doc/html/rfc7519#section-4.1
 
+// JWT标准声明 (Standard Claims) https://datatracker.ietf.org/doc/html/rfc7519#section-4.1
 import crypto.hmac
 import crypto.sha256
 import encoding.base64
@@ -14,7 +14,7 @@ const header_opt = base64.url_encode_str(json.encode(JwtHeader{
 	typ: 'JWT'
 }))
 
-/*>>>>>>>>>>>>>captcha_jwt>>>>>>>>>>>>>*/
+//*>>>>>>>>>>>>>captcha_jwt>>>>>>>>>>>>>*/
 const opt_secret = 'd8a3b1f0-6e7b-4c9a-9f2d-1c3e5f7a8b4c' //固定值，JWT有效性验证时使用
 
 fn random_num() string {
@@ -26,20 +26,20 @@ fn random_num() string {
 }
 
 //生成captcha_opt令牌
-pub fn opt_generate() (string,string) {
-  opt_num := random_num().str()
+pub fn opt_generate() (string, string) {
+	opt_num := random_num().str()
 
-  payload_captcha := JwtPayload{
-	iss: 'v-admin'      // 签发者 (Issuer) your-app-name
-	sub: 'captcha' // captcha唯一标识 (Subject)
-	// aud: ['api-service', 'client'] // 接收方 (Audience)，可以是数组或字符串
-	exp: time.now().add_seconds(120).unix() // 过期时间 (Expiration Time) 120秒后
-	nbf: time.now().unix() // 生效时间 (Not Before)，立即生效
-	iat: time.now().unix() // 签发时间 (Issued At)
-	jti: rand.uuid_v4() // JWT唯一标识 (JWT ID)，防重防攻击
-	// 自定义业务字段 (Custom Claims)
-	opt_text: opt_num // 验证码
-  }
+	payload_captcha := JwtPayload{
+		iss: 'v-admin' // 签发者 (Issuer) your-app-name
+		sub: 'captcha' // captcha唯一标识 (Subject)
+		// aud: ['api-service', 'client'] // 接收方 (Audience)，可以是数组或字符串
+		exp: time.now().add_seconds(120).unix() // 过期时间 (Expiration Time) 120秒后
+		nbf: time.now().unix() // 生效时间 (Not Before)，立即生效
+		iat: time.now().unix() // 签发时间 (Issued At)
+		jti: rand.uuid_v4() // JWT唯一标识 (JWT ID)，防重防攻击
+		// 自定义业务字段 (Custom Claims)
+		opt_text: opt_num // 验证码
+	}
 
 	playload_64 := base64.url_encode_str(json.encode(payload_captcha))
 
@@ -47,12 +47,12 @@ pub fn opt_generate() (string,string) {
 	signature := hmac.new(opt_secret.bytes(), message.bytes(), sha256.sum, 64)
 	base64_signature := base64.url_encode_str(signature.bytestr())
 
-	return '${header_opt}.${playload_64}.${base64_signature}',opt_num
+	return '${header_opt}.${playload_64}.${base64_signature}', opt_num
 }
 
 // 验证opt令牌
 pub fn opt_verify(token string, opt_num string) bool {
-  // 1.分割验证
+	// 1.分割验证
 	parts := token.split('.')
 	if parts.len != 3 {
 		return false
@@ -81,9 +81,9 @@ pub fn opt_verify(token string, opt_num string) bool {
 		return false
 	}
 	// 验证 opt
-		if opt_num != payload.opt_text {
-			return false
-		}
+	if opt_num != payload.opt_text {
+		return false
+	}
 	return true
 }
 

@@ -1,4 +1,5 @@
 #!/usr/bin/v run
+
 module main
 
 import db.mysql

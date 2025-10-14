@@ -3,7 +3,7 @@
 import veb
 
 struct Context {
-	veb.Context#!/usr/bin/v run
+	veb.Context
 }
 
 struct App {

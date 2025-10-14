@@ -4,10 +4,10 @@ import rand
 
 pub struct ValidationError {
 pub:
-	field   string
-	msg string  //使用 message 更符合RESTful 接口规范
-	rule    string
-	meta    map[string]string // 扩展参数（如 { "min": ’8‘, "max": 20 }）
+	field string
+	msg   string //使用 message 更符合RESTful 接口规范
+	rule  string
+	meta  map[string]string // 扩展参数（如 { "min": ’8‘, "max": 20 }）
 }
 
 pub struct ApiErrorResponse {
@@ -16,7 +16,7 @@ pub:
 	status     bool
 	request_id string
 	error      string
-	details    ?[]ValidationError  //暂时未使用，待未来扩展
+	details    ?[]ValidationError //暂时未使用，待未来扩展
 }
 
 pub struct ApiSuccessResponse[T] {
@@ -24,7 +24,7 @@ pub:
 	code       int
 	status     bool
 	request_id string
-	msg    string //使用 message 更符合RESTful 接口规范
+	msg        string //使用 message 更符合RESTful 接口规范
 	data       T
 }
 
@@ -34,7 +34,7 @@ pub fn json_success[T](status_code int, message_success string, respose_data T) 
 		code:       status_code
 		status:     true
 		request_id: uuid
-		msg:    message_success
+		msg:        message_success
 		data:       respose_data
 	}
 	return response
@@ -58,9 +58,10 @@ type SumResp = []string
 	| map[string]string
 	| []int
 	| int
-	// | f64
 	| map[string]int
 	| map[string]bool
+
+// | f64
 
 @[params]
 pub struct ApiErrorResponseOptparams {
