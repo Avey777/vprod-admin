@@ -1,6 +1,7 @@
 module schema_core
 
 @[unique_key: 'role_id, api_id, source_type, source_id']
+@[index: 'role_id, api_id, source_type, source_id']
 @[comment: '租户角色与api资源关系表']
 @[table: 'core_role_api']
 pub struct CoreRoleApi {

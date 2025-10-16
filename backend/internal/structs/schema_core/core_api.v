@@ -4,6 +4,7 @@ import time
 
 @[comment: '核心API表']
 @[table: 'core_api']
+@[index: 'path']
 pub struct CoreApi {
 pub:
 	id           string  @[comment: 'UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'VARCHAR(36)']

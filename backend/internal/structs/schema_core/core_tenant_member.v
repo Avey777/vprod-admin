@@ -4,6 +4,7 @@ import time
 
 @[comment: '租户成员表,member_id==user_id']
 @[unique_key: 'tenant_id,member_id']
+@[index: 'tenant_id,member_id']
 @[table: 'core_tenant_member']
 pub struct CoreTenantMember {
 pub:

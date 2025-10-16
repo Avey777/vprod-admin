@@ -41,7 +41,7 @@ fn authority_jwt_verify_core(mut ctx Context) bool {
 		return false
 	}
 
-	// // >>>>> 验证用户权限 >>>>>
+	// >>>>> 验证用户权限 >>>>>
 	is_allowed := authorize_and_check_api(mut ctx, req_token, tenant_id, subapp_id, ctx.req.url) or {
 		ctx.res.status_code = 403
 		ctx.request_error('Authorization failed: ${err}')
@@ -53,8 +53,7 @@ fn authority_jwt_verify_core(mut ctx Context) bool {
 		ctx.request_error("You don't have permission to perform this action")
 		return false
 	}
-
-	// // <<<<< 验证用户权限 <<<<<
+	// <<<<< 验证用户权限 <<<<<
 
 	return true
 }
