@@ -104,30 +104,30 @@ fn authorize_and_check_api(mut ctx Context, req_token string, tenant_id string, 
 	role_ids := core_roles.map(it.role_id)
 	log.debug('role_ids: ${role_ids}')
 
-	// step4 先查出当前路径对应的 API id
-	api_records := sql db {
-		select from schema_core.CoreApi where path == req_path
+	// step4: 检查当前 path 是否注册，且是否在角色授权范围内
+	core_api := sql db {
+		select from schema_core.CoreApi where path == req_path limit 1
 	}!
-	if api_records.len == 0 {
+	if core_api.len == 0 {
 		return error('API path not found in registry')
 	}
-	api_ids := api_records.map(it.id)
+	api_id := core_api[0].id
 
-	// step5 检查租户级 API 权限
-	mut tenant_api := sql db {
+	// step5: 检查租户级权限
+	tenant_api := sql db {
 		select from schema_core.CoreRoleApi where role_id in role_ids && source_type == 'tenant'
-		&& api_id in api_ids
+		&& api_id == api_id
 	}!
 	if tenant_api.len > 0 {
 		log.debug('Tenant-level API matched ✅')
 		return true
 	}
 
-	// step6 检查子应用级 API 权限
+	// step6: 检查子应用级权限
 	if subapp_id != '' {
-		mut app_api := sql db {
+		app_api := sql db {
 			select from schema_core.CoreRoleApi where role_id in role_ids && source_type == 'app'
-			&& source_id == subapp_id && api_id in api_ids
+			&& source_id == subapp_id && api_id == api_id
 		}!
 		if app_api.len > 0 {
 			log.debug('Subapp-level API matched ✅')
