@@ -2,14 +2,14 @@ module schema_core
 
 import time
 
+@[unique_key: 'tenant_id,name']
 @[comment: '角色表']
 @[table: 'core_role']
-@[unique_key: 'tenant_id,name']
 pub struct CoreRole {
 pub:
 	id             string  @[comment: '租户角色ID,UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
-	tenant_id      string  @[comment: '所属租户ID, 默认全局租户ID: 00000000-0000-0000-0000-000000000000';  sql_type: 'CHAR(36)']
-	name           string  @[comment: '角色名称';  sql_type: 'VARCHAR(255)']
+	tenant_id      string  @[comment: '所属租户ID, 默认全局租户ID: 00000000-0000-0000-0000-000000000000'; sql_type: 'CHAR(36)']
+	name           string  @[comment: '角色名称'; sql_type: 'VARCHAR(255)']
 	default_router string  @[comment: 'Default menu : dashboard | 默认登录页面'; default: '"/dashboard"'; omitempty; sql_type: 'VARCHAR(255)']
 	remark         ?string @[comment: 'Remark | 备注'; omitempty; sql_type: 'VARCHAR(255)']
 	sort           u32     @[comment: 'Order number | 排序编号'; default: 0; omitempty; sql_type: 'int']

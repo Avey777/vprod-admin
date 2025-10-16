@@ -20,14 +20,18 @@ pub fn (app &Base) init_core(mut ctx Context) veb.Result {
 	}
 
 	sql db {
+		create table schema_core.CoreApi
 		create table schema_core.CoreApp
 		create table schema_core.CoreAppClient
 		create table schema_core.CoreConnector
+		create table schema_core.CoreMenu
 		create table schema_core.CoreProject
 		create table schema_core.CoreRole
+		create table schema_core.CoreRoleApi
+		create table schema_core.CoreRoleMenu
+		create table schema_core.CoreRoleTenantMember
 		create table schema_core.CoreTenant
 		create table schema_core.CoreTenantMember
-		create table schema_core.CoreTenantMemberRole
 		create table schema_core.CoreTenantSubApp
 		create table schema_core.CoreToken
 		create table schema_core.CoreUser
