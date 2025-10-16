@@ -4,6 +4,7 @@ import time
 
 @[table: 'core_token']
 @[comment: 'Token表']
+@[index: 'token']
 pub struct CoreToken {
 pub:
 	id         string    @[comment: 'UUID rand.uuid_v7()'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)'; unique]
