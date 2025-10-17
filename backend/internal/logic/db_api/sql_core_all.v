@@ -53,3 +53,42 @@ REPLACE INTO `core_api` (`id`, `path`, `description`, `api_group`, `service_name
   ('00000000-0000-0000-0000-000000000051', '/core_api/admin/token/logout', 'apiDesc.forceLoggingOut', 'token', 'Core', 'POST', 0, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
   ('00000000-0000-0000-0000-000000000052', '/core_api/admin/token', 'apiDesc.getTokenById', 'token', 'Core', 'POST', 0, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
 "
+
+pub const core_app = r'
+'
+
+pub const core_app_client = r'
+'
+
+pub const core_menu = r'
+'
+
+pub const core_project = r'
+'
+
+pub const core_role = r'
+'
+
+pub const core_role_api = r'
+'
+
+pub const core_role_menu = r'
+'
+
+pub const core_role_tenant_member = r'
+'
+
+pub const core_tenant = r'
+'
+
+pub const core_tenant_member = r'
+'
+
+pub const core_tenant_subapp = r'
+'
+
+pub const core_token = r'
+'
+
+pub const core_user = r'
+'
