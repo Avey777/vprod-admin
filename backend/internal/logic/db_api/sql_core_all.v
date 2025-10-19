@@ -1,3 +1,5 @@
+module db_api
+
 pub const core_api = r"
 REPLACE INTO `core_api` (`id`, `path`, `description`, `api_group`, `service_name`, `method`, `is_required`, `source_type`, `source_id`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
   ('00000000-0000-0000-0000-000000000001', '/core_api/admin/user/login', 'apiDesc.userLogin', 'user', 'Core', 'POST', 1, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
