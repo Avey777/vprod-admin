@@ -4,8 +4,12 @@ services:
     image: localhost/avey777/v-admin:latest
     container_name: v-admin
     restart: unless-stopped
-    network_mode: host # <-- 关键修改，使容器共享宿主机网络
+    # 关键修改，使容器共享宿主机网络
+    network_mode: host
+
+    # 由于使用了 host 网络模式，ports 映射被注释掉
     # ports:
     #   - "9900:9009"
+
     volumes:
       - ~/.config/v-admin/config.toml:/app/etc/config.toml

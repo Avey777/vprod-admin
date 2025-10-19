@@ -5,7 +5,8 @@ services:
     image: avey777/v-admin:latest
     container_name: v-admin
     restart: unless-stopped
-    network_mode: host # 关键修改，使容器共享宿主机网络
+    # 关键修改，使容器共享宿主机网络
+    network_mode: host
 
     # 由于使用了 host 网络模式，ports 映射被注释掉
     # ports:

@@ -1,5 +1,5 @@
 # 第一阶段：构建环境
-FROM thevlang/vlang:alpine-build as builder
+FROM thevlang/vlang:latest as builder
 
 WORKDIR /app
 COPY ./backend .
