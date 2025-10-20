@@ -14,7 +14,7 @@ pub:
 	service_name string  @[comment: 'Service name | 服务名称'; default: '"Tenant"'; omitempty; sql_type: 'VARCHAR(255)']
 	method       string  @[comment: 'HTTP method | HTTP 请求类型'; default: '"POST"'; omitempty; sql_type: 'VARCHAR(32)']
 	is_required  u8      @[comment: 'Whether is required | 是否必选,，0：否，1：是'; default: 0; omitempty; sql_type: 'tinyint(1)']
-	source_type  string  @[comment: '来源类型: tenant/app'; sql_type: 'VARCHAR(32)']
+	source_type  string  @[comment: '来源类型: tenant/app(wms/fms/pay/oms/tms/crm/)'; sql_type: 'VARCHAR(32)']
 	source_id    string  @[comment: '来源ID: app_id或tenant_id等'; sql_type: 'CHAR(36)']
 
 	updater_id ?string    @[comment: '修改者ID'; omitempty; sql_type: 'CHAR(36)']

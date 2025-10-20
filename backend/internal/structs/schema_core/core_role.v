@@ -14,7 +14,7 @@ pub:
 	remark         ?string @[comment: 'Remark | 备注'; omitempty; sql_type: 'VARCHAR(255)']
 	sort           u32     @[comment: 'Order number | 排序编号'; default: 0; omitempty; sql_type: 'int']
 	status         u8      @[comment: '状态，0：正常，1：禁用'; default: 0; omitempty; sql_type: 'tinyint']
-	type           string  @[comment: '角色类型: tenant/global'; default: 'tenant'; sql_type: 'VARCHAR(32)']
+	type           string  @[comment: '角色类型: tenant/global'; default: '"tenant"'; sql_type: 'VARCHAR(255)']
 
 	updater_id ?string    @[comment: '修改者ID'; omitempty; sql_type: 'CHAR(36)']
 	updated_at time.Time  @[comment: 'Update Time | 修改日期'; omitempty; sql_type: 'TIMESTAMP']

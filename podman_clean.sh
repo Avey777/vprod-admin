@@ -24,25 +24,3 @@ podman buildah rm -a 2>/dev/null || echo "没有Buildah资源"
 
 # 清理容器运行时文件
 rm -rf /run/user/1000/containers/* 2>/dev/null || echo "没有容器运行时文件"
-
-echo "=== 开始构建 ==="
-
-# 构建镜像
-podman build \
-    --no-cache \
-    --network=host \
-    --rm=true \
-    --tmpdir=/tmp/podman-tmp \
-    -f Containerfile \
-    -t "$IMAGE_NAME" . || {
-    echo "构建失败，执行清理..."
-    podman image prune -af
-    exit 1
-    }
-
-echo "=== 构建成功 ==="
-
-# 最终清理
-podman image prune -f 2>/dev/null
-
-echo "=== 脚本执行完成 ==="

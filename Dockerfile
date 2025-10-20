@@ -1,5 +1,5 @@
 # 第一阶段：构建环境
-FROM thevlang/vlang:latest as builder
+FROM thevlang/vlang:alpine as builder
 
 WORKDIR /app
 COPY ./backend .
@@ -7,14 +7,14 @@ COPY ./backend .
 # 安装依赖并构建（适配 Alpine）
 RUN apk add --no-cache \
     libatomic \
-    musl-dev \
-    mariadb-connector-c-dev \
-    build-base && \
+    # musl-dev \
+    build-base \
+    mariadb-connector-c-dev && \
     v -prod -o app . && \
     rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
 # 第二阶段：运行时环境
-FROM thevlang/vlang:latest
+FROM thevlang/vlang:alpine
 
 WORKDIR /app
 
@@ -26,7 +26,8 @@ RUN apk add --no-cache \
 
 # 复制构建产物
 COPY --from=builder /app/app .
-COPY --from=builder /app/etc/ ./etc/
+COPY --from=builder /app/static ./static/
+COPY --from=builder /app/etc/config.toml ./etc/
 
 
 EXPOSE 9009
