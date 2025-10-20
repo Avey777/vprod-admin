@@ -1,10 +1,10 @@
-module schema_mcms
+module schema_msg
 
 import time
 
 // 站内私信消息分类表
-@[table: 'mcms_site_inner_category']
-pub struct McmsSiteInnerCategory {
+@[table: 'msg_site_inner_category']
+pub struct MsgSiteInnerCategory {
 pub:
 	id          string  @[auto_inc; comment: 'UUID'; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	title       string  @[comment: 'Category Title | 分类名称'; omitempty; required; sql: 'title'; sql_type: 'VARCHAR(255)']

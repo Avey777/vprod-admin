@@ -1,10 +1,10 @@
-module schema_mcms
+module schema_msg
 
 import time
 
 // 站内私信消息表
-@[table: 'mcms_site_inner_msg']
-pub struct McmsSiteInnerMsg {
+@[table: 'msg_site_inner_msg']
+pub struct MsgSiteInnerMsg {
 pub:
 	id                            string  @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	avatar                        ?string @[comment: 'Avatar | 头像或图标'; omitempty; sql: 'avatar'; sql_type: 'VARCHAR(255)']

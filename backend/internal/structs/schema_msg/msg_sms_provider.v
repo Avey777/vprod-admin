@@ -1,10 +1,10 @@
-module schema_mcms
+module schema_msg
 
 import time
 
 // 短信服务提供商表
-@[table: 'mcms_sms_provider']
-pub struct McmsSmsProvider {
+@[table: 'msg_sms_provider']
+pub struct MsgSmsProvider {
 pub:
 	id         string @[auto_inc; comment: 'UUID'; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	name       string @[comment: 'The SMS provider name | 短信服务的提供商'; omitempty; required; sql: 'name'; sql_type: 'VARCHAR(255)'; unique: 'name']
