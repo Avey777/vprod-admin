@@ -29,26 +29,3 @@ docker builder prune -af 2>/dev/null || echo "没有构建器缓存"
 # 5. 清理网络（可选）
 echo "5. 清理未使用网络..."
 docker network prune -f 2>/dev/null || echo "没有未使用网络"
-
-echo "=== 开始构建 v-admin 镜像 ==="
-
-# 构建镜像
-docker buildx build \
-    --no-cache \
-    --network=host \
-    --rm=true \
-    --progress=plain \
-    -f Dockerfile \
-    -t "$IMAGE_NAME" . || {
-    echo "构建失败！"
-    exit 1
-    }
-
-echo "=== 构建成功 ==="
-
-# 构建后清理
-echo "=== 构建后清理 ==="
-docker image prune -f 2>/dev/null
-docker buildx prune -f 2>/dev/null
-
-echo "=== 镜像构建完成: $IMAGE_NAME ==="

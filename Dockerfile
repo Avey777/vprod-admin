@@ -7,7 +7,7 @@ COPY ./backend .
 # 安装依赖并构建（适配 Alpine）
 RUN apk add --no-cache \
     libatomic \
-    musl-dev \
+    # musl-dev \
     build-base \
     mariadb-connector-c-dev && \
     v -prod -o app . && \
@@ -26,6 +26,7 @@ RUN apk add --no-cache \
 
 # 复制构建产物
 COPY --from=builder /app/app .
+COPY --from=builder /app/static ./static/
 COPY --from=builder /app/etc/config.toml ./etc/
 
 
