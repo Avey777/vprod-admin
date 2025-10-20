@@ -29,13 +29,13 @@ jobs:
       - name: Delete Container
         run: |
           docker rm -f v-admin
-          docker rmi -f avey777/vadmin
+          docker rmi -f avey777/v-admin
       - name: Docker build
         run: |
-          docker buildx build -f Dockerfile-docker -t avey777/vadmin .
+          docker buildx build  --no-cache --network=host --rm=true --progress=plain -f Dockerfile -t avey777/v-admin .
       - name: Run Container
         run: |
-          docker run --name=v-admin --restart=unless-stopped -p 9009:9009 -e CONFIG_PATH=backend/etc/config.toml -v /opt/vprod/config.toml:/workspace/vprod-admin/config.toml -d avey777/vprod-admin
+          docker run --name=v-admin --restart=unless-stopped -p 9009:9009 -e CONFIG_PATH=backend/etc/config.toml -v ~/.config/config.toml:/workspace/v-admin/etc/config.toml -d avey777/v-admin
       - name: Clean Docker cache
         run: |
           docker builder prune -f

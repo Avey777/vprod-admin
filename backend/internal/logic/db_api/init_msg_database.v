@@ -4,7 +4,7 @@ import veb
 import log
 import common.api { json_error, json_success_optparams }
 import internal.structs { Context }
-import internal.structs.schema_mcms
+import internal.structs.schema_msg
 
 @['/init/init_mcms'; get]
 pub fn (app &Base) init_mcms(mut ctx Context) veb.Result {
@@ -20,13 +20,13 @@ pub fn (app &Base) init_mcms(mut ctx Context) veb.Result {
 	}
 
 	sql db {
-		create table schema_mcms.McmsSmsProvider
-		create table schema_mcms.McmsSmsLog
-		create table schema_mcms.McmsSiteNotification
-		create table schema_mcms.McmsSiteInnerMsg
-		create table schema_mcms.McmsSiteInnerCategory
-		create table schema_mcms.McmsEmailProvider
-		create table schema_mcms.McmsEmailLog
+		create table schema_msg.MsgSmsProvider
+		create table schema_msg.MsgSmsLog
+		create table schema_msg.MsgSiteNotification
+		create table schema_msg.MsgSiteInnerMsg
+		create table schema_msg.MsgSiteInnerCategory
+		create table schema_msg.MsgEmailProvider
+		create table schema_msg.MsgEmailLog
 	} or { return ctx.text('error creating table:  ${err}') }
 	log.debug('Database init_mcms success')
 

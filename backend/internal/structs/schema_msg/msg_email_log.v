@@ -1,10 +1,10 @@
-module schema_mcms
+module schema_msg
 
 import time
 
 // 邮件发送日志表
-@[table: 'mcms_email_log']
-pub struct McmsEmailLog {
+@[table: 'msg_email_log']
+pub struct MsgEmailLog {
 pub:
 	id          string @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	target      string @[comment: 'The target email address | 目标邮箱地址'; omitempty; required; sql: 'target'; sql_type: 'VARCHAR(255)']

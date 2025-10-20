@@ -1,10 +1,10 @@
-module schema_mcms
+module schema_msg
 
 import time
 
 // 短信发送日志表
-@[table: 'mcms_sms_log']
-pub struct McmsSmsLog {
+@[table: 'msg_sms_log']
+pub struct MsgSmsLog {
 pub:
 	id           string @[comment: 'UUID'; immutable; primary; sql: 'id'; sql_type: 'CHAR(36)']
 	phone_number string @[comment: 'The target phone number | 目标电话'; omitempty; required; sql: 'phone_number'; sql_type: 'VARCHAR(255)']
