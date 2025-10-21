@@ -16,6 +16,8 @@ jobs:
       image: thevlang/vlang:alpine-dev
     steps:
       - uses: actions/checkout@v4
+      - name: Check V version
+        run: v version
       - name: Install dependencies
         run: |
           apk add --no-cache mariadb-connector-c-dev
