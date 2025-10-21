@@ -1,0 +1,44 @@
+name: Forgejo Actions v-workspace
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  test:
+    runs-on: docker
+    container:
+      image: thevlang/vlang:alpine-dev
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          apk add --no-cache libatomic musl-dev mariadb-connector-c-dev build-base
+      - name: Run tests
+        working-directory: backend
+        run: v -stats test .
+
+  build:
+    runs-on: docker
+    container:
+      image: thevlang/vlang:alpine-dev
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          apk add --no-cache libatomic musl-dev mariadb-connector-c-dev build-base
+      - name: Build application
+        working-directory: backend
+        run: v -stats -prod -o v-admin .
+
+  notification:
+    runs-on: docker
+    if: always()
+    steps:
+      - name: Pipeline status
+        run: echo "🍏 This job's status is ${{ job.status }}."
