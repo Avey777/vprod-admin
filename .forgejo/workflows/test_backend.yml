@@ -36,7 +36,7 @@ jobs:
         run: v up
       - name: Install dependencies
         run: |
-          apk add --no-cache mariadb-connector-c-dev
+          apk add --no-cache libatomic mariadb-connector-c-dev
           # apk add --no-cache mariadb-connector-c-dev libatomic musl-dev build-base
       - name: Build application
         working-directory: backend
