@@ -20,7 +20,7 @@ jobs:
         run: v version
       - name: Install dependencies
         run: |
-          apk add --no-cache mariadb-connector-c-dev  libatomic musl-dev
+          apk add --no-cache mariadb-connector-c-dev  libatomic musl-dev libatomic1-dev
           # apk add --no-cache mariadb-connector-c-dev libatomic musl-dev build-base
       - name: Run tests
         working-directory: backend
