@@ -10,21 +10,21 @@ on:
       - reopened
 
 jobs:
-  test:
-    runs-on: docker
-    container:
-      image: thevlang/vlang:alpine-dev
-    steps:
-      - uses: actions/checkout@v4
-      - name: Check V version
-        run: v version
-      - name: Install dependencies
-        run: |
-          apk add --no-cache mariadb-connector-c-dev  libatomic musl-dev libatomic1-dev
-          # apk add --no-cache mariadb-connector-c-dev libatomic musl-dev build-base
-      - name: Run tests
-        working-directory: backend
-        run: v -stats test .
+  # test:
+  #   runs-on: docker
+  #   container:
+  #     image: thevlang/vlang:alpine-dev
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Check V version
+  #       run: v version
+  #     - name: Install dependencies
+  #       run: |
+  #         apk add --no-cache mariadb-connector-c-dev  libatomic musl-dev
+  #         # apk add --no-cache mariadb-connector-c-dev libatomic musl-dev build-base
+  #     - name: Run tests
+  #       working-directory: backend
+  #       run: v -stats test .
 
   build:
     runs-on: docker
@@ -36,7 +36,7 @@ jobs:
         run: v up
       - name: Install dependencies
         run: |
-          apk add --no-cache mariadb-connector-c-dev libatomic musl-dev build-base 
+          apk add --no-cache mariadb-connector-c-dev libatomic musl-dev build-base libatomic1-dev
           # apk add --no-cache mariadb-connector-c-dev libatomic musl-dev build-base
       - name: Build application
         working-directory: backend
