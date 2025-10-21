@@ -18,8 +18,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install dependencies
         run: |
-          apk add mariadb-connector-c-dev
-          # apk add --no-cache libatomic musl-dev mariadb-connector-c-dev build-base
+          apk add --no-cache mariadb-connector-c-dev
+          # apk add --no-cache mariadb-connector-c-dev libatomic musl-dev build-base
       - name: Run tests
         working-directory: backend
         run: v -stats test .
@@ -32,8 +32,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install dependencies
         run: |
-          apk add mariadb-connector-c-dev
-          # apk add --no-cache libatomic musl-dev mariadb-connector-c-dev build-base
+          apk add --no-cache mariadb-connector-c-dev
+          # apk add --no-cache mariadb-connector-c-dev libatomic musl-dev build-base
       - name: Build application
         working-directory: backend
         run: v -stats -prod -o v-admin .
