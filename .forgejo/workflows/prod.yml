@@ -26,11 +26,7 @@ jobs:
 
       - name: Build application
         run: |
-          echo "🔨 Building application with V..."
-          # 根据你的项目结构调整构建命令
-          # 例如：v -prod -o app_name .
-          # 这里假设你的项目结构需要构建
-          v build -prod -o v-admin .
+          v -prod -o v-admin .
 
       - name: Test build output
         run: |
