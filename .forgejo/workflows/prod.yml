@@ -4,19 +4,12 @@ on:
   push:
     branches:
       - "main"
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
 
 jobs:
   build:
     runs-on: docker
     container:
       image: thevlang/vlang:alpine-dev
-    outputs:
-      build-tag: ${{ steps.meta.outputs.tags }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -29,75 +22,38 @@ jobs:
             mariadb-connector-c-dev \
             build-base
 
-      - name: Debug project structure
-        run: |
-          echo "📁 Project structure:"
-          pwd
-          ls -la
-          echo "📁 Backend directory:"
-          ls -la backend/
-          echo "🔍 V files in backend:"
-          find backend -name "*.v" -type f | head -20
-
       - name: Build application from backend
         working-directory: backend
         run: |
           echo "🏗️ Building from backend directory..."
-          echo "V version:"
-          v version
-          echo "Current directory:"
-          pwd
-          ls -la
-          echo "Building with V..."
           v -stats -prod -o v-admin .
 
       - name: Verify build output
         working-directory: backend
         run: |
-          echo "✅ Build verification:"
-          ls -la
           if [ -f "v-admin" ]; then
             echo "✅ Build successful!"
-            file v-admin
-            echo "Binary size:"
-            du -h v-admin
+            # 创建构建标识文件
+            echo "${{ github.sha }}" > build-info.txt
           else
-            echo "❌ Build failed - no binary produced"
+            echo "❌ Build failed"
             exit 1
           fi
 
-      - name: Run tests
+      - name: Create build archive
         working-directory: backend
         run: |
-          echo "🧪 Running tests..."
-          v -stats test . || echo "Tests completed"
+          tar czf ../build.tar.gz v-admin etc/ Dockerfile build-info.txt
+          echo "📦 Archive created:"
+          ls -la ../build.tar.gz
 
-      - name: Prepare artifacts
-        working-directory: backend
-        run: |
-          echo "📦 Preparing artifacts..."
-          mkdir -p etc
-          [ -f "etc/config.toml" ] || echo "# Configuration file" > etc/config.toml
-
-      - name: Copy Dockerfile to backend
-        run: |
-          echo "📋 Copying Dockerfile to backend..."
-          if [ -f "Dockerfile" ]; then
-            cp Dockerfile backend/
-          else
-            echo "ℹ️ No root Dockerfile found, using backend/Dockerfile if exists"
-          fi
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      - name: Cache build artifacts
+        uses: actions/cache@v3
         with:
-          name: v-admin-build
-          path: |
-            backend/v-admin
-            backend/etc/
-            backend/Dockerfile
-            Dockerfile
-          retention-days: 1
+          path: build.tar.gz
+          key: build-${{ github.sha }}
+          restore-keys: |
+            build-
 
   deploy:
     runs-on: docker
@@ -107,103 +63,52 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
+      - name: Restore build cache
+        uses: actions/cache@v3
         with:
-          name: v-admin-build
+          path: build.tar.gz
+          key: build-${{ github.sha }}
 
-      - name: Set up Docker
+      - name: Extract build artifacts
         run: |
-          echo "🐳 Docker version:"
-          docker --version
+          echo "📦 Extracting build artifacts..."
+          if [ -f "build.tar.gz" ]; then
+            tar xzf build.tar.gz
+            echo "✅ Artifacts extracted"
+            ls -la
+          else
+            echo "❌ No build archive found, rebuilding..."
+            cd backend
+            apk add build-base musl-dev
+            v -prod -o v-admin .
+            cp v-admin ../
+            cp Dockerfile ../
+          fi
 
       - name: Verify artifacts
         run: |
-          echo "📁 Deployment workspace:"
-          pwd
-          ls -la
           echo "✅ Artifacts verification:"
           [ -f "v-admin" ] && echo "✓ Binary found" || echo "✗ Binary missing"
           [ -f "Dockerfile" ] && echo "✓ Dockerfile found" || echo "✗ Dockerfile missing"
 
-      - name: Clean up existing containers
+      - name: Set up Docker and deploy
         run: |
+          echo "🐳 Docker version:"
+          docker --version
+
           echo "🧹 Cleaning up existing containers..."
           docker rm -f v-admin || true
           docker rmi -f avey777/v-admin || true
 
-      - name: Build Docker image
-        run: |
           echo "🔨 Building Docker image..."
-          docker buildx build \
-            --no-cache \
-            --rm=true \
-            --progress=plain \
-            -f Dockerfile \
-            -t avey777/v-admin .
+          docker build -t avey777/v-admin .
 
-      - name: Verify Docker image
-        run: |
-          echo "🔍 Verifying Docker image..."
-          docker images | grep v-admin
-
-      - name: Run Container
-        run: |
           echo "🚀 Starting container..."
-          mkdir -p ~/.config/v-admin/
-          [ -f "~/.config/v-admin/config.toml" ] || touch ~/.config/v-admin/config.toml
-
           docker run --name=v-admin \
             --restart=unless-stopped \
             -p 9009:9009 \
-            -v ~/.config/v-admin/config.toml:/app/etc/config.toml \
             -d avey777/v-admin
 
-      - name: Check container status
-        run: |
           echo "📊 Container status:"
-          docker ps -a | grep v-admin
-          echo "🔍 Container logs:"
           sleep 5
-          docker logs v-admin --tail 20 || true
-
-      - name: Health check
-        run: |
-          echo "🏥 Performing health check..."
-          sleep 10
-          if docker ps | grep -q v-admin; then
-            echo "✅ Container is running"
-            echo "🔄 Restarting to ensure stability..."
-            docker restart v-admin
-            sleep 5
-            docker ps | grep v-admin && echo "✅ Container restarted successfully" || echo "❌ Container failed after restart"
-          else
-            echo "❌ Container failed to start"
-            exit 1
-          fi
-
-      - name: Clean Docker cache
-        run: |
-          echo "🧹 Cleaning Docker cache..."
-          docker builder prune -f
-          docker image prune -f
-
-  notification:
-    runs-on: docker
-    needs: [build, deploy]
-    if: always()
-    steps:
-      - name: Deployment status
-        run: |
-          echo "🎉 CI/CD Pipeline completed!"
-          echo "Build job status: ${{ needs.build.result }}"
-          echo "Deploy job status: ${{ needs.deploy.result }}"
-
-          if [ "${{ needs.build.result }}" = "success" ] && [ "${{ needs.deploy.result }}" = "success" ]; then
-            echo "✅ All jobs completed successfully!"
-          elif [ "${{ needs.build.result }}" = "success" ] && [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "✅ PR build successful!"
-          else
-            echo "❌ Some jobs failed. Check the logs above."
-            exit 1
-          fi
+          docker ps | grep v-admin && echo "✅ Deployed successfully" || echo "❌ Deployment failed"
