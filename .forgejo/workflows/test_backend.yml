@@ -1,5 +1,13 @@
-name: Forgejo Actions
-on: [push]
+name: Forgejo Actions v-workspace
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   test:
@@ -27,3 +35,10 @@ jobs:
       - name: Build application
         working-directory: backend
         run: v -stats -prod -o v-admin .
+
+  notification:
+    runs-on: docker
+    if: always()
+    steps:
+      - name: Pipeline status
+        run: echo "🍏 This job's status is ${{ job.status }}."
