@@ -16,9 +16,9 @@ jobs:
       image: thevlang/vlang:alpine-dev
     steps:
       - uses: actions/checkout@v4
-      - name: Install dependencies
-        run: |
-          apk add --no-cache libatomic musl-dev mariadb-connector-c-dev build-base
+      # - name: Install dependencies
+      #   run: |
+      #     apk add --no-cache libatomic musl-dev mariadb-connector-c-dev build-base
       - name: Run tests
         working-directory: backend
         run: v -stats test .
@@ -29,9 +29,9 @@ jobs:
       image: thevlang/vlang:alpine-dev
     steps:
       - uses: actions/checkout@v4
-      - name: Install dependencies
-        run: |
-          apk add --no-cache libatomic musl-dev mariadb-connector-c-dev build-base
+      # - name: Install dependencies
+      #   run: |
+      #     apk add --no-cache libatomic musl-dev mariadb-connector-c-dev build-base
       - name: Build application
         working-directory: backend
         run: v -stats -prod -o v-admin .
