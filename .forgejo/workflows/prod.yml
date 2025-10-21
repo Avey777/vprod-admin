@@ -4,39 +4,152 @@ on:
   push:
     branches:
       - "main"
+
 jobs:
-  Deploy-Actions:
+  build:
     runs-on: docker
     container:
       image: thevlang/vlang:alpine-dev
+    outputs:
+      build-tag: ${{ steps.meta.outputs.tags }}
     steps:
-      - name: Debug workspace
-        run: |
-          pwd
-          ls -la /workspace
-      - run: echo "🎉 The job was automatically triggered by a ${{ runner.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Forgejo!"
-      - run: echo "🔎 The name of your branch is ${{ runner.ref }} and your repository is ${{ runner.repository }}."
       - name: Check out repository code
         uses: actions/checkout@v4
-      - run: echo "💡 The ${{ runner.repository }} repository has been cloned to the runner."
-      - name: Show workspace
+
+      - name: Debug workspace
         run: |
+          echo "📁 Current workspace:"
           pwd
           ls -la
-          ls -la /workspace
-      - run: echo "🖥️ The workflow is now ready to deploy your code on the runner."
-      - name: Delete Container
+          echo "🔧 V version:"
+          v version
+
+      - name: Build application
         run: |
-          docker rm -f v-admin
-          docker rmi -f avey777/v-admin
-      - name: Docker build
+          echo "🔨 Building application with V..."
+          # 根据你的项目结构调整构建命令
+          # 例如：v -prod -o app_name .
+          # 这里假设你的项目结构需要构建
+          v build -prod -o v-admin .
+
+      - name: Test build output
         run: |
-          docker buildx build  --no-cache --network=host --rm=true --progress=plain -f Dockerfile -t avey777/v-admin .
+          echo "✅ Build output:"
+          ls -la
+          [ -f "v-admin" ] && echo "Build successful" || echo "Build failed"
+
+      - name: Prepare artifacts
+        run: |
+          echo "📦 Preparing artifacts..."
+          # 创建必要的配置文件或目录
+          mkdir -p etc
+          [ -f "etc/config.toml" ] || echo "# Configuration file" > etc/config.toml
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: v-admin-build
+          path: |
+            v-admin
+            etc/
+            Dockerfile
+          retention-days: 1
+
+  deploy:
+    runs-on: docker
+    needs: build
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: v-admin-build
+
+      - name: Set up Docker
+        run: |
+          echo "🐳 Docker version:"
+          docker --version
+
+      - name: Verify artifacts
+        run: |
+          echo "📁 Deployment workspace:"
+          pwd
+          ls -la
+          echo "✅ Artifacts verification:"
+          [ -f "v-admin" ] && echo "✓ Binary found" || echo "✗ Binary missing"
+          [ -f "Dockerfile" ] && echo "✓ Dockerfile found" || echo "✗ Dockerfile missing"
+
+      - name: Clean up existing containers
+        run: |
+          echo "🧹 Cleaning up existing containers..."
+          docker rm -f v-admin || true
+          docker rmi -f avey777/v-admin || true
+
+      - name: Build Docker image
+        run: |
+          echo "🔨 Building Docker image..."
+          docker buildx build \
+            --no-cache \
+            --rm=true \
+            --progress=plain \
+            -f Dockerfile \
+            -t avey777/v-admin .
+
+      - name: Verify Docker image
+        run: |
+          echo "🔍 Verifying Docker image..."
+          docker images | grep v-admin
+
       - name: Run Container
         run: |
-          docker run --name=v-admin --restart=unless-stopped -p 9009:9009 -e CONFIG_PATH=backend/etc/config.toml -v ~/.config/config.toml:/workspace/v-admin/etc/config.toml -d avey777/v-admin
+          echo "🚀 Starting container..."
+          # 创建本地配置目录
+          mkdir -p ~/.config/
+          # 如果配置文件不存在，创建默认配置
+          [ -f "~/.config/v-admin/config.toml" ] || touch ~/.config/v-admin/config.toml
+
+          docker run --name=v-admin \
+            --restart=unless-stopped \
+            -p 9009:9009 \
+            -e CONFIG_PATH=backend/etc/config.toml \
+            -v ~/.config/v-admin/config.toml:/workspace/v-admin/etc/config.toml \
+            -d avey777/v-admin
+
+      - name: Check container status
+        run: |
+          echo "📊 Container status:"
+          docker ps -a | grep v-admin
+          echo "🔍 Container logs:"
+          docker logs v-admin --tail 50 || true
+
+      - name: Health check
+        run: |
+          echo "🏥 Performing health check..."
+          sleep 10
+          docker ps | grep v-admin && echo "✅ Container is running" || echo "❌ Container failed to start"
+
       - name: Clean Docker cache
         run: |
+          echo "🧹 Cleaning Docker cache..."
           docker builder prune -f
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+          docker image prune -f
+
+  notification:
+    runs-on: docker
+    needs: [build, deploy]
+    if: always()
+    steps:
+      - name: Deployment status
+        run: |
+          echo "🎉 Deployment completed!"
+          echo "Build job status: ${{ needs.build.result }}"
+          echo "Deploy job status: ${{ needs.deploy.result }}"
+
+          if [ "${{ needs.build.result }}" = "success" ] && [ "${{ needs.deploy.result }}" = "success" ]; then
+            echo "✅ All jobs completed successfully!"
+          else
+            echo "❌ Some jobs failed. Check the logs above."
+            exit 1
+          fi
