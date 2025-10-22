@@ -64,10 +64,10 @@ fn role_menu_list_resp(mut ctx Context, req GetMenuListByRoleReq) !GetMenuListBy
 	mut datalist := []GetMenuListByRole{} // map空数组初始化
 	for row in result {
 		mut data := GetMenuListByRole{
-			id:         row.id //主键ID
-			parent_id:  row.parent_id or { return error('Parent ID not found') }
-			menu_level: row.menu_level
-			// menu_type:             row.menu_type or { return error('Menu type not found') }
+			id:                    row.id //主键ID
+			parent_id:             row.parent_id or { return error('Parent ID not found') }
+			menu_level:            row.menu_level
+			menu_type:             row.menu_type
 			path:                  row.path or { return error('Path not found') }
 			name:                  row.name
 			redirect:              row.redirect or { return error('Redirect not found') }
@@ -122,7 +122,7 @@ struct GetMenuListByRole {
 	id                    string     @[json: 'id']
 	parent_id             string     @[json: 'parent_id']
 	menu_level            u64        @[json: 'menu_level']
-	menu_type             string     @[json: 'menu_type']
+	menu_type             u64        @[json: 'menu_type']
 	path                  string     @[json: 'path']
 	name                  string     @[json: 'name']
 	redirect              string     @[json: 'redirect']
