@@ -14,7 +14,9 @@ import internal.structs { Context }
 fn (app &Api) update_token(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	req := json.decode[UpdateCoreApiReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
 	mut result := update_api_resp(mut ctx, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
@@ -22,18 +24,8 @@ fn (app &Api) update_token(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn update_api_resp(mut ctx Context, req json.Any) !map[string]Any {
+fn update_api_resp(mut ctx Context, req UpdateCoreApiReq) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-
-	id := req.as_map()['id'] or { '' }.str()
-	path := req.as_map()['path'] or { '' }.str()
-	description := req.as_map()['description'] or { '' }.str()
-	api_group := req.as_map()['api_group'] or { '' }.str()
-	service_name := req.as_map()['service_name'] or { '' }.str()
-	method := req.as_map()['method'] or { '' }.str()
-	is_required := req.as_map()['is_required'] or { 0 }.u8()
-
-	updated_at := req.as_map()['updated_at'] or { time.now() }.to_time()!
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
 	defer {
@@ -44,15 +36,32 @@ fn update_api_resp(mut ctx Context, req json.Any) !map[string]Any {
 
 	mut sys_api := orm.new_query[schema_core.CoreApi](db)
 
-	sys_api.set('path = ?', path)!
-		.set('description = ?', description)!
-		.set('api_group = ?', api_group)!
-		.set('service_name = ?', service_name)!
-		.set('method = ?', method)!
-		.set('is_required = ?', is_required)!
-		.set('updated_at = ?', updated_at)!
+	id := req.id
+
+	sys_api.set('path = ?', req.path)!
+		.set('description = ?', req.description or { '' })!
+		.set('api_group = ?', req.api_group)!
+		.set('service_name = ?', req.service_name)!
+		.set('method = ?', req.method)!
+		.set('is_required = ?', req.is_required)!
+		.set('source_type = ?', req.source_type)!
+		.set('source_id = ?', req.source_id)!
+		.set('updated_at = ?', time.now())!
 		.where('id = ?', id)!
 		.update()!
 
 	return map[string]Any{}
+}
+
+struct UpdateCoreApiReq {
+	id           string     @[json: 'id'; required]
+	path         string     @[json: 'path'; required]
+	description  ?string    @[json: 'description']
+	api_group    string     @[json: 'api_group'; required]
+	service_name string     @[json: 'service_name'; required]
+	method       string     @[json: 'method'; required]
+	is_required  u8         @[default: 0; json: 'is_required'; required]
+	source_type  string     @[json: 'source_type'; required]
+	source_id    string     @[json: 'source_id'; required]
+	updated_at   ?time.Time @[json: 'updated_at']
 }

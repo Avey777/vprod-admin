@@ -14,22 +14,16 @@ fn (app &Api) api_list(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	req := json.decode[GetCoreApiByListReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
 	mut result := api_list_resp(mut ctx, req) or { return ctx.json(api.json_error_500(err.msg())) }
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn api_list_resp(mut ctx Context, req json.Any) !map[string]Any {
+fn api_list_resp(mut ctx Context, req GetCoreApiByListReq) !GetCoreApiByListResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-
-	page := req.as_map()['page'] or { 1 }.int()
-	page_size := req.as_map()['page_size'] or { 10 }.int()
-	path := req.as_map()['path'] or { '' }.str()
-	api_group := req.as_map()['api_group'] or { '' }.str()
-	service_name := req.as_map()['service_name'] or { '' }.str()
-	method := req.as_map()['method'] or { '' }.str()
-	is_required := req.as_map()['is_required'] or { 100 }.u8()
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
 	defer {
@@ -43,48 +37,78 @@ fn api_list_resp(mut ctx Context, req json.Any) !map[string]Any {
 	mut count := sql db {
 		select count from schema_core.CoreUser
 	}!
-	offset_num := (page - 1) * page_size
+	offset_num := (req.page - 1) * req.page_size
 	//*>>>*/
 	mut query := sys_api.select()!
-	if path != '' {
-		query = query.where('path = ?', path)!
+	if req.path != '' {
+		query = query.where('path = ?', req.path)!
 	}
-	if api_group != '' {
-		query = query.where('api_group = ?', api_group)!
+	if req.api_group != '' {
+		query = query.where('api_group = ?', req.api_group)!
 	}
-	if service_name != '' {
-		query = query.where('service_name = ?', service_name)!
+	if req.service_name != '' {
+		query = query.where('service_name = ?', req.service_name)!
 	}
-	if is_required !in [0, 1] {
-		query = query.where('is_required = ?', is_required)!
+	if req.is_required !in [0, 1] {
+		query = query.where('is_required = ?', req.is_required)!
 	}
-	if method != '' {
-		query = query.where('method = ?', method)!
+	if req.method != '' {
+		query = query.where('method = ?', req.method)!
 	}
 
-	result := query.limit(page_size)!.offset(offset_num)!.query()!
+	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
 	//*<<<*/
-	mut datalist := []map[string]Any{} // map空数组初始化
+	mut datalist := []GetCoreApiByList{} // map空数组初始化
 	for row in result {
-		mut data := map[string]Any{} // map初始化
-		data['id'] = row.id //主键ID
-		data['path'] = row.path
-		data['description'] = row.description or { '' }
-		data['api_group'] = row.api_group
-		data['method'] = row.method
-		data['is_required'] = int(row.is_required)
-		data['service_name'] = row.service_name
-
-		data['created_at'] = row.created_at.format_ss()
-		data['updated_at'] = row.updated_at.format_ss()
-		data['deleted_at'] = row.deleted_at or { time.Time{} }.format_ss()
-
+		mut data := GetCoreApiByList{ // map初始化
+			id:           row.id //主键ID
+			path:         row.path
+			description:  row.description or { '' }
+			api_group:    row.api_group
+			method:       row.method
+			is_required:  row.is_required
+			service_name: row.service_name
+			created_at:   row.created_at
+			updated_at:   row.updated_at
+			deleted_at:   row.deleted_at
+		}
 		datalist << data //追加data到maplist 数组
 	}
 
-	mut result_data := map[string]Any{}
-	result_data['total'] = count
-	result_data['data'] = datalist
+	mut result_data := GetCoreApiByListResp{
+		total: count
+		data:  datalist
+	}
 
 	return result_data
+}
+
+struct GetCoreApiByListReq {
+	page         int    @[json: 'page']
+	page_size    int    @[json: 'page_size']
+	path         string @[json: 'path']
+	api_group    string @[json: 'api_group']
+	service_name string @[json: 'service_name']
+	method       string @[json: 'method']
+	is_required  u8     @[json: 'is_required']
+}
+
+struct GetCoreApiByListResp {
+	total int
+	data  []GetCoreApiByList
+}
+
+pub struct GetCoreApiByList {
+	id           string     @[json: 'id']
+	path         string     @[json: 'path']
+	description  ?string    @[json: 'description']
+	api_group    string     @[json: 'api_group']
+	service_name string     @[json: 'service_name']
+	method       string     @[json: 'method']
+	is_required  u8         @[default: 0; json: 'is_required']
+	source_type  string     @[json: 'source_type']
+	source_id    string     @[json: 'source_id']
+	created_at   ?time.Time @[json: 'created_at'] //; raw: '.format_ss()'
+	updated_at   ?time.Time @[json: 'updated_at'] //; raw: '.format_ss()'
+	deleted_at   ?time.Time @[json: 'deleted_at'] //; raw: '.format_ss()'
 }
