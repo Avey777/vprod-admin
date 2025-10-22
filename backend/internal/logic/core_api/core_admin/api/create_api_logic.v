@@ -15,7 +15,9 @@ import internal.structs { Context }
 fn (app &Api) create_api(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	req := json.decode[CreateCoreApiReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
 	mut result := create_api_resp(mut ctx, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
@@ -23,7 +25,7 @@ fn (app &Api) create_api(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn create_api_resp(mut ctx Context, req json.Any) !map[string]Any {
+fn create_api_resp(mut ctx Context, req CreateCoreApiReq) !map[string]Any {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -33,20 +35,37 @@ fn create_api_resp(mut ctx Context, req json.Any) !map[string]Any {
 		}
 	}
 
+	time_now := time.now()
 	apis := schema_core.CoreApi{
 		id:           rand.uuid_v7()
-		path:         req.as_map()['path'] or { '' }.str()
-		description:  req.as_map()['description'] or { '' }.str()
-		api_group:    req.as_map()['api_group'] or { '' }.str()
-		service_name: req.as_map()['service_name'] or { 0 }.str()
-		method:       req.as_map()['method'] or { '' }.str()
-		is_required:  req.as_map()['is_required'] or { '' }.u8()
-		created_at:   req.as_map()['created_at'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
-		updated_at:   req.as_map()['updated_at'] or { time.now() }.to_time()!
+		path:         req.path // or { return error('path is required') }
+		description:  req.description or { '' }
+		api_group:    req.api_group    // or { return error('api_group is required') }.str()
+		service_name: req.service_name // or { return error('service_name is required') }.str()
+		method:       req.method       // or { return error('method is required') }.str()
+		is_required:  req.is_required  // or { 0 }.u8()
+		source_type:  req.source_type  // or { return error('source_type is required') }.str()
+		source_id:    req.source_id    // or { return error('source_id is required') }.str()
+		created_at:   req.created_at or { time_now }   //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
+		updated_at:   req.updated_at or { time_now }
 	}
 
 	mut sys_api := orm.new_query[schema_core.CoreApi](db)
 	sys_api.insert(apis)!
 
 	return map[string]Any{}
+}
+
+struct CreateCoreApiReq {
+	id           string     @[json: 'id'; required]
+	path         string     @[json: 'path'; required]
+	description  ?string    @[json: 'description']
+	api_group    string     @[json: 'api_group'; required]
+	service_name string     @[json: 'service_name'; required]
+	method       string     @[json: 'method'; required]
+	is_required  u8         @[default: 0; json: 'is_required'; required]
+	source_type  string     @[json: 'source_type'; required]
+	source_id    string     @[json: 'source_id'; required]
+	created_at   ?time.Time @[json: 'created_at']
+	updated_at   ?time.Time @[json: 'updated_at']
 }
