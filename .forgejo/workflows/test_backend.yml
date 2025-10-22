@@ -16,9 +16,12 @@ jobs:
       image: thevlang/vlang:alpine-dev
     steps:
       - uses: actions/checkout@v4
+      - name: Check V version
+        run: v version
       - name: Install dependencies
         run: |
-          apk add --no-cache libatomic musl-dev mariadb-connector-c-dev build-base
+          apk add --no-cache mariadb-connector-c-dev
+          # apk add --no-cache mariadb-connector-c-dev libatomic musl-dev build-base
       - name: Run tests
         working-directory: backend
         run: v -stats test .
@@ -29,12 +32,15 @@ jobs:
       image: thevlang/vlang:alpine-dev
     steps:
       - uses: actions/checkout@v4
+      # - name: update v
+      #   run: v up
       - name: Install dependencies
         run: |
-          apk add --no-cache libatomic musl-dev mariadb-connector-c-dev build-base
+          apk add --no-cache mariadb-connector-c-dev
+          # apk add --no-cache mariadb-connector-c-dev libatomic musl-dev build-base
       - name: Build application
         working-directory: backend
-        run: v -stats -prod -o v-admin .
+        run: v -stats -cc gcc -o v-admin .
 
   notification:
     runs-on: docker
