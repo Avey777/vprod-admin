@@ -22,7 +22,7 @@ fn (app &Api) api_list(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn api_list_resp(mut ctx Context, req GetCoreApiByListReq) !map[string]Any {
+fn api_list_resp(mut ctx Context, req GetCoreApiByListReq) !GetCoreApiByListResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -58,27 +58,27 @@ fn api_list_resp(mut ctx Context, req GetCoreApiByListReq) !map[string]Any {
 
 	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
 	//*<<<*/
-	mut datalist := []map[string]Any{} // map空数组初始化
+	mut datalist := []GetCoreApiByList{} // map空数组初始化
 	for row in result {
-		mut data := map[string]Any{} // map初始化
-		data['id'] = row.id //主键ID
-		data['path'] = row.path
-		data['description'] = row.description or { '' }
-		data['api_group'] = row.api_group
-		data['method'] = row.method
-		data['is_required'] = int(row.is_required)
-		data['service_name'] = row.service_name
-
-		data['created_at'] = row.created_at.format_ss()
-		data['updated_at'] = row.updated_at.format_ss()
-		data['deleted_at'] = row.deleted_at or { time.Time{} }.format_ss()
-
+		mut data := GetCoreApiByList{ // map初始化
+			id:           row.id //主键ID
+			path:         row.path
+			description:  row.description or { '' }
+			api_group:    row.api_group
+			method:       row.method
+			is_required:  row.is_required
+			service_name: row.service_name
+			created_at:   row.created_at
+			updated_at:   row.updated_at
+			deleted_at:   row.deleted_at
+		}
 		datalist << data //追加data到maplist 数组
 	}
 
-	mut result_data := map[string]Any{}
-	result_data['total'] = count
-	result_data['data'] = datalist
+	mut result_data := GetCoreApiByListResp{
+		total: count
+		data:  datalist
+	}
 
 	return result_data
 }
@@ -94,6 +94,11 @@ struct GetCoreApiByListReq {
 }
 
 struct GetCoreApiByListResp {
+	total int
+	data  []GetCoreApiByList
+}
+
+pub struct GetCoreApiByList {
 	id           string     @[json: 'id']
 	path         string     @[json: 'path']
 	description  ?string    @[json: 'description']
@@ -103,7 +108,7 @@ struct GetCoreApiByListResp {
 	is_required  u8         @[default: 0; json: 'is_required']
 	source_type  string     @[json: 'source_type']
 	source_id    string     @[json: 'source_id']
-	created_at   ?time.Time @[json: 'created_at'; raw: '.format_ss()']
-	updated_at   ?time.Time @[json: 'updated_at'; raw: '.format_ss()']
-	deleted_at   ?time.Time @[json: 'deleted_at'; raw: '.format_ss()']
+	created_at   ?time.Time @[json: 'created_at'] //; raw: '.format_ss()'
+	updated_at   ?time.Time @[json: 'updated_at'] //; raw: '.format_ss()'
+	deleted_at   ?time.Time @[json: 'deleted_at'] //; raw: '.format_ss()'
 }

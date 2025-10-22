@@ -56,7 +56,7 @@ fn api_by_id_resp(mut ctx Context, req GetCoreApiByIDReq) ![]GetCoreApiByIDResp 
 			source_id:    row.source_id
 			created_at:   row.created_at
 			updated_at:   row.updated_at
-			deleted_at:   row.deleted_at or { time.Time{} }
+			deleted_at:   row.deleted_at
 		}
 
 		datalist << resp_obj //追加resp_obj到maplist 数组
