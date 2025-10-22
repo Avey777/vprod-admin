@@ -1,7 +1,7 @@
-module api
+module menu
 
 import internal.structs { App }
 
-pub struct Api {
+pub struct Menu {
 	App
 }

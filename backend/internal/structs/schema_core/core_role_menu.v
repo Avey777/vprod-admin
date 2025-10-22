@@ -7,7 +7,7 @@ pub struct CoreRoleMenu {
 pub:
 	role_id string @[comment: '角色ID'; sql_type: 'CHAR(36)']
 	menu_id string @[comment: '菜单 ID'; sql_type: 'CHAR(36)']
-	// 来源级别,表示这个资源属于哪个来源（例如哪个租户、哪个订阅的子应用、哪个全局模块）
-	source_type string @[comment: '来源类型: tenant/app'; sql_type: 'VARCHAR(32)']
-	source_id   string @[comment: '来源ID: app_id或tenant_id等'; sql_type: 'CHAR(36)']
+	// 来源级别,表示这个资源属于哪个来源（例如哪个租户、哪个订阅的子应用） 租户订阅应用表
+	source_type string @[comment: '来源类型: tenant/subapp'; sql_type: 'VARCHAR(32)']
+	source_id   string @[comment: '来源ID: subapp_id(tenant)'; sql_type: 'CHAR(36)']
 }

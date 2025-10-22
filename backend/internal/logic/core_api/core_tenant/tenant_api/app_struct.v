@@ -1,4 +1,4 @@
-module api
+module tenant_api
 
 import internal.structs { App }
 

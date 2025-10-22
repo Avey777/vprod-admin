@@ -1,7 +1,7 @@
-module api
+module tenant_menu
 
 import internal.structs { App }
 
-pub struct Api {
+pub struct Menu {
 	App
 }
