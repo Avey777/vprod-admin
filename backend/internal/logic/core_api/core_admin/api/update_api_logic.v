@@ -24,7 +24,7 @@ fn (app &Api) update_token(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn update_api_resp(mut ctx Context, req UpdateCoreApiReq) !map[string]Any {
+fn update_api_resp(mut ctx Context, req UpdateCoreApiReq) !string {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -50,7 +50,7 @@ fn update_api_resp(mut ctx Context, req UpdateCoreApiReq) !map[string]Any {
 		.where('id = ?', id)!
 		.update()!
 
-	return map[string]Any{}
+	return 'API updated successfully'
 }
 
 struct UpdateCoreApiReq {

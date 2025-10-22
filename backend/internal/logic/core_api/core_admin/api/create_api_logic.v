@@ -25,7 +25,7 @@ fn (app &Api) create_api(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn create_api_resp(mut ctx Context, req CreateCoreApiReq) !map[string]Any {
+fn create_api_resp(mut ctx Context, req CreateCoreApiReq) !string {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -53,7 +53,7 @@ fn create_api_resp(mut ctx Context, req CreateCoreApiReq) !map[string]Any {
 	mut sys_api := orm.new_query[schema_core.CoreApi](db)
 	sys_api.insert(apis)!
 
-	return map[string]Any{}
+	return 'API created successfully'
 }
 
 struct CreateCoreApiReq {

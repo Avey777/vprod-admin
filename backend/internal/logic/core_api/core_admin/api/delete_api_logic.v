@@ -23,7 +23,7 @@ fn (app &Api) delete_api(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn delete_api_resp(mut ctx Context, req DeleteCoreApiReq) !map[string]Any {
+fn delete_api_resp(mut ctx Context, req DeleteCoreApiReq) !string {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -33,13 +33,11 @@ fn delete_api_resp(mut ctx Context, req DeleteCoreApiReq) !map[string]Any {
 		}
 	}
 
-	api_id := req.id
-
 	mut sys_api := orm.new_query[schema_core.CoreApi](db)
-	sys_api.delete()!.where('id = ?', api_id)!.update()!
-	// sys_api.set('del_flag = ?', 1)!.where('id = ?', api_id)!.update()!
+	sys_api.delete()!.where('id = ?', req.id)!.update()!
+	// sys_api.set('del_flag = ?', 1)!.where('id = ?', req.id)!.update()!
 
-	return map[string]Any{}
+	return 'API deleted successfully'
 }
 
 struct DeleteCoreApiReq {
