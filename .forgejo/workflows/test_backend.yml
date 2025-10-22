@@ -40,7 +40,7 @@ jobs:
           # apk add --no-cache mariadb-connector-c-dev libatomic musl-dev build-base
       - name: Build application
         working-directory: backend
-        run: v -stats -cflags "-latomic" -o v-admin .
+        run: v -stats -dflags "-latomic" -cc tcc -o v-admin .
 
   notification:
     runs-on: docker
