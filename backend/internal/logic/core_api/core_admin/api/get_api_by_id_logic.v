@@ -79,7 +79,7 @@ struct GetCoreApiByIDResp {
 	is_required  u8         @[default: 0; json: 'is_required']
 	source_type  string     @[json: 'source_type']
 	source_id    string     @[json: 'source_id']
-	created_at   ?time.Time @[json: 'created_at'; raw: '.format_ss()']
-	updated_at   ?time.Time @[json: 'updated_at'; raw: '.format_ss()']
-	deleted_at   ?time.Time @[json: 'deleted_at'; raw: '.format_ss()']
+	created_at   ?time.Time @[json: 'created_at'] //; raw: '.format_ss()'
+	updated_at   ?time.Time @[json: 'updated_at'] //; raw: '.format_ss()'
+	deleted_at   ?time.Time @[json: 'deleted_at'] //; raw: '.format_ss()'
 }
