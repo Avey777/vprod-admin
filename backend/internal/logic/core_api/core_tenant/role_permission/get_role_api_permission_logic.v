@@ -9,7 +9,7 @@ import internal.structs.schema_core
 import common.api
 import internal.structs { Context }
 
-@['/role_api/permission'; post]
+@['/role_permission/apt_list'; post]
 fn (app &RolePermission) role_api_permission(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
