@@ -43,7 +43,6 @@ fn update_role_resp(mut ctx Context, req UpdateTenantRoleReq) !string {
 		.set('remark = ?', req.remark)!
 		.set('sort = ?', req.sort)!
 		.set('data_scope = ?', req.data_scope)!
-		.set('custom_dept_ids = ?', req.custom_dept_ids)!
 		.set('updated_at = ?', req.updated_at)!
 		.where('id = ?', req.role_id)!
 		.update()!
@@ -52,15 +51,14 @@ fn update_role_resp(mut ctx Context, req UpdateTenantRoleReq) !string {
 }
 
 struct UpdateTenantRoleReq {
-	role_id         string    @[json: 'role_id']
-	tenant_id       string    @[json: 'tenant_id']
-	status          u8        @[default: 0; json: 'status']
-	name            string    @[json: 'name']
-	code            string    @[json: 'code']
-	default_router  string    @[json: 'default_router']
-	remark          string    @[json: 'remark']
-	sort            u64       @[json: 'sort']
-	data_scope      u8        @[json: 'data_scope']
-	custom_dept_ids string    @[json: 'custom_dept_ids']
-	updated_at      time.Time @[json: 'updated_at']
+	role_id        string    @[json: 'role_id']
+	tenant_id      string    @[json: 'tenant_id']
+	status         u8        @[default: 0; json: 'status']
+	name           string    @[json: 'name']
+	code           string    @[json: 'code']
+	default_router string    @[json: 'default_router']
+	remark         string    @[json: 'remark']
+	sort           u64       @[json: 'sort']
+	data_scope     u8        @[json: 'data_scope']
+	updated_at     time.Time @[json: 'updated_at']
 }
