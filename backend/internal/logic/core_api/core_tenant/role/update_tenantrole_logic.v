@@ -10,7 +10,7 @@ import common.api
 import internal.structs { Context }
 
 // Update Role ||更新Role
-@['/tenantrole/update'; post]
+@['/tenant_role/update'; post]
 fn (app &Role) update_role(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 

@@ -11,7 +11,7 @@ import common.api
 import internal.structs { Context }
 
 // Create role | 创建Role
-@['/create_tenantrole'; post]
+@['/tenant_role/create'; post]
 fn (app &Role) create_role(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 

@@ -9,7 +9,7 @@ import common.api
 import internal.structs { Context }
 
 // Delete Role | 删除Role
-@['/delete_tenantrole'; post]
+@['/tenant_role/delete'; post]
 fn (app &Role) delete_role(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
