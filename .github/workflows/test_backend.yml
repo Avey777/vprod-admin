@@ -45,7 +45,7 @@ jobs:
         run: v -stats -cc gcc -o v-admin .
 
   notification:
-    runs-on: docker
+    runs-on: ubuntu-latest
     if: always()
     steps:
       - name: Pipeline status
