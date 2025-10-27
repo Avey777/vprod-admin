@@ -11,7 +11,7 @@ struct App {
 }
 
 fn (mut app App) index(mut ctx Context) veb.Result {
-	return ctx.json('index succcess') //不正常
+	return ctx.json('index succcess')
 }
 
 fn main() {
@@ -21,7 +21,6 @@ fn main() {
 	veb.run[App, Context](mut app, port)
 }
 
-// 初始化中间件并设置 handler ,并返回中间件选项
 fn authority_middleware() veb.MiddlewareOptions[Context] {
 	return veb.MiddlewareOptions[Context]{
 		handler: authority_jwt_verify
