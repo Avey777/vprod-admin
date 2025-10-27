@@ -2,9 +2,13 @@ name: Forgejo Actions v-workspace
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - "main"
   pull_request:
-    types: [ opened, synchronize, reopened ]
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   test:
@@ -52,4 +56,4 @@ jobs:
     if: always()
     steps:
       - name: Report status
-        run: echo " Workflow finished with overall status: ${{ job.status }}"
+        run: echo "🍏 This job's status is ${{ job.status }}."
