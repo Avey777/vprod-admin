@@ -5,6 +5,7 @@ import common.jwt
 import log
 import internal.structs { Context }
 import internal.structs.schema_core
+import time
 
 /* =========================================================
 Core认证中间件 authority_jwt_verify_core
@@ -62,6 +63,13 @@ fn authority_jwt_verify_core(mut ctx Context) bool {
 		ctx.res.status_code = 401
 		ctx.request_error('Authorization error')
 		log.warn('Authorization error')
+		return false
+	}
+
+	// ---------- 解码 JWT Payload  全局使用----------
+	ctx.jwt_payload = jwt.jwt_decode(req_token) or {
+		ctx.res.status_code = 401
+		ctx.request_error('Failed to parse token')
 		return false
 	}
 
@@ -129,6 +137,10 @@ fn authorize_and_check_api(mut ctx Context, req_token string, tenant_id string, 
 	if core_token.len != 1 {
 		return error('Token not found')
 	}
+	if core_token[0].expired_at < time.now() {
+		return error('Token expired')
+	}
+
 	user_id := core_token[0].user_id
 	log.debug('user_id: ${user_id}')
 

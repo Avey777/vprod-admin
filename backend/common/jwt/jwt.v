@@ -60,6 +60,19 @@ pub fn jwt_verify(secret string, token string) bool {
 	return true
 }
 
+// 解析 JWT token（不验证签名，只解析 payload）
+pub fn jwt_decode(token string) !JwtPayload {
+	parts := token.split('.')
+	if parts.len != 3 {
+		return error('Invalid JWT format: expected 3 parts, got ${parts.len}')
+	}
+	// 解析 JSON
+	payload := json.decode[JwtPayload](base64.url_decode_str(parts[1])) or {
+		return error('Failed to parse JWT payload JSON: ${err}')
+	}
+	return payload
+}
+
 // 恒定时间比较
 fn constant_time_compare(a string, b string) bool {
 	// 将长度差异转换为非零值（若长度不同）
