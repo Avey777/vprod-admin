@@ -11,7 +11,8 @@ on:
 
 jobs:
   test:
-    runs-on: docker
+    name: Run Tests
+    runs-on: ubuntu-latest
     container:
       image: thevlang/vlang:alpine-dev
     steps:
@@ -27,7 +28,8 @@ jobs:
         run: v -stats test .
 
   build:
-    runs-on: docker
+    name: Build Application
+    runs-on: ubuntu-latest
     container:
       image: thevlang/vlang:alpine-dev
     steps:
