@@ -1,6 +1,6 @@
 // 根据租户ID和应用订阅ID,获取租户角色的api权限
 
-module role_permission
+module authority
 
 import veb
 import log

@@ -1,6 +1,6 @@
 // 根据租户ID和应用订阅ID,获取租户角色的菜单权限列表,菜单权限包括有权限无权限
 
-module role_permission
+module authority
 
 import veb
 import log
