@@ -1,4 +1,4 @@
-module authority
+module role_permission
 
 // 用户授权模块 authority
 

@@ -1,7 +1,7 @@
 // 根据租户ID和应用订阅ID,逐个设置租户角色的api权限
 // step1 删除角色关联的租户的所有api权限
 // step1 插入角色关联的租户的所有api权限
-module authority
+module role_permission
 
 import veb
 import log

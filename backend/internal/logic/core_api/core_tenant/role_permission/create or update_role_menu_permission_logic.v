@@ -2,7 +2,7 @@
 // step1 删除角色关联的租户的所有菜单权限
 // step2 插入角色关联的租户的所有菜单权限
 
-module authority
+module role_permission
 
 import veb
 import log
