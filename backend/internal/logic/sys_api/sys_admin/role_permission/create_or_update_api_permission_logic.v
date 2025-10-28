@@ -1,71 +1,85 @@
 module role_permission
 
-// 用户授权模块 authority
+import veb
+import log
+import x.json2 as json
+import internal.structs.schema_sys
+import common.api
+import internal.structs { Context }
 
-// import (
-// 	"context"
+@['/role_permission/update_api'; post]
+fn (app &RolePermission) update_api_permission(mut ctx Context) veb.Result {
+	log.debug('${@METHOD} ${@MOD}.${@FILE_LINE}')
 
-// 	"github.com/zeromicro/go-zero/core/errorx"
+	req := json.decode[UpdateApiReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400('Invalid request body: ${err.msg()}'))
+	}
 
-// 	"github.com/suyuan32/simple-admin-common/i18n"
+	// 参数检查
+	if req.role_id == '' {
+		return ctx.json(api.json_error_400('Missing required fields: role_id '))
+	}
+	if req.api_ids.len == 0 {
+		return ctx.json(api.json_error_400('api_ids cannot be empty'))
+	}
 
-// 	"github.com/suyuan32/simple-admin-core/api/internal/svc"
-// 	"github.com/suyuan32/simple-admin-core/api/internal/types"
-// 	"github.com/suyuan32/simple-admin-core/rpc/types/core"
+	// ✅ 正确的 V 语言错误处理写法
+	mut result := update_api__permission_resp(mut ctx, req) or {
+		return ctx.json(api.json_error_500(err.msg()))
+	}
 
-// 	"github.com/zeromicro/go-zero/core/logx"
-// )
+	return ctx.json(api.json_success_200(result))
+}
 
-// type CreateOrUpdateApiAuthorityLogic struct {
-// 	logx.Logger
-// 	ctx    context.Context
-// 	svcCtx *svc.ServiceContext
-// }
+// -------------------------------
+// 核心逻辑：删除旧权限 + 插入新权限
+// -------------------------------
+fn update_api__permission_resp(mut ctx Context, req UpdateApiReq) !string {
+	log.debug('${@METHOD} ${@MOD}.${@FILE_LINE}')
 
-// func NewCreateOrUpdateApiAuthorityLogic(ctx context.Context, svcCtx *svc.ServiceContext) *CreateOrUpdateApiAuthorityLogic {
-// 	return &CreateOrUpdateApiAuthorityLogic{
-// 		Logger: logx.WithContext(ctx),
-// 		ctx:    ctx,
-// 		svcCtx: svcCtx,
-// 	}
-// }
+	mut db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or {
+			log.warn('Failed to release connection ${@LOCATION}: ${err}')
+		}
+	}
 
-// func (l *CreateOrUpdateApiAuthorityLogic) CreateOrUpdateApiAuthority(req *types.CreateOrUpdateApiAuthorityReq) (resp *types.BaseMsgResp, err error) {
-// 	data, err := l.svcCtx.CoreRpc.GetRoleById(l.ctx, &core.IDReq{Id: req.RoleId})
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	// ✅ 显式开启事务
+	db.begin() or { return error('Failed to begin transaction: ${err}') }
 
-// 	// clear old policies
-// 	var oldPolicies [][]string
-// 	oldPolicies, err = l.svcCtx.Casbin.GetFilteredPolicy(0, *data.Code)
-// 	if err != nil {
-// 		logx.Error("failed to get old Casbin policy", logx.Field("detail", err))
-// 		return nil, errorx.NewInternalError(err.Error())
-// 	}
+	// Step 1: 删除旧数据
+	sql db {
+		delete from schema_sys.SysRoleApi where role_id == req.role_id
+	} or {
+		db.rollback() or {}
+		return error('Failed to delete old role-api permissions: ${err}')
+	}
 
-// 	if len(oldPolicies) != 0 {
-// 		removeResult, err := l.svcCtx.Casbin.RemoveFilteredPolicy(0, *data.Code)
-// 		if err != nil {
-// 			l.Logger.Errorw("failed to remove roles policy", logx.Field("roleCode", data.Code), logx.Field("detail", err.Error()))
-// 			return nil, errorx.NewInvalidArgumentError(err.Error())
-// 		}
-// 		if !removeResult {
-// 			return nil, errorx.NewInvalidArgumentError("casbin.removeFailed")
-// 		}
-// 	}
-// 	// add new policies
-// 	var policies [][]string
-// 	for _, v := range req.Data {
-// 		policies = append(policies, []string{*data.Code, v.Path, v.Method})
-// 	}
-// 	addResult, err := l.svcCtx.Casbin.AddPolicies(policies)
-// 	if err != nil {
-// 		return nil, errorx.NewInvalidArgumentError("casbin.addFailed")
-// 	}
-// 	if addResult {
-// 		return &types.BaseMsgResp{Msg: l.svcCtx.Trans.Trans(l.ctx, i18n.UpdateSuccess)}, nil
-// 	} else {
-// 		return &types.BaseMsgResp{Msg: l.svcCtx.Trans.Trans(l.ctx, i18n.UpdateFailed)}, nil
-// 	}
-// }
+	// Step 2: 插入新API权限
+	for api_id in req.api_ids {
+		new_perm := schema_sys.SysRoleApi{
+			role_id: req.role_id
+			api_id:  api_id
+		}
+
+		sql db {
+			insert new_perm into schema_sys.SysRoleApi
+		} or {
+			db.rollback() or {}
+			return error('Failed to insert api_id=${api_id}: ${err}')
+		}
+	}
+	// ✅ 成功后提交事务
+	db.commit() or {
+		db.rollback() or {}
+		return error('Failed to commit transaction: ${err}')
+	}
+
+	log.info('Updated ${req.api_ids.len} api permissions for role=${req.role_id}')
+	return 'Role api permissions updated successfully'
+}
+
+struct UpdateApiReq {
+	role_id string   @[json: 'role_id']
+	api_ids []string @[json: 'api_ids']
+}
