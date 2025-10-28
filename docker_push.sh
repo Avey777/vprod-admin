@@ -56,19 +56,19 @@ auto_login() {
     echo "=== Docker Hub 自动登录 ==="
 
     # 从环境变量获取凭证
-    DOCKERHUB_USERNAME="${DOCKERHUB_USERNAME:-avey777}"
-    DOCKERHUB_PASSWORD="${DOCKERHUB_PASSWORD}"
+    DOCKER_HUB_USERNAME="${DOCKER_HUB_USERNAME:-avey777}"
+    DOCKER_HUB_ACCESS_TOKEN="${DOCKER_HUB_ACCESS_TOKEN}"
 
-    if [[ -z "$DOCKERHUB_PASSWORD" ]]; then
-        echo "错误: DOCKERHUB_PASSWORD 环境变量未设置"
-        echo "请检查 .env 文件或设置: export DOCKERHUB_PASSWORD='your_api_token'"
+    if [[ -z "$DOCKER_HUB_ACCESS_TOKEN" ]]; then
+        echo "错误: DOCKER_HUB_ACCESS_TOKEN 环境变量未设置"
+        echo "请检查 .env 文件或设置: export DOCKER_HUB_ACCESS_TOKEN='your_api_token'"
         echo "或手动执行: docker login docker.io"
         exit 1
     fi
 
-    echo "使用用户名: $DOCKERHUB_USERNAME"
-    echo "$DOCKERHUB_PASSWORD" | docker login docker.io \
-        -u "$DOCKERHUB_USERNAME" \
+    echo "使用用户名: $DOCKER_HUB_USERNAME"
+    echo "$DOCKER_HUB_ACCESS_TOKEN" | docker login docker.io \
+        -u "$DOCKER_HUB_USERNAME" \
         --password-stdin || {
         echo "Docker Hub 登录失败"
         exit 1
