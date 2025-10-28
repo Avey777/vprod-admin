@@ -7,7 +7,7 @@ import internal.structs.schema_sys
 import common.api
 import internal.structs { Context }
 
-@['/role_permission/menu_list'; post]
+@['/menu_list'; post]
 fn (app &RolePermission) role_menu_permission(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
