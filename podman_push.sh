@@ -53,13 +53,13 @@ load_env() {
 load_env
 
 # 使用正确的环境变量名称
-DOCKER_USERNAME="${DOCKERHUB_USERNAME}"
-DOCKER_PASSWORD="${DOCKERHUB_PASSWORD}"
+DOCKER_HUB_USERNAME="${DOCKER_HUB_USERNAME}"
+DOCKER_HUB_ACCESS_TOKEN="${DOCKER_HUB_ACCESS_TOKEN}"
 
 # 调试：检查环境变量是否设置成功
 echo "=== 环境变量检查 ==="
 echo "用户名: ${DOCKER_USERNAME:-未设置}"
-echo "密码: ${DOCKER_PASSWORD:+已设置（隐藏）}"
+echo "密码: ${DOCKER_HUB_ACCESS_TOKEN:+已设置（隐藏）}"
 
 # 检查是否已登录到 Docker Hub
 check_login() {
@@ -70,14 +70,14 @@ check_login() {
 auto_login() {
     echo "=== Docker Hub 自动登录 ==="
 
-    if [[ -z "$DOCKER_PASSWORD" ]]; then
+    if [[ -z "$DOCKER_HUB_ACCESS_TOKEN" ]]; then
         echo "错误: DOCKERHUB_PASSWORD 环境变量未设置"
         echo "请检查 .env 文件"
         exit 1
     fi
 
     if [[ -z "$DOCKER_USERNAME" ]]; then
-        echo "错误: DOCKERHUB_USERNAME 环境变量未设置"
+        echo "错误: DOCKER_HUB_USERNAME 环境变量未设置"
         echo "请检查 .env 文件"
         exit 1
     fi
@@ -85,7 +85,7 @@ auto_login() {
     echo "使用用户名: $DOCKER_USERNAME"
     echo "登录到 Docker Hub..."
 
-    echo "$DOCKER_PASSWORD" | podman login docker.io \
+    echo "$DOCKER_HUB_ACCESS_TOKEN" | podman login docker.io \
         -u "$DOCKER_USERNAME" \
         --password-stdin || {
         echo "Docker Hub 登录失败"
