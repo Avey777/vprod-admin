@@ -9,6 +9,7 @@ import internal.logic.sys_api.sys_admin { Admin } // 必须是路由模块内部
 import internal.logic.sys_api.sys_admin.user { User }
 import internal.logic.sys_api.sys_admin.token { Token }
 import internal.logic.sys_api.sys_admin.role { Role }
+import internal.logic.sys_api.sys_admin.role_permission { RolePermission }
 import internal.logic.sys_api.sys_admin.position { Position }
 import internal.logic.sys_api.sys_admin.menu { Menu }
 import internal.logic.sys_api.sys_admin.mfa { MFA }
@@ -35,6 +36,8 @@ fn (mut app AliasApp) routes_sys_admin(conn &dbpool.DatabasePool, doc_conf &conf
 	app.register_routes_sys[Token, Context](mut &Token{}, '/sys_api/admin/token', conn,
 		doc_conf)
 	app.register_routes_sys[Role, Context](mut &Role{}, '/sys_api/admin/role', conn, doc_conf)
+	app.register_routes_sys[RolePermission, Context](mut &RolePermission{}, '/sys_api/admin/role_permission',
+		conn, doc_conf)
 	app.register_routes_sys[Position, Context](mut &Position{}, '/sys_api/admin/position',
 		conn, doc_conf)
 	app.register_routes_sys[Menu, Context](mut &Menu{}, '/sys_api/admin/menu', conn, doc_conf)

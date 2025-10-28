@@ -23,7 +23,7 @@ fn (app &RolePermission) update_api_permission(mut ctx Context) veb.Result {
 		return ctx.json(api.json_error_400('Missing required fields: tenant_id / role_id / source_type / source_id'))
 	}
 	if req.api_ids.len == 0 {
-		return ctx.json(api.json_error_400('menu_ids cannot be empty'))
+		return ctx.json(api.json_error_400('api_ids cannot be empty'))
 	}
 
 	// ✅ 正确的 V 语言错误处理写法
@@ -52,11 +52,11 @@ fn update_api__permission_resp(mut ctx Context, req UpdateApiReq) !string {
 
 	// Step 1: 删除旧数据
 	sql db {
-		delete from schema_core.CoreRoleMenu where role_id == req.role_id
+		delete from schema_core.CoreRoleApi where role_id == req.role_id
 		&& source_type == req.source_type && source_id == req.source_id
 	} or {
 		db.rollback() or {}
-		return error('Failed to delete old role-menu permissions: ${err}')
+		return error('Failed to delete old role-api permissions: ${err}')
 	}
 
 	// Step 2: 插入新API权限
@@ -71,7 +71,7 @@ fn update_api__permission_resp(mut ctx Context, req UpdateApiReq) !string {
 			insert new_perm into schema_core.CoreRoleApi
 		} or {
 			db.rollback() or {}
-			return error('Failed to insert menu_id=${api_id}: ${err}')
+			return error('Failed to insert api_id=${api_id}: ${err}')
 		}
 	}
 	// ✅ 成功后提交事务
@@ -80,14 +80,14 @@ fn update_api__permission_resp(mut ctx Context, req UpdateApiReq) !string {
 		return error('Failed to commit transaction: ${err}')
 	}
 
-	log.info('Updated ${req.api_ids.len} menu permissions for role=${req.role_id}')
+	log.info('Updated ${req.api_ids.len} api permissions for role=${req.role_id}')
 	return 'Role api permissions updated successfully'
 }
 
 struct UpdateApiReq {
 	tenant_id   string   @[json: 'tenant_id']
 	role_id     string   @[json: 'role_id']
-	api_ids     []string @[json: 'menu_ids']
+	api_ids     []string @[json: 'api_ids']
 	source_type string   @[json: 'source_type']
 	source_id   string   @[json: 'source_id']
 }
