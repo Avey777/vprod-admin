@@ -16,6 +16,9 @@ jobs:
         run: |
           ./docker_build.sh
 
+      - name: docker images
+        run: docker images
+
       - name: Push Docker image
         run: |
           ./docker_push.sh

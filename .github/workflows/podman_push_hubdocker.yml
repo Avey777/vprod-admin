@@ -21,6 +21,9 @@ jobs:
         run: |
           ./podman_build.sh
 
+      - name: podman images
+        run: podman images
+
       - name: Set script permissions
         run: |
           chmod +x ./podman_build.sh
