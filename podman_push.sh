@@ -17,7 +17,6 @@ fi
 
 # -----------------------------
 # 加载环境变量
-# 优先使用环境变量，其次尝试加载本地 .env 文件
 # -----------------------------
 DOCKER_HUB_USERNAME="${DOCKER_HUB_USERNAME:-}"
 DOCKER_HUB_ACCESS_TOKEN="${DOCKER_HUB_ACCESS_TOKEN:-}"
@@ -27,17 +26,13 @@ if [[ -z "$DOCKER_HUB_USERNAME" || -z "$DOCKER_HUB_ACCESS_TOKEN" ]]; then
     if [[ -f "$ENV_FILE" ]]; then
         echo "加载本地环境变量文件: $ENV_FILE"
         while IFS='=' read -r key value || [ -n "$key" ]; do
-            # 跳过空行或注释
             [[ -z "$key" || "$key" =~ ^[[:space:]]*# ]] && continue
-            # 去掉引号
             value="${value%\"}"
             value="${value#\"}"
             value="${value%\'}"
             value="${value#\'}"
             export "$key"="$value"
         done < "$ENV_FILE"
-
-        # 重新读取
         DOCKER_HUB_USERNAME="${DOCKER_HUB_USERNAME}"
         DOCKER_HUB_ACCESS_TOKEN="${DOCKER_HUB_ACCESS_TOKEN}"
     else
@@ -54,15 +49,17 @@ echo "用户名: ${DOCKER_HUB_USERNAME:-未设置}"
 echo "密码: ${DOCKER_HUB_ACCESS_TOKEN:+已设置（隐藏）}"
 
 # -----------------------------
-# 登录 Docker Hub
+# 登录 Docker Hub (Podman)
 # -----------------------------
+LOGIN_REGISTRY="https://index.docker.io/v1/"
+
 check_login() {
-    podman login docker.io --get-login > /dev/null 2>&1
+    podman login "$LOGIN_REGISTRY" --get-login > /dev/null 2>&1
 }
 
 auto_login() {
     echo "=== Docker Hub 自动登录 ==="
-    echo "$DOCKER_HUB_ACCESS_TOKEN" | podman login docker.io \
+    echo "$DOCKER_HUB_ACCESS_TOKEN" | podman login "$LOGIN_REGISTRY" \
         -u "$DOCKER_HUB_USERNAME" \
         --password-stdin || {
         echo "Docker Hub 登录失败，请检查用户名/访问令牌或网络"
@@ -74,7 +71,7 @@ auto_login() {
 if ! check_login; then
     auto_login
 else
-    CURRENT_USER=$(podman login docker.io --get-login 2>/dev/null)
+    CURRENT_USER=$(podman login "$LOGIN_REGISTRY" --get-login 2>/dev/null)
     echo "已登录为: $CURRENT_USER"
 fi
 
@@ -91,6 +88,7 @@ podman tag "$LOCAL_IMAGE" "$IMAGE_NAME"
 echo "推送镜像: $IMAGE_NAME"
 podman push "$IMAGE_NAME" || {
     echo "推送失败: $IMAGE_NAME"
+    echo "请检查 Docker Hub 用户名、Access Token 权限（需包含 Write 权限）及镜像命名空间是否匹配"
     exit 1
 }
 
