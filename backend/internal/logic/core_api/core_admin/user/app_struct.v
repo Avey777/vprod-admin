@@ -2,6 +2,6 @@ module user
 
 import internal.structs { App }
 
-pub struct Api {
+pub struct User {
 	App
 }

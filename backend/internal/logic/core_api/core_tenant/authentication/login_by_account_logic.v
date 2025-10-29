@@ -1,102 +1,117 @@
 module authentication
 
-// import (
-// 	"context"
-// 	"strings"
-// 	"time"
+import veb
+import log
+import orm
+import time
+import rand
+import x.json2 as json
+import internal.structs.schema_sys
+import common.api
+import internal.structs { Context }
+import common.jwt
+import common.captcha
+import common.encrypt
 
-// 	"github.com/suyuan32/simple-admin-common/config"
-// 	"github.com/suyuan32/simple-admin-common/enum/common"
-// 	"github.com/suyuan32/simple-admin-common/orm/ent/entctx/datapermctx"
-// 	"github.com/suyuan32/simple-admin-common/orm/ent/entenum"
+// Login by Account | 帐号登入
+@['/login_by_account'; post]
+fn (app &Authentication) login_by_account_logic(mut ctx Context) veb.Result {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-// 	"github.com/suyuan32/simple-admin-common/utils/encrypt"
-// 	"github.com/suyuan32/simple-admin-common/utils/jwt"
-// 	"github.com/suyuan32/simple-admin-common/utils/pointy"
-// 	"github.com/zeromicro/go-zero/core/errorx"
+	req := json.decode[LoginByAccountReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+	mut result := login_by_account_resp(mut ctx, req) or {
+		return ctx.json(api.json_error_500(err.msg()))
+	}
 
-// 	"github.com/suyuan32/simple-admin-core/api/internal/svc"
-// 	"github.com/suyuan32/simple-admin-core/api/internal/types"
-// 	"github.com/suyuan32/simple-admin-core/rpc/types/core"
+	return ctx.json(api.json_success_200(result))
+}
 
-// 	"github.com/zeromicro/go-zero/core/logx"
-// )
+fn login_by_account_resp(mut ctx Context, req LoginByAccountReq) !LoginByAccountResp {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-// type LoginLogic struct {
-// 	logx.Logger
-// 	ctx    context.Context
-// 	svcCtx *svc.ServiceContext
-// }
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or {
+			log.warn('Failed to release connection ${@LOCATION}: ${err}')
+		}
+	}
 
-// func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic {
-// 	return &LoginLogic{
-// 		Logger: logx.WithContext(ctx),
-// 		ctx:    ctx,
-// 		svcCtx: svcCtx,
-// 	}
-// }
+	if captcha.captcha_verify(req.captcha_id, req.captcha_text) == false {
+		return error('Captcha error')
+	}
 
-// func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err error) {
-// 	if l.svcCtx.Config.ProjectConf.LoginVerify != "captcha" && l.svcCtx.Config.ProjectConf.LoginVerify != "all" {
-// 		return nil, errorx.NewCodeAbortedError("login.loginTypeForbidden")
-// 	}
+	mut sys_user := orm.new_query[schema_sys.SysUser](db)
+	mut user_info := sys_user.select('id', 'username', 'password', 'status')!.where('username = ?',
+		req.username)!.limit(1)!.query()!
+	if user_info.len == 0 {
+		return error('UserName not exit')
+	}
+	if !encrypt.bcrypt_verify(req.password, user_info[0].password) {
+		return error('UserName or Password error')
+	}
 
-// 	if ok := l.svcCtx.Captcha.Verify(config.RedisCaptchaPrefix+req.CaptchaId, req.Captcha, true); ok {
-// 		l.ctx = datapermctx.WithScopeContext(l.ctx, entenum.DataPermAllStr)
+	expired_at := time.now().add_days(30)
+	token_jwt := token_jwt_generate(mut ctx, req) // 生成token和captcha
+	tokens := schema_sys.SysToken{
+		id:         rand.uuid_v7()
+		status:     req.status
+		user_id:    req.user_id
+		username:   req.username
+		token:      token_jwt
+		source:     req.source
+		expired_at: expired_at
+		created_at: time.now()
+		updated_at: time.now()
+	}
+	mut sys_token := orm.new_query[schema_sys.SysToken](db)
+	sys_token.insert(tokens)!
 
-// 		user, err := l.svcCtx.CoreRpc.GetUserByUsername(l.ctx,
-// 			&core.UsernameReq{
-// 				Username: req.Username,
-// 			})
-// 		if err != nil {
-// 			return nil, err
-// 		}
+	data := LoginByAccountResp{
+		expired_at: expired_at.str()
+		token_jwt:  token_jwt
+		user_id:    req.user_id
+	}
+	return data
+}
 
-// 		if user.Status != nil && *user.Status != uint32(common.StatusNormal) {
-// 			return nil, errorx.NewCodeInvalidArgumentError("login.userBanned")
-// 		}
+fn token_jwt_generate(mut ctx Context, req LoginByAccountReq) string {
+	secret := ctx.get_custom_header('secret') or { '' }
 
-// 		if !encrypt.BcryptCheck(req.Password, *user.Password) {
-// 			return nil, errorx.NewCodeInvalidArgumentError("login.wrongUsernameOrPassword")
-// 		}
+	mut payload := jwt.JwtPayload{
+		iss: 'v-admin'   // 签发者 (Issuer) your-app-name
+		sub: req.user_id // 用户唯一标识 (Subject)
+		// aud: ['api-service', 'webapp'] // 接收方 (Audience)，可以是数组或字符串
+		exp: time.now().add_days(30).unix() // 过期时间 (Expiration Time) 7天后
+		nbf: time.now().unix() // 生效时间 (Not Before)，立即生效
+		iat: time.now().unix() // 签发时间 (Issued At)
+		jti: rand.uuid_v4() // JWT唯一标识 (JWT ID)，防重防攻击
+		// 自定义业务字段 (Custom Claims)
+		roles:     ['admin', 'editor'] // 用户角色
+		client_ip: req.login_ip or { '' }        // ip地址
+		device_id: req.device_id or { '' }       // 设备id
+	}
 
-// 		token, err := jwt.NewJwtToken(l.svcCtx.Config.Auth.AccessSecret, time.Now().Unix(),
-// 			l.svcCtx.Config.Auth.AccessExpire, jwt.WithOption("userId", user.Id), jwt.WithOption("roleId",
-// 				strings.Join(user.RoleCodes, ",")), jwt.WithOption("deptId", user.DepartmentId))
-// 		if err != nil {
-// 			return nil, err
-// 		}
+	token := jwt.jwt_generate(secret, payload)
 
-// 		// add token into database
-// 		expiredAt := time.Now().Add(time.Second * time.Duration(l.svcCtx.Config.Auth.AccessExpire)).UnixMilli()
-// 		_, err = l.svcCtx.CoreRpc.CreateToken(l.ctx, &core.TokenInfo{
-// 			Uuid:      user.Id,
-// 			Token:     pointy.GetPointer(token),
-// 			Source:    pointy.GetPointer("core_user"),
-// 			Status:    pointy.GetPointer(uint32(common.StatusNormal)),
-// 			Username:  user.Username,
-// 			ExpiredAt: pointy.GetPointer(expiredAt),
-// 		})
+	return token
+}
 
-// 		if err != nil {
-// 			return nil, err
-// 		}
+struct LoginByAccountReq {
+	username     string  @[json: 'username']
+	password     string  @[json: 'password']
+	captcha_text string  @[json: 'captcha_text']
+	captcha_id   string  @[json: 'captcha_id']
+	status       u8      @[json: 'status']
+	user_id      string  @[json: 'user_id']
+	source       string  @[json: 'source']
+	login_ip     ?string @[json: 'login_ip']
+	device_id    ?string @[json: 'device_id']
+}
 
-// 		err = l.svcCtx.Redis.Del(l.ctx, config.RedisCaptchaPrefix+req.CaptchaId).Err()
-// 		if err != nil {
-// 			logx.Errorw("failed to delete captcha in redis", logx.Field("detail", err))
-// 		}
-
-// 		resp = &types.LoginResp{
-// 			BaseDataInfo: types.BaseDataInfo{Msg: l.svcCtx.Trans.Trans(l.ctx, "login.loginSuccessTitle")},
-// 			Data: types.LoginInfo{
-// 				UserId: *user.Id,
-// 				Token:  token,
-// 				Expire: uint64(expiredAt),
-// 			},
-// 		}
-// 		return resp, nil
-// 	} else {
-// 		return nil, errorx.NewCodeInvalidArgumentError("login.wrongCaptcha")
-// 	}
-// }
+struct LoginByAccountResp {
+	expired_at string @[json: 'expired_at']
+	user_id    string @[json: 'user_id']
+	token_jwt  string @[json: 'token_jwt']
+}

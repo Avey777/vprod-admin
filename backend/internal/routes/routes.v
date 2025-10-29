@@ -35,6 +35,7 @@ pub fn (mut app AliasApp) routes_ifdef(conn &dbpool.DatabasePool, doc_conf &conf
 		app.routes_base(conn, doc_conf)
 		app.routes_sys_admin(conn, doc_conf)
 		app.routes_core_admin(conn, doc_conf)
+		app.routes_core_tenant(conn, doc_conf)
 	}
 }
 
