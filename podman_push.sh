@@ -20,29 +20,25 @@ if ! podman image inspect "$LOCAL_IMAGE" > /dev/null 2>&1; then
 fi
 
 # -----------------------------
-# 加载环境变量
+# 加载环境变量文件（如果存在）
+# -----------------------------
+ENV_FILE=".env"
+if [[ -f "$ENV_FILE" ]]; then
+    echo "加载环境变量文件: $ENV_FILE"
+    set -o allexport
+    source "$ENV_FILE"
+    set +o allexport
+fi
+
+# -----------------------------
+# 设置 Docker Hub 用户名和访问令牌
 # -----------------------------
 DOCKER_HUB_USERNAME="${DOCKER_HUB_USERNAME:-}"
 DOCKER_HUB_ACCESS_TOKEN="${DOCKER_HUB_ACCESS_TOKEN:-}"
 
-if [[ -z "$DOCKER_HUB_USERNAME" || -z "$DOCKER_HUB_ACCESS_TOKEN" ]]; then
-    ENV_FILE=".env"
-    if [[ -f "$ENV_FILE" ]]; then
-        echo "加载本地环境变量文件: $ENV_FILE"
-        while IFS='=' read -r key value || [ -n "$key" ]; do
-            [[ -z "$key" || "$key" =~ ^[[:space:]]*# ]] && continue
-            value="${value%\"}"
-            value="${value#\"}"
-            value="${value%\'}"
-            value="${value#\'}"
-            export "$key"="$value"
-        done < "$ENV_FILE"
-        DOCKER_HUB_USERNAME="${DOCKER_HUB_USERNAME}"
-        DOCKER_HUB_ACCESS_TOKEN="${DOCKER_HUB_ACCESS_TOKEN}"
-    else
-        echo "错误: 未找到环境变量文件 $ENV_FILE，且环境变量未设置"
-        exit 1
-    fi
+if [[ -z "$DOCKER_HUB_USERNAME" ]] || [[ -z "$DOCKER_HUB_ACCESS_TOKEN" ]]; then
+    echo "错误: DOCKER_HUB_USERNAME 或 DOCKER_HUB_ACCESS_TOKEN 未设置"
+    exit 1
 fi
 
 # -----------------------------
