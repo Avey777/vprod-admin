@@ -39,7 +39,7 @@ docker buildx build \
     --rm=true \
     --progress=plain \
     -f Dockerfile \
-    -t "$IMAGE_NAME" . || {
+    -t "$IMAGE_NAME:latest" . || {
     echo "构建失败！"
     exit 1
     }
