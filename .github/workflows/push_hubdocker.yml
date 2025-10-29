@@ -1,0 +1,35 @@
+name: Github Actions Push to Docker Hub
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  podman_build:
+    if: startsWith(env.GITHUB_SERVER_URL, 'https://github.com')
+    name: Build and Push Application with Podman
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Podman
+        run: |
+          sudo apt install -y podman
+
+      - name: Build Docker image
+        run: |
+          ./podman_build.sh
+
+      - name: Push Docker image
+        run: |
+          ./podman_push.sh
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+  notification:
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Pipeline status
+        run: echo "🍏 This job's status is ${{ job.status }}."
