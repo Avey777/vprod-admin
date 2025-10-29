@@ -16,6 +16,11 @@ jobs:
         run: |
           sudo apt install -y podman
 
+      - name: Set script permissions
+        run: |
+          chmod +x ./podman_build.sh
+          chmod +x ./podman_push.sh
+
       - name: Build Docker image
         working-directory: /
         run: |
@@ -23,11 +28,6 @@ jobs:
 
       - name: podman images
         run: podman images
-
-      - name: Set script permissions
-        run: |
-          chmod +x ./podman_build.sh
-          chmod +x ./podman_push.sh
 
       - name: Push Docker image
         run: |
