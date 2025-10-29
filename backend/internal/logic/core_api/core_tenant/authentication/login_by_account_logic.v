@@ -94,6 +94,7 @@ fn token_jwt_generate(mut ctx Context, req LoginByAccountReq) string {
 	}
 
 	token := jwt.jwt_generate(secret, payload)
+
 	return token
 }
 
