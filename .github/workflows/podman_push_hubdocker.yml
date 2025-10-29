@@ -1,11 +1,11 @@
-name: Github Actions Push to Docker Hub
+name: Podman Push to Docker Hub
 on:
   push:
     branches:
       - "main"
 
 jobs:
-  podman_build:
+  podman_push:
     if: startsWith(env.GITHUB_SERVER_URL, 'https://github.com')
     name: Build and Push Application with Podman
     runs-on: ubuntu-latest
