@@ -33,6 +33,8 @@ jobs:
 
       - name: Push Docker image
         run: |
+          export DOCKER_HUB_USERNAME="${{ secrets.DOCKER_HUB_USERNAME }}"
+          export DOCKER_HUB_ACCESS_TOKEN="${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}"
           ./podman_push.sh
 
   notification:
