@@ -6,7 +6,7 @@ on:
 
 jobs:
   podman_push:
-    if: startsWith(env.GITHUB_SERVER_URL, 'https://github.com')
+    if: startsWith(github.server_url, 'https://github.com')
     name: Build and Push Application with Podman
     runs-on: ubuntu-latest
     steps:
@@ -17,6 +17,7 @@ jobs:
           sudo apt install -y podman
 
       - name: Build Docker image
+        working-directory: /
         run: |
           ./podman_build.sh
 

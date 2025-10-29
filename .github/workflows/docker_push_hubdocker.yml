@@ -6,7 +6,7 @@ on:
 
 jobs:
   docker_push:
-    if: startsWith(env.GITHUB_SERVER_URL, 'https://github.com')
+    if: startsWith(github.server_url, 'https://github.com')
     name: Build and Push Application with Docker
     runs-on: ubuntu-latest
     steps:
