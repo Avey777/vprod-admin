@@ -22,7 +22,6 @@ jobs:
           chmod +x ./podman_push.sh
 
       - name: Build Docker image
-        working-directory: /
         run: |
           ./podman_build.sh
 
