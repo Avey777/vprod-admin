@@ -94,7 +94,7 @@ docker push "$IMAGE_NAME" || {
     exit 1
 }
 
-echo "=== 镜像推送成功 ===
+echo "=== 镜像推送成功 ==="
 echo "镜像地址:"
 echo " - docker.io/$IMAGE_NAME"
 
