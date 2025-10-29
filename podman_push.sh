@@ -1,7 +1,9 @@
 #!/bin/bash
 set -e
 
-# 支持传参自定义 TAG，如果没有传，默认 latest
+# -----------------------------
+# 参数和镜像名称
+# -----------------------------
 TAG="${1:-latest}"
 IMAGE_NAME="avey777/v-admin:$TAG"
 LOCAL_IMAGE="localhost/avey777/v-admin:$TAG"
@@ -9,7 +11,9 @@ LOCAL_IMAGE="localhost/avey777/v-admin:$TAG"
 echo "=== 准备推送镜像 ==="
 echo "最新标签: $IMAGE_NAME"
 
+# -----------------------------
 # 检查本地镜像
+# -----------------------------
 if ! podman image inspect "$LOCAL_IMAGE" > /dev/null 2>&1; then
     echo "错误: 镜像 $LOCAL_IMAGE 不存在，请先构建镜像"
     exit 1
@@ -53,38 +57,25 @@ echo "密码: ${DOCKER_HUB_ACCESS_TOKEN:+已设置（隐藏）}"
 # -----------------------------
 LOGIN_REGISTRY="https://index.docker.io/v1/"
 
-check_login() {
-    podman login "$LOGIN_REGISTRY" --get-login > /dev/null 2>&1
+echo "=== 强制登录 Docker Hub ==="
+echo "$DOCKER_HUB_ACCESS_TOKEN" | podman login "$LOGIN_REGISTRY" \
+    -u "$DOCKER_HUB_USERNAME" \
+    --password-stdin || {
+    echo "Docker Hub 登录失败，请检查用户名/访问令牌或网络"
+    exit 1
 }
 
-auto_login() {
-    echo "=== Docker Hub 自动登录 ==="
-    echo "$DOCKER_HUB_ACCESS_TOKEN" | podman login "$LOGIN_REGISTRY" \
-        -u "$DOCKER_HUB_USERNAME" \
-        --password-stdin || {
-        echo "Docker Hub 登录失败，请检查用户名/访问令牌或网络"
-        exit 1
-    }
-    echo "登录成功"
-}
-
-if ! check_login; then
-    auto_login
-else
-    CURRENT_USER=$(podman login "$LOGIN_REGISTRY" --get-login 2>/dev/null)
-    echo "已登录为: $CURRENT_USER"
-fi
+# 确认登录用户
+CURRENT_USER=$(podman login "$LOGIN_REGISTRY" --get-login 2>/dev/null)
+echo "已登录为: $CURRENT_USER"
 
 # -----------------------------
 # 推送镜像
 # -----------------------------
 echo "=== 开始推送镜像 ==="
-
-# 打标签
 echo "重新标记镜像: $LOCAL_IMAGE -> $IMAGE_NAME"
 podman tag "$LOCAL_IMAGE" "$IMAGE_NAME"
 
-# 推送镜像
 echo "推送镜像: $IMAGE_NAME"
 podman push "$IMAGE_NAME" || {
     echo "推送失败: $IMAGE_NAME"
