@@ -4,7 +4,7 @@
 避免频繁进行 IO
 */
 
-module conf
+module config
 
 import toml
 import sync

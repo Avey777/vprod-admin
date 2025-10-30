@@ -5,7 +5,7 @@ import log
 import time
 import internal.structs { Context }
 import internal.middleware.dbpool
-import internal.middleware.conf
+import internal.middleware.config
 
 // 独立中间件生成函数
 pub fn db_middleware(conn &dbpool.DatabasePool) veb.MiddlewareOptions[Context] {
@@ -18,7 +18,7 @@ pub fn db_middleware(conn &dbpool.DatabasePool) veb.MiddlewareOptions[Context] {
 }
 
 // 初始化数据库连接池
-pub fn init_db_pool(doc &conf.GlobalConfig) !&dbpool.DatabasePool {
+pub fn init_db_pool(doc &config.GlobalConfig) !&dbpool.DatabasePool {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	mut config_db := dbpool.DatabaseConfig{
@@ -47,7 +47,7 @@ pub fn init_db_pool(doc &conf.GlobalConfig) !&dbpool.DatabasePool {
 	}
 	// log.debug('${config_db}')
 	mut conn := dbpool.new_db_pool(config_db) or {
-		log.error('Mysql/TiDB数据库连接失败,请检查配置文件: ${conf.config_toml()}: ${doc.dbconf} : ${err}')
+		log.error('Mysql/TiDB数据库连接失败,请检查配置文件: ${config.config_toml()}: ${doc.dbconf} : ${err}')
 		return err
 	}
 	// log.debug('${conn}')

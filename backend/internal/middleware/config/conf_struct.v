@@ -1,4 +1,4 @@
-module conf
+module config
 
 // 嵌套配置结构体
 @[heap]

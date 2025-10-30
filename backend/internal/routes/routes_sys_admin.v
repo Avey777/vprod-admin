@@ -2,7 +2,7 @@ module routes
 
 import log
 import internal.middleware.dbpool
-import internal.middleware.conf
+import internal.middleware.config
 import internal.structs { Context }
 // import internal.middleware
 import internal.logic.sys_api.sys_admin { Admin } // 必须是路由模块内部声明的结构体
@@ -20,7 +20,7 @@ import internal.logic.sys_api.sys_admin.configuration { Configuration }
 import internal.logic.sys_api.sys_admin.authentication { Authentication }
 import internal.logic.sys_api.sys_admin.api { Api }
 
-fn (mut app AliasApp) routes_sys_admin(conn &dbpool.DatabasePool, doc_conf &conf.GlobalConfig) {
+fn (mut app AliasApp) routes_sys_admin(conn &dbpool.DatabasePool, doc_conf &config.GlobalConfig) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	// 方式二：通过泛型的方式使用全局中间件，适合对多个控制器使用相同的中间件
 

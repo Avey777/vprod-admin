@@ -1,4 +1,4 @@
-module config
+module config_compliance
 
 import log
 import toml

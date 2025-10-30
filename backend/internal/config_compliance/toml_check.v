@@ -1,15 +1,15 @@
-module config
+module config_compliance
 
 import os
 import log
 import toml
-import internal.middleware.conf
+import internal.middleware.config
 
 pub fn check_all() ! {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	check_config_toml()! //检查配置文件是否存在
-	doc := conf.read_toml() or { return }
+	doc := config.read_toml() or { return }
 	log_set_sevel(doc) or { return } //设置日志级别
 	check_config_toml_data(doc) //检查配置文件内必要数据是否配置
 }
@@ -20,7 +20,7 @@ fn check_config_toml() ! {
 	default_path := os.join_path(@VMODROOT, 'config_template.toml')
 
 	// 只调用一次 find_toml()
-	config_path := conf.find_toml() or {
+	config_path := config.find_toml() or {
 		// 当找不到配置文件时，使用指定路径
 		log.warn('未找到配置文件，将使用默认路径: ${default_path}')
 		'etc/config.toml'
@@ -48,7 +48,7 @@ fn check_config_toml() ! {
 		log.info('正在退出程序...')
 		exit(0) // 生产配置模板后，退出程序
 	} else {
-		log.info('配置文件加载完成: ${conf.find_toml() or { return }}')
+		log.info('配置文件加载完成: ${config.find_toml() or { return }}')
 	}
 }
 

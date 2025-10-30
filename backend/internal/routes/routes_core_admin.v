@@ -2,14 +2,14 @@ module routes
 
 import log
 import internal.middleware.dbpool
-import internal.middleware.conf
+import internal.middleware.config
 import internal.structs
 import internal.logic.core_api.core_admin.api
 import internal.logic.core_api.core_admin.menu
 import internal.logic.core_api.core_admin.oauthprovider
 import internal.logic.core_api.core_admin.user
 
-fn (mut app AliasApp) routes_core_admin(conn &dbpool.DatabasePool, doc_conf &conf.GlobalConfig) {
+fn (mut app AliasApp) routes_core_admin(conn &dbpool.DatabasePool, doc_conf &config.GlobalConfig) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	// 必须通过token_jwt 认证
