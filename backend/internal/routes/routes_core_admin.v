@@ -1,8 +1,8 @@
 module routes
 
 import log
-import internal.middleware.dbpool
-import internal.middleware.config
+import internal.dbpool
+import internal.config
 import internal.structs
 import internal.logic.core_api.core_admin.api
 import internal.logic.core_api.core_admin.menu

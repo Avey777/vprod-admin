@@ -3,7 +3,7 @@ module config_compliance
 import os
 import log
 import toml
-import internal.middleware.config
+import internal.config
 
 pub fn check_all() ! {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')

@@ -4,8 +4,8 @@ import log
 import internal.structs { Context }
 import internal.middleware
 import internal.logic.db_api { Base }
-import internal.middleware.dbpool
-import internal.middleware.config
+import internal.dbpool
+import internal.config
 
 // 根据条件编译，选择运行的服务
 pub fn (mut app AliasApp) routes_ifdef(conn &dbpool.DatabasePool, doc_conf &config.GlobalConfig) {

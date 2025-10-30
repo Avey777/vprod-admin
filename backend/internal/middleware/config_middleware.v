@@ -2,7 +2,7 @@ module middleware
 
 import veb
 import internal.structs { Context }
-import internal.middleware.config
+import internal.config
 
 // 配置中间件 - 将全局配置注入请求上下文
 pub fn config_middle(conf &config.GlobalConfig) veb.MiddlewareOptions[Context] {

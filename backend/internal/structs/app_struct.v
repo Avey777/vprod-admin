@@ -2,8 +2,8 @@ module structs
 
 import veb
 import common.jwt { JwtPayload }
-import internal.middleware.dbpool
-import internal.middleware.config
+import internal.dbpool
+import internal.config
 
 pub struct Context {
 	veb.Context

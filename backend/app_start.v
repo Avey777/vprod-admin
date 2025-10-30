@@ -4,7 +4,7 @@ import veb
 import log
 import internal.structs { Context }
 import internal.middleware
-import internal.middleware.config
+import internal.config
 import internal.routes { AliasApp }
 
 pub fn new_app() {

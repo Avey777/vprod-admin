@@ -4,8 +4,8 @@ import veb
 import log
 import time
 import internal.structs { Context }
-import internal.middleware.dbpool
-import internal.middleware.config
+import internal.dbpool
+import internal.config
 
 // 独立中间件生成函数
 pub fn db_middleware(conn &dbpool.DatabasePool) veb.MiddlewareOptions[Context] {

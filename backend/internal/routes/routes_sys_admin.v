@@ -1,8 +1,8 @@
 module routes
 
 import log
-import internal.middleware.dbpool
-import internal.middleware.config
+import internal.dbpool
+import internal.config
 import internal.structs { Context }
 // import internal.middleware
 import internal.logic.sys_api.sys_admin { Admin } // 必须是路由模块内部声明的结构体
