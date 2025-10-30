@@ -1,78 +1,52 @@
 module authentication
 
-// import (
-// 	"context"
+// import veb
+// import log
+// import orm
+// import x.json2 as json
+// import internal.structs.schema_sys
+// import common.api
+// import internal.structs { Context }
 
-// 	"github.com/suyuan32/simple-admin-common/config"
-// 	"github.com/suyuan32/simple-admin-common/i18n"
-// 	"github.com/suyuan32/simple-admin-common/orm/ent/entctx/datapermctx"
-// 	"github.com/suyuan32/simple-admin-common/orm/ent/entenum"
-// 	"github.com/zeromicro/go-zero/core/errorx"
+// // Change Password | 修改密码
+// @['/change_password'; post]
+// fn (app &User) change_password(mut ctx Context) veb.Result {
+// 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-// 	"github.com/suyuan32/simple-admin-core/rpc/types/core"
+// 	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+// 	mut result := change_password_resp(mut ctx, req) or {
+// 		return ctx.json(api.json_error_500(err.msg()))
+// 	}
 
-// 	"github.com/suyuan32/simple-admin-core/api/internal/svc"
-// 	"github.com/suyuan32/simple-admin-core/api/internal/types"
-
-// 	"github.com/zeromicro/go-zero/core/logx"
-// )
-
-// type ResetPasswordByEmailLogic struct {
-// 	logx.Logger
-// 	ctx    context.Context
-// 	svcCtx *svc.ServiceContext
+// 	return ctx.json(api.json_success_200(result))
 // }
 
-// func NewResetPasswordByEmailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ResetPasswordByEmailLogic {
-// 	return &ResetPasswordByEmailLogic{
-// 		Logger: logx.WithContext(ctx),
-// 		ctx:    ctx,
-// 		svcCtx: svcCtx}
-// }
+// fn change_password_resp(mut ctx Context, req json.Any) !map[string]Any {
+// 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-// func (l *ResetPasswordByEmailLogic) ResetPasswordByEmail(req *types.ResetPasswordByEmailReq) (resp *types.BaseMsgResp, err error) {
-// 	if l.svcCtx.Config.ProjectConf.ResetVerify != "email" && l.svcCtx.Config.ProjectConf.ResetVerify != "sms_or_email" {
-// 		return nil, errorx.NewCodeAbortedError("login.resetTypeForbidden")
+// 	user_id := req.as_map()['user_id'] or { '' }.str()
+// 	new_password := req.as_map()['new_password'] or { '' }.str()
+// 	old_password := req.as_map()['old_password'] or { '' }.str()
+
+// 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+// 	defer {
+// 		ctx.dbpool.release(conn) or {
+// 			log.warn('Failed to release connection ${@LOCATION}: ${err}')
+// 		}
 // 	}
 
-// 	captchaData, err := l.svcCtx.Redis.Get(l.ctx, config.RedisCaptchaPrefix+req.Email).Result()
-// 	if err != nil {
-// 		logx.Errorw("failed to get captcha data in redis for email validation", logx.Field("detail", err),
-// 			logx.Field("data", req))
-// 		return nil, errorx.NewCodeInvalidArgumentError(i18n.Failed)
+// 	mut sys_user := orm.new_query[schema_sys.SysUser](db)
+// 	pwd := sys_user.select('password')!.where('id = ?', user_id)!.query()!
+
+// 	if pwd[0].password != old_password {
+// 		return error('Incorrect old password | 旧密码不正确')
 // 	}
 
-// 	if captchaData == req.Captcha {
-// 		l.ctx = datapermctx.WithScopeContext(l.ctx, entenum.DataPermAllStr)
+// 	sys_user.reset()
 
-// 		userData, err := l.svcCtx.CoreRpc.GetUserList(l.ctx, &core.UserListReq{
-// 			Page:     1,
-// 			PageSize: 1,
-// 			Email:    &req.Email,
-// 		})
-// 		if err != nil {
-// 			return nil, err
-// 		}
+// 	sys_user.set('password = ?', new_password)!
+// 		.where('id = ?', user_id)!
+// 		.update()!
 
-// 		if userData.Total == 0 {
-// 			return nil, errorx.NewCodeInvalidArgumentError("login.userNotExist")
-// 		}
-
-// 		result, err := l.svcCtx.CoreRpc.UpdateUser(l.ctx, &core.UserInfo{Id: userData.Data[0].Id, Password: &req.Password})
-// 		if err != nil {
-// 			return nil, err
-// 		}
-
-// 		err = l.svcCtx.Redis.Del(l.ctx, config.RedisCaptchaPrefix+req.Email).Err()
-// 		if err != nil {
-// 			logx.Errorw("failed to delete captcha in redis", logx.Field("detail", err))
-// 		}
-
-// 		return &types.BaseMsgResp{Msg: l.svcCtx.Trans.Trans(l.ctx, result.Msg)}, nil
-// 	}
-
-// 	return &types.BaseMsgResp{
-// 		Code: 0,
-// 		Msg:  l.svcCtx.Trans.Trans(l.ctx, "login.wrongCaptcha"),
-// 	}, nil
+// 	return map[string]Any{}
 // }

@@ -16,6 +16,8 @@ v-admin
   └── internal                            # 所有服务内部文件
       ├── config                          # 静态配置文件对应的结构体声明目录以及配置代码
       │   └── check.v
+      ├── dbpool                          # 数据库连接池目录
+      │    └── dbpool.v
       ├── handler                         # 可选，一般http服务会有这一层做外部请求处理，handler为固定后缀
       │   └── app_struct.v
       ├── i18n                            # 国际化(本地化)目录
@@ -23,7 +25,7 @@ v-admin
       │   │   ├── zh.json
       │   │   └── en.json
       │   └── vars.v
-      ├── logic                           # 业务目录，所有业务编码文件都存放在这个目录下面，logic为固定后缀
+      ├── logic                           # 业务目录，所有业务编码文件都存放在这个目录下面，logic为固定后缀 | services 业务逻辑
       │   ├── sys_api/
       │   ├── pay_api/
       │   └── mcms_api/
@@ -35,7 +37,7 @@ v-admin
       │   ├── app_struct.v
       │   ├── routes_sys_admin.v
       │   └── routes.v
-      ├── structs                         # 结构体存放目录
+      ├── structs                         # 结构体存放目录 | models ORM模型定义
       │   └── xxx_structs.v
       └── svc                             # (service context)依赖注入目录，logic的依赖都要在这里进行显式注入
           └── service_context.v

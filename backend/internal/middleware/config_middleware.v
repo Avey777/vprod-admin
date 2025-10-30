@@ -2,13 +2,13 @@ module middleware
 
 import veb
 import internal.structs { Context }
-import internal.middleware.conf
+import internal.config
 
 // 配置中间件 - 将全局配置注入请求上下文
-pub fn config_middle(config &conf.GlobalConfig) veb.MiddlewareOptions[Context] {
+pub fn config_middle(conf &config.GlobalConfig) veb.MiddlewareOptions[Context] {
 	return veb.MiddlewareOptions[Context]{
-		handler: fn [config] (mut ctx Context) bool {
-			ctx.config = config
+		handler: fn [conf] (mut ctx Context) bool {
+			ctx.config = conf
 			return true
 		}
 	}

@@ -4,7 +4,7 @@ import veb
 import log
 import internal.structs { Context }
 import internal.middleware
-import internal.middleware.conf
+import internal.config
 import internal.routes { AliasApp }
 
 pub fn new_app() {
@@ -12,7 +12,7 @@ pub fn new_app() {
 
 	//*******init_config_loader********/
 	log.debug('init_config_loader()')
-	mut loader := conf.new_config_loader()
+	mut loader := config.new_config_loader()
 	doc := loader.get_config() or { panic('Failed to load config: ${err}') }
 	log.debug('${doc}')
 	//********init_config_loader*******/

@@ -2,14 +2,14 @@ module structs
 
 import veb
 import common.jwt { JwtPayload }
-import internal.middleware.dbpool
-import internal.middleware.conf
+import internal.dbpool
+import internal.config
 
 pub struct Context {
 	veb.Context
 pub mut:
 	dbpool      &dbpool.DatabasePool
-	config      &conf.GlobalConfig
+	config      &config.GlobalConfig
 	jwt_payload JwtPayload
 }
 

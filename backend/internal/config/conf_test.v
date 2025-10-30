@@ -1,4 +1,4 @@
-module conf
+module config
 
 fn test_config_toml() {
 	dump(config_toml())
