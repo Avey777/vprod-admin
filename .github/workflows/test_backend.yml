@@ -23,6 +23,8 @@ jobs:
         run: |
           apk add --no-cache mariadb-connector-c-dev
           # apk add --no-cache mariadb-connector-c-dev libatomic musl-dev build-base
+      - name: Format check
+        run: v fmt -verify .
       - name: Run tests
         working-directory: backend
         run: v -stats test .

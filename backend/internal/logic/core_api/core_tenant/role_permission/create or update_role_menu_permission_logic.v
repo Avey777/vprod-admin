@@ -11,7 +11,7 @@ import internal.structs.schema_core
 import common.api
 import internal.structs { Context }
 
-@['/role_permission/update_menu'; post]
+@['/tenant_role_permission/update_menu'; post]
 fn (app &RolePermission) update_menu_permission(mut ctx Context) veb.Result {
 	log.debug('${@METHOD} ${@MOD}.${@FILE_LINE}')
 

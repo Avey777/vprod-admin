@@ -2,6 +2,6 @@ module oauthprovider
 
 import internal.structs { App }
 
-pub struct Oauthprovider {
+pub struct OauthProvider {
 	App
 }
