@@ -1,4 +1,4 @@
-module config_compliance
+module check
 
 import os
 import log
@@ -10,7 +10,7 @@ pub fn check_all() ! {
 
 	check_config_toml()! //检查配置文件是否存在
 	doc := config.read_toml() or { return }
-	log_set_sevel(doc) or { return } //设置日志级别
+	set_log_sevel(doc) or { return } //设置全局日志级别
 	check_config_toml_data(doc) //检查配置文件内必要数据是否配置
 }
 
