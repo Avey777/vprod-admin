@@ -2,11 +2,11 @@ module main
 
 // import time
 // import sync
-import internal.config_compliance
+import internal.check
 
 fn main() {
 	banner()
-	config_compliance.check_all()!
+	check.check_all()!
 
 	server_thread := spawn new_app() // 启动服务器并处理错误
 	//* 这里主线程可以做一些其他事情 */

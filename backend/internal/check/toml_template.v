@@ -1,4 +1,4 @@
-module config_compliance
+module check
 
 const data = "[web]
 port = 9009
