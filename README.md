@@ -16,6 +16,8 @@ v-admin
   └── internal                            # 所有服务内部文件
       ├── config                          # 静态配置文件对应的结构体声明目录以及配置代码
       │   └── check.v
+      ├── dbpool                          # 数据库连接池目录
+      │    └── dbpool.v
       ├── handler                         # 可选，一般http服务会有这一层做外部请求处理，handler为固定后缀
       │   └── app_struct.v
       ├── i18n                            # 国际化(本地化)目录
