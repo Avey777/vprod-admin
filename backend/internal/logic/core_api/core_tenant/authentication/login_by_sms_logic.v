@@ -1,110 +1,112 @@
 module authentication
 
-// import (
-// 	"context"
-// 	"strings"
-// 	"time"
+import veb
+import log
+import orm
+import time
+import rand
+import x.json2 as json
+import internal.structs.schema_core
+import common.api
+import internal.structs { Context }
+import common.jwt
+import common.opt
 
-// 	"github.com/suyuan32/simple-admin-common/config"
-// 	"github.com/suyuan32/simple-admin-common/enum/common"
-// 	"github.com/suyuan32/simple-admin-common/i18n"
-// 	"github.com/suyuan32/simple-admin-common/orm/ent/entctx/datapermctx"
-// 	"github.com/suyuan32/simple-admin-common/orm/ent/entenum"
-// 	"github.com/suyuan32/simple-admin-common/utils/jwt"
-// 	"github.com/suyuan32/simple-admin-common/utils/pointy"
-// 	"github.com/zeromicro/go-zero/core/errorx"
+// Login by SMS | 短信登入
+@['/login_by_sms'; post]
+fn (app &Authentication) login_by_sms_logic(mut ctx Context) veb.Result {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-// 	"github.com/suyuan32/simple-admin-core/rpc/types/core"
+	req := json.decode[LoginBySMSReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+	mut result := login_by_sms_resp(mut ctx, req) or {
+		return ctx.json(api.json_error_500(err.msg()))
+	}
 
-// 	"github.com/suyuan32/simple-admin-core/api/internal/svc"
-// 	"github.com/suyuan32/simple-admin-core/api/internal/types"
+	return ctx.json(api.json_success_200(result))
+}
 
-// 	"github.com/zeromicro/go-zero/core/logx"
-// )
+fn login_by_sms_resp(mut ctx Context, req LoginBySMSReq) !LoginBySMSResp {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-// type LoginBySmsLogic struct {
-// 	logx.Logger
-// 	ctx    context.Context
-// 	svcCtx *svc.ServiceContext
-// }
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or {
+			log.warn('Failed to release connection ${@LOCATION}: ${err}')
+		}
+	}
 
-// func NewLoginBySmsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginBySmsLogic {
-// 	return &LoginBySmsLogic{
-// 		Logger: logx.WithContext(ctx),
-// 		ctx:    ctx,
-// 		svcCtx: svcCtx}
-// }
+	if opt.opt_verify(req.opt_token, req.opt_num) == false {
+		return error('Captcha error')
+	}
 
-// func (l *LoginBySmsLogic) LoginBySms(req *types.LoginBySmsReq) (resp *types.LoginResp, err error) {
-// 	if l.svcCtx.Config.ProjectConf.LoginVerify != "sms" && l.svcCtx.Config.ProjectConf.LoginVerify != "sms_or_email" &&
-// 		l.svcCtx.Config.ProjectConf.LoginVerify != "all" {
-// 		return nil, errorx.NewCodeAbortedError("login.loginTypeForbidden")
-// 	}
+	mut core_user := orm.new_query[schema_core.CoreUser](db)
+	mut user_info := core_user.select('id', 'username', 'status', 'mobile')!.where('mobile = ?',
+		req.phone_num)!.limit(1)!.query()!
+	if user_info.len == 0 {
+		return error('mobile not exit')
+	}
 
-// 	captchaData, err := l.svcCtx.Redis.Get(l.ctx, config.RedisCaptchaPrefix+req.PhoneNumber).Result()
-// 	if err != nil {
-// 		logx.Errorw("failed to get captcha data in redis for email validation", logx.Field("detail", err),
-// 			logx.Field("data", req))
-// 		return nil, errorx.NewCodeInvalidArgumentError(i18n.Failed)
-// 	}
+	expired_at := time.now().add_days(30)
+	token_jwt := sms_token_jwt_generate(mut ctx, req) // 生成token和copt
+	tokens := schema_core.CoreToken{
+		id:         rand.uuid_v7()
+		status:     req.status
+		user_id:    req.user_id
+		username:   user_info[0].username
+		token:      token_jwt
+		source:     req.source
+		expired_at: expired_at
+		created_at: time.now()
+		updated_at: time.now()
+	}
+	mut sys_token := orm.new_query[schema_core.CoreToken](db)
+	sys_token.insert(tokens)!
 
-// 	if captchaData == req.Captcha {
-// 		l.ctx = datapermctx.WithScopeContext(l.ctx, entenum.DataPermAllStr)
+	data := LoginBySMSResp{
+		expired_at: expired_at.str()
+		token_jwt:  token_jwt
+		user_id:    req.user_id
+	}
+	return data
+}
 
-// 		userData, err := l.svcCtx.CoreRpc.GetUserList(l.ctx, &core.UserListReq{
-// 			Page:     1,
-// 			PageSize: 1,
-// 			Mobile:   &req.PhoneNumber,
-// 		})
-// 		if err != nil {
-// 			return nil, err
-// 		}
+fn sms_token_jwt_generate(mut ctx Context, req LoginBySMSReq) string {
+	// secret := req.as_map()['Secret'] or { '' }.str()
+	secret := ctx.get_custom_header('secret') or { '' }
 
-// 		if userData.Total == 0 {
-// 			return nil, errorx.NewCodeInvalidArgumentError("login.userNotExist")
-// 		}
+	mut payload := jwt.JwtPayload{
+		iss: 'v-admin'   // 签发者 (Issuer) your-app-name
+		sub: req.user_id // 用户唯一标识 (Subject)
+		// aud: ['api-service', 'webapp'] // 接收方 (Audience)，可以是数组或字符串
+		exp: time.now().add_days(30).unix() // 过期时间 (Expiration Time) 7天后
+		nbf: time.now().unix() // 生效时间 (Not Before)，立即生效
+		iat: time.now().unix() // 签发时间 (Issued At)
+		jti: rand.uuid_v4() // JWT唯一标识 (JWT ID)，防重防攻击
+		// 自定义业务字段 (Custom Claims)
+		roles:     ['admin', 'editor'] // 用户角色
+		client_ip: req.login_ip        // ip地址
+		device_id: req.device_id       // 设备id
+	}
 
-// 		if *userData.Data[0].Status != uint32(common.StatusNormal) {
-// 			return nil, errorx.NewCodeInvalidArgumentError("login.userBanned")
-// 		}
+	token := jwt.jwt_generate(secret, payload)
+	return token
+}
 
-// 		token, err := jwt.NewJwtToken(l.svcCtx.Config.Auth.AccessSecret, time.Now().Unix(),
-// 			l.svcCtx.Config.Auth.AccessExpire, jwt.WithOption("userId", userData.Data[0].Id), jwt.WithOption("roleId",
-// 				strings.Join(userData.Data[0].RoleCodes, ",")), jwt.WithOption("deptId", userData.Data[0].DepartmentId))
-// 		if err != nil {
-// 			return nil, err
-// 		}
+struct LoginBySMSReq {
+	status    u8     @[json: 'status']
+	phone_num string @[json: 'phone_num']
+	opt_num   string @[json: 'opt_num']
+	opt_token string @[json: 'opt_token']
+	user_id   string @[json: 'user_id']
+	source    string @[json: 'source']
+	login_ip  string @[json: 'login_ip']
+	device_id string @[json: 'device_id']
+}
 
-// 		// add token into database
-// 		expiredAt := time.Now().Add(time.Second * time.Duration(l.svcCtx.Config.Auth.AccessExpire)).UnixMilli()
-// 		_, err = l.svcCtx.CoreRpc.CreateToken(l.ctx, &core.TokenInfo{
-// 			Uuid:      userData.Data[0].Id,
-// 			Token:     pointy.GetPointer(token),
-// 			Source:    pointy.GetPointer("core_user"),
-// 			Status:    pointy.GetPointer(uint32(common.StatusNormal)),
-// 			Username:  userData.Data[0].Username,
-// 			ExpiredAt: pointy.GetPointer(expiredAt),
-// 		})
-
-// 		if err != nil {
-// 			return nil, err
-// 		}
-
-// 		err = l.svcCtx.Redis.Del(l.ctx, config.RedisCaptchaPrefix+req.PhoneNumber).Err()
-// 		if err != nil {
-// 			logx.Errorw("failed to delete captcha in redis", logx.Field("detail", err))
-// 		}
-
-// 		resp = &types.LoginResp{
-// 			BaseDataInfo: types.BaseDataInfo{Msg: l.svcCtx.Trans.Trans(l.ctx, "login.loginSuccessTitle")},
-// 			Data: types.LoginInfo{
-// 				UserId: *userData.Data[0].Id,
-// 				Token:  token,
-// 				Expire: uint64(expiredAt),
-// 			},
-// 		}
-// 		return resp, nil
-// 	} else {
-// 		return nil, errorx.NewCodeInvalidArgumentError("login.wrongCaptcha")
-// 	}
-// }
+struct LoginBySMSResp {
+	expired_at string @[json: 'expired_at']
+	user_id    string @[json: 'user_id']
+	token_jwt  string @[json: 'token_jwt']
+}
