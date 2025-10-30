@@ -6,7 +6,7 @@ import orm
 import time
 import rand
 import x.json2 as json
-import internal.structs.schema_sys
+import internal.structs.schema_core
 import common.api
 import internal.structs { Context }
 import common.jwt
@@ -42,8 +42,8 @@ fn login_by_account_resp(mut ctx Context, req LoginByAccountReq) !LoginByAccount
 		return error('Captcha error')
 	}
 
-	mut sys_user := orm.new_query[schema_sys.SysUser](db)
-	mut user_info := sys_user.select('id', 'username', 'password', 'status')!.where('username = ?',
+	mut core_user := orm.new_query[schema_core.CoreUser](db)
+	mut user_info := core_user.select('id', 'username', 'password', 'status')!.where('username = ?',
 		req.username)!.limit(1)!.query()!
 	if user_info.len == 0 {
 		return error('UserName not exit')
@@ -54,7 +54,7 @@ fn login_by_account_resp(mut ctx Context, req LoginByAccountReq) !LoginByAccount
 
 	expired_at := time.now().add_days(30)
 	token_jwt := token_jwt_generate(mut ctx, req) // 生成token和captcha
-	tokens := schema_sys.SysToken{
+	tokens := schema_core.CoreToken{
 		id:         rand.uuid_v7()
 		status:     req.status
 		user_id:    req.user_id
@@ -65,8 +65,9 @@ fn login_by_account_resp(mut ctx Context, req LoginByAccountReq) !LoginByAccount
 		created_at: time.now()
 		updated_at: time.now()
 	}
-	mut sys_token := orm.new_query[schema_sys.SysToken](db)
-	sys_token.insert(tokens)!
+
+	mut core_token := orm.new_query[schema_core.CoreToken](db)
+	core_token.insert(tokens)!
 
 	data := LoginByAccountResp{
 		expired_at: expired_at.str()

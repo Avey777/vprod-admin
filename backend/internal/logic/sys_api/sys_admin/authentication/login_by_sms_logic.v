@@ -18,15 +18,17 @@ import common.opt
 fn (app &Authentication) login_by_sms_logic(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := login_by_account_resp(mut ctx, req) or {
+	req := json.decode[LoginBySMSReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+	mut result := login_by_sms_resp(mut ctx, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn login_by_sms_resp(mut ctx Context, req json.Any) !map[string]Any {
+fn login_by_sms_resp(mut ctx Context, req LoginBySMSReq) !LoginBySMSResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -36,17 +38,13 @@ fn login_by_sms_resp(mut ctx Context, req json.Any) !map[string]Any {
 		}
 	}
 
-	phone_num := req.as_map()['phone_num'] or { return error('Please enter your phone_num') }.str()
-	opt_num := req.as_map()['opt_num'] or { return error('Please input opt_num') }.str()
-	opt_token := req.as_map()['opt_token'] or { return error('Please return opt_token') }.str()
-
-	if opt.opt_verify(opt_token, opt_num) == false {
+	if opt.opt_verify(req.opt_token, req.opt_num) == false {
 		return error('Captcha error')
 	}
 
 	mut sys_user := orm.new_query[schema_sys.SysUser](db)
 	mut user_info := sys_user.select('id', 'username', 'status', 'mobile')!.where('mobile = ?',
-		phone_num)!.limit(1)!.query()!
+		req.phone_num)!.limit(1)!.query()!
 	if user_info.len == 0 {
 		return error('mobile not exit')
 	}
@@ -55,11 +53,11 @@ fn login_by_sms_resp(mut ctx Context, req json.Any) !map[string]Any {
 	token_jwt := sms_token_jwt_generate(mut ctx, req) // 生成token和copt
 	tokens := schema_sys.SysToken{
 		id:         rand.uuid_v7()
-		status:     req.as_map()['status'] or { 0 }.u8()
-		user_id:    req.as_map()['user_id'] or { '' }.str()
+		status:     req.status
+		user_id:    req.user_id
 		username:   user_info[0].username
 		token:      token_jwt
-		source:     req.as_map()['source'] or { '' }.str()
+		source:     req.source
 		expired_at: expired_at
 		created_at: time.now()
 		updated_at: time.now()
@@ -67,20 +65,21 @@ fn login_by_sms_resp(mut ctx Context, req json.Any) !map[string]Any {
 	mut sys_token := orm.new_query[schema_sys.SysToken](db)
 	sys_token.insert(tokens)!
 
-	mut data := map[string]Any{}
-	data['expired_at'] = expired_at.str()
-	data['token'] = token_jwt
-	data['user_id'] = user_info[0].id
+	data := LoginBySMSResp{
+		expired_at: expired_at.str()
+		token_jwt:  token_jwt
+		user_id:    req.user_id
+	}
 	return data
 }
 
-fn sms_token_jwt_generate(mut ctx Context, req json.Any) string {
+fn sms_token_jwt_generate(mut ctx Context, req LoginBySMSReq) string {
 	// secret := req.as_map()['Secret'] or { '' }.str()
 	secret := ctx.get_custom_header('secret') or { '' }
 
 	mut payload := jwt.JwtPayload{
-		iss: 'v-admin' // 签发者 (Issuer) your-app-name
-		sub: req.as_map()['user_id'] or { '' }.str() // 用户唯一标识 (Subject)
+		iss: 'v-admin'   // 签发者 (Issuer) your-app-name
+		sub: req.user_id // 用户唯一标识 (Subject)
 		// aud: ['api-service', 'webapp'] // 接收方 (Audience)，可以是数组或字符串
 		exp: time.now().add_days(30).unix() // 过期时间 (Expiration Time) 7天后
 		nbf: time.now().unix() // 生效时间 (Not Before)，立即生效
@@ -88,10 +87,27 @@ fn sms_token_jwt_generate(mut ctx Context, req json.Any) string {
 		jti: rand.uuid_v4() // JWT唯一标识 (JWT ID)，防重防攻击
 		// 自定义业务字段 (Custom Claims)
 		roles:     ['admin', 'editor'] // 用户角色
-		client_ip: req.as_map()['login_ip'] or { '' }.str() // ip地址
-		device_id: req.as_map()['device_id'] or { '' }.str() // 设备id
+		client_ip: req.login_ip        // ip地址
+		device_id: req.device_id       // 设备id
 	}
 
 	token := jwt.jwt_generate(secret, payload)
 	return token
+}
+
+struct LoginBySMSReq {
+	status    u8     @[json: 'status']
+	phone_num string @[json: 'phone_num']
+	opt_num   string @[json: 'opt_num']
+	opt_token string @[json: 'opt_token']
+	user_id   string @[json: 'user_id']
+	source    string @[json: 'source']
+	login_ip  string @[json: 'login_ip']
+	device_id string @[json: 'device_id']
+}
+
+struct LoginBySMSResp {
+	expired_at string @[json: 'expired_at']
+	user_id    string @[json: 'user_id']
+	token_jwt  string @[json: 'token_jwt']
 }
