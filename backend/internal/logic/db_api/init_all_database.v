@@ -2,7 +2,7 @@ module db_api
 
 import veb
 import log
-import common.api { json_success_optparams }
+import common.api
 import internal.structs { Context }
 
 @['/init/all_database'; get]
@@ -17,5 +17,5 @@ fn (app &Base) init_all(mut ctx Context) veb.Result {
 	app.init_sys(mut ctx)
 
 	log.debug('Database init_all success')
-	return ctx.json(json_success_optparams(data: 'all database init Successfull'))
+	return ctx.json(api.json_success_200('all database init Successfull'))
 }

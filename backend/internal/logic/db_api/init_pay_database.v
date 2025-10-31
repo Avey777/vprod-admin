@@ -2,7 +2,7 @@ module db_api
 
 import veb
 import log
-import common.api { json_error_500, json_success_optparams }
+import common.api
 import internal.structs { Context }
 import internal.structs.schema_pay
 
@@ -11,7 +11,7 @@ pub fn (app &Base) init_pay(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or {
-		return ctx.json(json_error_500('Failed to acquire connection: ${err}'))
+		return ctx.json(api.json_error_500('Failed to acquire connection: ${err}'))
 	}
 	defer {
 		ctx.dbpool.release(conn) or {
@@ -27,5 +27,5 @@ pub fn (app &Base) init_pay(mut ctx Context) veb.Result {
 	} or { return ctx.text('error creating table:  ${err}') }
 	log.debug('Database init_pay success')
 
-	return ctx.json(json_success_optparams(data: 'all database init Successfull'))
+	return ctx.json(api.json_success_200('Pay database init Successfull'))
 }

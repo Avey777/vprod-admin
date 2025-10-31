@@ -2,7 +2,7 @@ module db_api
 
 import veb
 import log
-import common.api { json_error_500, json_success_optparams }
+import common.api
 import internal.structs { Context }
 import internal.structs.schema_sys
 
@@ -11,7 +11,7 @@ pub fn (app &Base) init_sys(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or {
-		return ctx.json(json_error_500('获取的连接无效: ${err}'))
+		return ctx.json(api.json_error_500('获取的连接无效: ${err}'))
 	}
 	defer {
 		ctx.dbpool.release(conn) or {
@@ -44,9 +44,9 @@ pub fn (app &Base) init_sys(mut ctx Context) veb.Result {
 	sql_commands := [sys_user, sys_token, sys_department, sys_position, sys_role, sys_api, sys_menu,
 		sys_user_department, sys_user_position, sys_user_role, sys_role_api, sys_role_menu]
 	for cmd in sql_commands {
-		db.exec(cmd) or { return ctx.json(json_error_500('执行 ${cmd} SQL失败: ${err}')) }
+		db.exec(cmd) or { return ctx.json(api.json_error_500('执行 ${cmd} SQL失败: ${err}')) }
 		log.info('${cmd} init_sys_data success')
 	}
 
-	return ctx.json(json_success_optparams(data: 'sys database init Successfull'))
+	return ctx.json(api.json_success_200('sys database init Successfull'))
 }

@@ -10,6 +10,7 @@ pub:
 	meta  map[string]string // 扩展参数（如 { "min": ’8‘, "max": 20 }）
 }
 
+@[params]
 pub struct ApiErrorResponse {
 pub:
 	code       int
@@ -19,6 +20,7 @@ pub:
 	details    ?[]ValidationError //暂时未使用，待未来扩展
 }
 
+@[params]
 pub struct ApiSuccessResponse[T] {
 pub:
 	code       int
@@ -45,28 +47,6 @@ pub fn json_error(c ApiErrorResponse) ApiErrorResponse {
 		status:     false
 		request_id: uuid
 		error:      c.error
-	}
-	return response
-}
-
-// /*******可选参支持 - 支持泛型*******->*/
-
-@[params]
-pub struct ApiSuccessResponseOptparams[T] {
-pub:
-	request_id string
-	status     bool
-	code       int
-	data       T
-}
-
-pub fn json_success_optparams[T](c ApiSuccessResponseOptparams[T]) ApiSuccessResponseOptparams[T] {
-	mut uuid := rand.uuid_v4()
-	response := ApiSuccessResponseOptparams[T]{
-		request_id: uuid
-		status:     true
-		code:       c.code
-		data:       c.data
 	}
 	return response
 }
