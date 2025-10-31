@@ -19,7 +19,7 @@ fn (app &User) user_list(mut ctx Context) veb.Result {
 		return ctx.json(api.json_error(500, 'Internal Server Error:${err}'))
 	}
 
-	return ctx.json(api.json_success(200, 'success', result))
+	return ctx.json(api.json_success_200(result))
 }
 
 fn user_list_resp(mut ctx Context, req json.Any) !map[string]Any {

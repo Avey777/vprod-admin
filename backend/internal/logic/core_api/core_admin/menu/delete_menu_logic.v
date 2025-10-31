@@ -23,7 +23,7 @@ fn (app &Menu) delete_menu(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn delete_menu_resp(mut ctx Context, req DeleteMenuReq) !string {
+fn delete_menu_resp(mut ctx Context, req DeleteMenuReq) !DeleteCoreMenuResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -37,9 +37,15 @@ fn delete_menu_resp(mut ctx Context, req DeleteMenuReq) !string {
 	sys_menu.delete()!.where('id = ?', req.id)!.update()!
 	// sys_menu.set('del_flag = ?', 1)!.where('id = ?', DeleteMenuReq)!.update()!
 
-	return 'CoreMenu Deleted successfully'
+	return DeleteCoreMenuResp{
+		msg: 'CoreMenu Deleted successfully'
+	}
 }
 
 struct DeleteMenuReq {
 	id string @[json: 'id']
+}
+
+struct DeleteCoreMenuResp {
+	msg string @[json: 'msg']
 }

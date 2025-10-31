@@ -24,7 +24,7 @@ fn (app &Menu) update_menu(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn update_menu_resp(mut ctx Context, req UpdateMenuReq) !string {
+fn update_menu_resp(mut ctx Context, req UpdateMenuReq) !UpdateMenuResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -63,7 +63,9 @@ fn update_menu_resp(mut ctx Context, req UpdateMenuReq) !string {
 		.where('id = ?', req.id)!
 		.update()!
 
-	return 'CoreMenu Updated Successfully'
+	return UpdateMenuResp{
+		msg: 'CoreMenu Updated Successfully'
+	}
 }
 
 struct UpdateMenuReq {
@@ -94,4 +96,8 @@ struct UpdateMenuReq {
 	source_type           string    @[json: 'source_type']
 	source_id             string    @[json: 'source_id']
 	updated_at            time.Time @[json: 'updated_at']
+}
+
+struct UpdateMenuResp {
+	msg string
 }

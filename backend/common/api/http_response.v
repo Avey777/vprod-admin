@@ -3,19 +3,19 @@ module api
 // 200 OK - 通用成功响应
 // 适用场景：GET请求成功、非创建型操作（如更新/删除）成功
 pub fn json_success_200[T](data T) ApiSuccessResponse[T] {
-	return json_success(200, 'OK', data)
+	return json_success(200, data)
 }
 
 // 201 Created - 资源创建成功
 // 适用场景：POST/PUT请求后返回新创建/更新的资源URL
 pub fn json_success_201[T](data T) ApiSuccessResponse[T] {
-	return json_success(201, 'Resource created successfully', data)
+	return json_success(201, data)
 }
 
 // 202 Accepted - 请求已接受处理
 // 适用场景：异步任务已排队（如邮件发送、后台计算）
 pub fn json_success_202[T](data T) ApiSuccessResponse[T] {
-	return json_success(202, 'Your request is being processed', data)
+	return json_success(202, data)
 }
 
 // 400 Bad Request - 客户端请求错误

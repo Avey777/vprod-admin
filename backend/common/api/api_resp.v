@@ -28,14 +28,14 @@ pub:
 	data       T
 }
 
-pub fn json_success[T](status_code int, message_success string, respose_data T) ApiSuccessResponse[T] {
+pub fn json_success[T](status_code int,  respose_data T) ApiSuccessResponse[T] {
 	mut uuid := rand.uuid_v7()
 	response := ApiSuccessResponse[T]{
 		code:       status_code
 		status:     true
 		request_id: uuid
-		msg:        message_success
-		data:       respose_data
+		// msg:        message_success
+		data: respose_data
 	}
 	return response
 }
