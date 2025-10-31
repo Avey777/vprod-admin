@@ -24,7 +24,6 @@ pub:
 	code       int
 	status     bool
 	request_id string
-	msg        string //使用 message 更符合RESTful 接口规范
 	data       T
 }
 
@@ -63,22 +62,20 @@ type SumResp = []string
 // | f64
 
 @[params]
-pub struct ApiErrorResponseOptparams {
+pub struct ApiSuccessResponseOptparams {
 pub:
 	request_id string
 	status     bool
 	code       int
-	message    string
 	data       SumResp
 }
 
-pub fn json_success_optparams(c ApiErrorResponseOptparams) ApiErrorResponseOptparams {
+pub fn json_success_optparams(c ApiSuccessResponseOptparams) ApiSuccessResponseOptparams {
 	mut uuid := rand.uuid_v4()
-	response := ApiErrorResponseOptparams{
+	response := ApiSuccessResponseOptparams{
 		request_id: uuid
 		status:     true
 		code:       c.code
-		message:    c.message
 		data:       c.data
 	}
 	return response
