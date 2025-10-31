@@ -29,24 +29,24 @@ pub:
 	data       T
 }
 
-pub fn json_success[T](c ApiSuccessResponse[T]) ApiSuccessResponse[T] {
+pub fn json_success[T](input ApiSuccessResponse[T]) ApiSuccessResponse[T] {
 	mut uuid := rand.uuid_v7()
 	response := ApiSuccessResponse[T]{
-		code:       c.code
+		code:       input.code
 		status:     true
 		request_id: uuid
-		data:       c.data
+		data:       input.data
 	}
 	return response
 }
 
-pub fn json_error(c ApiErrorResponse) ApiErrorResponse {
+pub fn json_error(input ApiErrorResponse) ApiErrorResponse {
 	mut uuid := rand.uuid_v7()
 	response := ApiErrorResponse{
-		code:       c.code
+		code:       input.code
 		status:     false
 		request_id: uuid
-		error:      c.error
+		error:      input.error
 	}
 	return response
 }
