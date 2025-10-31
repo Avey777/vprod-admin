@@ -73,11 +73,10 @@ fn access_token_resp(mut ctx Context, req AccessTokenReq) !AccessTokenResp {
 	mut sys_token := orm.new_query[schema_sys.SysToken](db)
 	sys_token.insert(new_token)!
 
-	mut data := AccessTokenResp{
+	return AccessTokenResp{
 		expired_at: time.unix(expired_at)
 		token:      token
 	}
-	return data
 }
 
 struct AccessTokenReq {
