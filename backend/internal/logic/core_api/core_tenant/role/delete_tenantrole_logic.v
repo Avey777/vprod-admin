@@ -23,7 +23,7 @@ fn (app &Role) delete_role(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn delete_role_resp(mut ctx Context, req DeleteTenantRoleReq) !string {
+fn delete_role_resp(mut ctx Context, req DeleteTenantRoleReq) !DeleteTenantRoleResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -36,9 +36,15 @@ fn delete_role_resp(mut ctx Context, req DeleteTenantRoleReq) !string {
 	mut sys_role := orm.new_query[schema_core.CoreRole](db)
 	sys_role.set('del_flag = ?', 1)!.where('id = ?', req.role_id)!.update()!
 
-	return 'Delete Tenant Role Successfully'
+	return DeleteTenantRoleResp{
+		msg: 'Delete Tenant Role Successfully'
+	}
 }
 
 struct DeleteTenantRoleReq {
 	role_id string @[json: 'role_id']
+}
+
+struct DeleteTenantRoleResp {
+	msg string @[json: 'msg']
 }

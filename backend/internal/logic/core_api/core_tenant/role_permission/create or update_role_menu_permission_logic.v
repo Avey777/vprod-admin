@@ -38,7 +38,7 @@ fn (app &RolePermission) update_menu_permission(mut ctx Context) veb.Result {
 // -------------------------------
 // 核心逻辑：删除旧权限 + 插入新权限
 // -------------------------------
-fn update_menu_permission_resp(mut ctx Context, req UpdateMenuReq) !string {
+fn update_menu_permission_resp(mut ctx Context, req UpdateMenuReq) !UpdateMenuResp {
 	log.debug('${@METHOD} ${@MOD}.${@FILE_LINE}')
 
 	mut db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -82,7 +82,9 @@ fn update_menu_permission_resp(mut ctx Context, req UpdateMenuReq) !string {
 	}
 
 	log.info('Updated ${req.menu_ids.len} menu permissions for role=${req.role_id}')
-	return 'Role menu permissions updated successfully'
+	return UpdateMenuResp{
+		msg: 'Role menu permissions updated successfully'
+	}
 }
 
 struct UpdateMenuReq {
@@ -91,4 +93,8 @@ struct UpdateMenuReq {
 	menu_ids    []string @[json: 'menu_ids']
 	source_type string   @[json: 'source_type']
 	source_id   string   @[json: 'source_id']
+}
+
+struct UpdateMenuResp {
+	msg string @[json: 'msg']
 }

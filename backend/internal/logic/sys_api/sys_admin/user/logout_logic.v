@@ -13,13 +13,15 @@ import internal.structs { Context }
 fn (app &User) logout_logic(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	req := json.decode[LogoutReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
 	mut result := logout_resp(mut ctx, req) or { return ctx.json(api.json_error_500(err.msg())) }
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn logout_resp(mut ctx Context, req json.Any) !map[string]Any {
+fn logout_resp(mut ctx Context, req LogoutReq) !LogoutResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -29,12 +31,20 @@ fn logout_resp(mut ctx Context, req json.Any) !map[string]Any {
 		}
 	}
 
-	user_id := req.as_map()['id'] or { return error('Please return user_id') }.str()
-
 	mut sys_token := orm.new_query[schema_sys.SysToken](db)
-	sys_token.set('status = ?', '1')!.where('id = ?', user_id)!.update()!
+	sys_token.set('status = ?', '1')!.where('id = ?', req.user_id)!.update()!
 
-	mut data := map[string]Any{}
-	data['logout'] = 'Logout successfull'
+	mut data := LogoutResp{
+		logout: 'Logout successfull'
+	}
+
 	return data
+}
+
+struct LogoutReq {
+	user_id string @[json: 'user_id']
+}
+
+struct LogoutResp {
+	logout string @[json: 'logout']
 }

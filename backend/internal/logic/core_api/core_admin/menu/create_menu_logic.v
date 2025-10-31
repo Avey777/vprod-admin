@@ -25,7 +25,7 @@ fn (app &Menu) create_menu(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn create_menu_resp(mut ctx Context, req CreateMenuReq) !string {
+fn create_menu_resp(mut ctx Context, req CreateMenuReq) !CreateCoreMenuResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -68,7 +68,9 @@ fn create_menu_resp(mut ctx Context, req CreateMenuReq) !string {
 	mut core_menu := orm.new_query[schema_core.CoreMenu](db)
 	core_menu.insert(menu)!
 
-	return 'CoreMenu created successfully'
+	return CreateCoreMenuResp{
+		msg: 'CoreMenu created successfully'
+	}
 }
 
 struct CreateMenuReq {
@@ -100,4 +102,8 @@ struct CreateMenuReq {
 	source_id             string    @[json: 'source_id']
 	created_at            time.Time @[json: 'created_at']
 	updated_at            time.Time @[json: 'updated_at']
+}
+
+struct CreateCoreMenuResp {
+	msg string
 }

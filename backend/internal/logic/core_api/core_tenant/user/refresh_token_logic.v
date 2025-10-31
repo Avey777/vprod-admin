@@ -6,7 +6,7 @@ import orm
 import time
 import rand
 import x.json2 as json
-import internal.structs.schema_sys
+import internal.structs.schema_core
 import common.api
 import internal.structs { Context }
 import common.jwt
@@ -16,7 +16,9 @@ import common.jwt
 fn (app &User) refresh_token(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	req := json.decode[RefreshTokenReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
 	mut result := refresh_token_resp(mut ctx, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
@@ -24,7 +26,7 @@ fn (app &User) refresh_token(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn refresh_token_resp(mut ctx Context, req json.Any) !map[string]Any {
+fn refresh_token_resp(mut ctx Context, req RefreshTokenReq) !RefreshTokenResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -35,17 +37,15 @@ fn refresh_token_resp(mut ctx Context, req json.Any) !map[string]Any {
 	}
 
 	time_now := time.now()
-	secret := req.as_map()['secret'] or { '' }.str()
 	expired_at := time_now.add_days(30).unix()
-	req_user_id := req.as_map()['req_user_id'] or { '' }.str()
 	// 禁用目前的所有token
-	mut sys_token := orm.new_query[schema_sys.SysToken](db)
-	sys_token.set('status=?', 1)!.where('id=?', req_user_id)!.update()!
+	mut core_token := orm.new_query[schema_core.CoreToken](db)
+	core_token.set('status=?', 1)!.where('id=?', req.user_id)!.update()!
 
 	// 生成 token
 	mut payload := jwt.JwtPayload{
 		iss: 'v-admin'
-		sub: req_user_id
+		sub: req.user_id
 		// aud: ['api-service', 'webapp']
 		exp: expired_at
 		nbf: time_now.unix()
@@ -54,28 +54,41 @@ fn refresh_token_resp(mut ctx Context, req json.Any) !map[string]Any {
 		// 自定义业务字段 (Custom Claims)
 		roles:     ['', '']
 		client_ip: ctx.ip()
-		device_id: req.as_map()['device_id'] or { '' }.str()
+		device_id: req.device_id
 	}
-	token := jwt.jwt_generate(secret, payload)
+	token := jwt.jwt_generate(req.secret, payload)
 
-	mut sys_user := orm.new_query[schema_sys.SysUser](db)
-	mut username := sys_user.select('username')!.where('id = ?', req_user_id)!.limit(1)!.query()!
+	mut core_user := orm.new_query[schema_core.CoreUser](db)
+	mut username := core_user.select('username')!.where('id = ?', req.user_id)!.limit(1)!.query()!
 	// token 写入数据库
-	new_token := schema_sys.SysToken{
+	new_token := schema_core.CoreToken{
 		id:         rand.uuid_v7()
 		status:     u8(0)
-		user_id:    req_user_id
+		user_id:    req.user_id
 		username:   username.str()
 		token:      token
-		source:     req.as_map()['source'] or { 'Core' }.str()
+		source:     req.source
 		expired_at: time.unix(expired_at)
-		created_at: req.as_map()['created_at'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
-		updated_at: req.as_map()['updated_at'] or { time.now() }.to_time()!
+		created_at: time_now //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
+		updated_at: time_now
 	}
-	sys_token.insert(new_token)! // 新token插入数据库
+	core_token.insert(new_token)! // 新token插入数据库
 
-	mut data := map[string]Any{}
-	data['expired_at'] = expired_at.str()
-	data['token'] = token
-	return data
+	return RefreshTokenResp{
+		expired_at: time.unix(expired_at)
+		token:      token
+	}
+}
+
+struct RefreshTokenReq {
+	token     string @[json: 'token']
+	secret    string @[json: 'secret']
+	user_id   string @[json: 'user_id']
+	source    string @[json: 'source']
+	device_id string @[json: 'device_id']
+}
+
+struct RefreshTokenResp {
+	expired_at time.Time @[json: 'expired_at']
+	token      string    @[json: 'token']
 }

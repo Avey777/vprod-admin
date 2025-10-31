@@ -24,7 +24,7 @@ fn (app &Role) update_role(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn update_role_resp(mut ctx Context, req UpdateTenantRoleReq) !string {
+fn update_role_resp(mut ctx Context, req UpdateTenantRoleReq) !UpdateTenantRoleResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -47,7 +47,9 @@ fn update_role_resp(mut ctx Context, req UpdateTenantRoleReq) !string {
 		.where('id = ?', req.role_id)!
 		.update()!
 
-	return 'Update Tenant Role successfully'
+	return UpdateTenantRoleResp{
+		msg: 'Update Tenant Role successfully'
+	}
 }
 
 struct UpdateTenantRoleReq {
@@ -61,4 +63,8 @@ struct UpdateTenantRoleReq {
 	sort           u64       @[json: 'sort']
 	data_scope     u8        @[json: 'data_scope']
 	updated_at     time.Time @[json: 'updated_at']
+}
+
+struct UpdateTenantRoleResp {
+	msg string @[json: 'msg']
 }

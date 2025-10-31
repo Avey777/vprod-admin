@@ -37,7 +37,7 @@ fn (app &RolePermission) update_api_permission(mut ctx Context) veb.Result {
 // -------------------------------
 // 核心逻辑：删除旧权限 + 插入新权限
 // -------------------------------
-fn update_api__permission_resp(mut ctx Context, req UpdateApiReq) !string {
+fn update_api__permission_resp(mut ctx Context, req UpdateApiReq) !UpdateApiResp {
 	log.debug('${@METHOD} ${@MOD}.${@FILE_LINE}')
 
 	mut db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -81,7 +81,9 @@ fn update_api__permission_resp(mut ctx Context, req UpdateApiReq) !string {
 	}
 
 	log.info('Updated ${req.api_ids.len} api permissions for role=${req.role_id}')
-	return 'Role api permissions updated successfully'
+	return UpdateApiResp{
+		msg: 'Role api permissions updated successfully'
+	}
 }
 
 struct UpdateApiReq {
@@ -90,4 +92,8 @@ struct UpdateApiReq {
 	api_ids     []string @[json: 'api_ids']
 	source_type string   @[json: 'source_type']
 	source_id   string   @[json: 'source_id']
+}
+
+struct UpdateApiResp {
+	msg string @[json: 'msg']
 }

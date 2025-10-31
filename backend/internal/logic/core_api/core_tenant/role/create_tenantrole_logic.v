@@ -25,7 +25,7 @@ fn (app &Role) create_role(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn create_role_resp(mut ctx Context, req CreateTenantRoleReq) !string {
+fn create_role_resp(mut ctx Context, req CreateTenantRoleReq) !CreateTenantRoleResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -54,7 +54,9 @@ fn create_role_resp(mut ctx Context, req CreateTenantRoleReq) !string {
 	mut core_role := orm.new_query[schema_core.CoreRole](db)
 	core_role.insert(roles)!
 
-	return 'Tenant role created successfully'
+	return CreateTenantRoleResp{
+		msg: 'Tenant role created successfully'
+	}
 }
 
 struct CreateTenantRoleReq {
@@ -68,4 +70,8 @@ struct CreateTenantRoleReq {
 	type           string  @[json: 'type']
 	updater_id     ?string @[json: 'updater_id']
 	creator_id     ?string @[json: 'creator_id']
+}
+
+struct CreateTenantRoleResp {
+	msg string @[json: 'msg']
 }

@@ -23,7 +23,7 @@ fn (app &Api) delete_api(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn delete_api_resp(mut ctx Context, req DeleteCoreApiReq) !string {
+fn delete_api_resp(mut ctx Context, req DeleteCoreApiReq) !DeleteCoreApiResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -37,9 +37,15 @@ fn delete_api_resp(mut ctx Context, req DeleteCoreApiReq) !string {
 	sys_api.delete()!.where('id = ?', req.id)!.update()!
 	// sys_api.set('del_flag = ?', 1)!.where('id = ?', req.id)!.update()!
 
-	return 'API deleted successfully'
+	return DeleteCoreApiResp{
+		msg: 'API deleted successfully'
+	}
 }
 
 struct DeleteCoreApiReq {
 	id string @[json: 'id'; required]
+}
+
+struct DeleteCoreApiResp {
+	msg string
 }
