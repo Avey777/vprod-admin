@@ -34,7 +34,6 @@ pub fn json_success[T](status_code int,  respose_data T) ApiSuccessResponse[T] {
 		code:       status_code
 		status:     true
 		request_id: uuid
-		// msg:        message_success
 		data: respose_data
 	}
 	return response
