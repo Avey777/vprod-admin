@@ -17,5 +17,5 @@ fn (app &Base) init_all(mut ctx Context) veb.Result {
 	app.init_sys(mut ctx)
 
 	log.debug('Database init_all success')
-	return ctx.json(json_success_optparams(message: 'all database init Successfull'))
+	return ctx.json(json_success_optparams(data: 'all database init Successfull'))
 }

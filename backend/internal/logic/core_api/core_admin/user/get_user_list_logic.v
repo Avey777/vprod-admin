@@ -16,7 +16,7 @@ fn (app &User) user_list(mut ctx Context) veb.Result {
 
 	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
 	mut result := user_list_resp(mut ctx, req) or {
-		return ctx.json(api.json_error(500, 'Internal Server Error:${err}'))
+		return ctx.json(api.json_error_500('Internal Server Error:${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
