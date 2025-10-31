@@ -11,7 +11,7 @@ pub fn (mut app AliasApp) get(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 	dump(ctx.config)
 	dump(ctx.config.web.port)
-	return ctx.json(api.json_success(code:200, data:'req success',))
+	return ctx.json(api.json_success(code: 200, data: 'req success'))
 }
 
 @['/static/403'; get; post]
