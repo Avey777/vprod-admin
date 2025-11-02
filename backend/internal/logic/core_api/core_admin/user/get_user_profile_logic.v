@@ -4,7 +4,7 @@ import veb
 import log
 import orm
 import x.json2 as json
-import internal.structs.schema_sys
+import internal.structs.schema_core
 import common.api
 import internal.structs { Context }
 
@@ -32,8 +32,8 @@ fn user_profile_resp(mut ctx Context, req UserProfileReq) !UserProfileResp {
 		}
 	}
 
-	mut sys_user := orm.new_query[schema_sys.SysUser](db)
-	result := sys_user.select('id = ?', req.user_id)!.query()!
+	mut core_user := orm.new_query[schema_core.CoreUser](db)
+	result := core_user.select('id = ?', req.user_id)!.query()!
 	dump(result)
 
 	if result.len == 0 {
@@ -44,7 +44,6 @@ fn user_profile_resp(mut ctx Context, req UserProfileReq) !UserProfileResp {
 	data := UserProfileResp{
 		nickname: row.nickname
 		avatar:   row.avatar or { '' }
-		mobile:   row.mobile or { '' }
 		email:    row.email or { '' }
 	}
 
@@ -58,6 +57,5 @@ struct UserProfileReq {
 struct UserProfileResp {
 	nickname string @[json: 'nickname']
 	avatar   string @[json: 'avatar']
-	mobile   string @[json: 'mobile']
 	email    string @[json: 'email']
 }
