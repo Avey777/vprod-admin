@@ -5,7 +5,7 @@ import log
 import orm
 import time
 import x.json2 as json
-import internal.structs.schema_sys
+import internal.structs.schema_core
 import common.api
 import internal.structs { Context }
 
@@ -33,31 +33,21 @@ fn update_user_resp(mut ctx Context, req UpdateUserReq) !UpdateUserResp {
 		}
 	}
 
-	mut user_positions := []schema_sys.SysUserPosition{cap: req.position_ids.len}
-	for position_id in req.position_ids {
-		user_positions << schema_sys.SysUserPosition{
-			user_id:     req.user_id
-			position_id: position_id
-		}
-	}
-
-	mut user_roles := []schema_sys.SysUserRole{cap: req.role_ids.len}
+	mut user_roles := []schema_core.CoreRoleTenantMember{cap: req.role_ids.len}
 	for role_id in req.role_ids {
-		user_roles << schema_sys.SysUserRole{
-			user_id: req.user_id
-			role_id: role_id
+		user_roles << schema_core.CoreRoleTenantMember{
+			member_id: req.user_id
+			role_id:   role_id
 		}
 	}
 
-	mut sys_user := orm.new_query[schema_sys.SysUser](db)
-	mut user_position := orm.new_query[schema_sys.SysUserPosition](db)
-	mut user_role := orm.new_query[schema_sys.SysUserRole](db)
+	mut sys_user := orm.new_query[schema_core.CoreUser](db)
+	mut user_role := orm.new_query[schema_core.CoreRoleTenantMember](db)
 
 	sys_user.set('avatar = ?', req.avatar)!
 		.set('email = ?', req.email)!
 		.set('mobile = ?', req.mobile)!
 		.set('nickname = ?', req.nickname)!
-		.set('department_id = ?', req.department_id)!
 		.set('description = ?', req.description)!
 		.set('home_path = ?', req.home_path)!
 		.set('password = ?', req.password)!
@@ -66,9 +56,6 @@ fn update_user_resp(mut ctx Context, req UpdateUserReq) !UpdateUserResp {
 		.set('updated_at = ?', req.updated_at)!
 		.where('id = ?', req.user_id)!
 		.update()!
-
-	user_position.delete()!.where('user_id = ?', req.user_id)!
-		.insert_many(user_positions)!
 
 	user_role.delete()!.where('user_id = ?', req.user_id)!
 		.insert_many(user_roles)!
@@ -79,20 +66,18 @@ fn update_user_resp(mut ctx Context, req UpdateUserReq) !UpdateUserResp {
 }
 
 struct UpdateUserReq {
-	user_id       string    @[json: 'user_id']
-	position_ids  []string  @[json: 'position_ids']
-	role_ids      []string  @[json: 'role_ids']
-	avatar        string    @[json: 'avatar']
-	department_id string    @[json: 'department_id']
-	description   string    @[json: 'description']
-	email         string    @[json: 'email']
-	home_path     string    @[json: 'home_path']
-	mobile        string    @[json: 'mobile']
-	nickname      string    @[json: 'nickname']
-	password      string    @[json: 'password']
-	status        u8        @[default: 0; json: 'status']
-	username      string    @[json: 'username']
-	updated_at    time.Time @[json: 'updated_at']
+	user_id     string    @[json: 'user_id']
+	role_ids    []string  @[json: 'role_ids']
+	avatar      string    @[json: 'avatar']
+	description string    @[json: 'description']
+	email       string    @[json: 'email']
+	home_path   string    @[json: 'home_path']
+	mobile      string    @[json: 'mobile']
+	nickname    string    @[json: 'nickname']
+	password    string    @[json: 'password']
+	status      u8        @[default: 0; json: 'status']
+	username    string    @[json: 'username']
+	updated_at  time.Time @[json: 'updated_at']
 }
 
 struct UpdateUserResp {
