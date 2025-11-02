@@ -12,7 +12,9 @@ import internal.structs { Context }
 fn (app &User) user_profile(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	req := json.decode[UserProfileReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
 	mut result := user_profile_resp(mut ctx, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
@@ -20,7 +22,7 @@ fn (app &User) user_profile(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn user_profile_resp(mut ctx Context, req json.Any) !map[string]Any {
+fn user_profile_resp(mut ctx Context, req UserProfileReq) !UserProfileResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -30,22 +32,32 @@ fn user_profile_resp(mut ctx Context, req json.Any) !map[string]Any {
 		}
 	}
 
-	user_id := req.as_map()['user_id'] or { '' }.str()
-
 	mut sys_user := orm.new_query[schema_sys.SysUser](db)
-	result := sys_user.select('id = ?', user_id)!.query()!
+	result := sys_user.select('id = ?', req.user_id)!.query()!
 	dump(result)
 
-	mut datalist := []map[string]Any{} // map空数组初始化
-	for row in result {
-		mut data := map[string]Any{} // map初始化
-		data['nickname'] = row.nickname
-		data['avatar'] = row.avatar or { '' }
-		data['mobile'] = row.mobile or { '' }
-		data['email'] = row.email or { '' }
-
-		datalist << data //追加data到maplist 数组
+	if result.len == 0 {
+		return error('User not found')
 	}
 
-	return datalist[0]
+	row := result[0]
+	data := UserProfileResp{
+		nickname: row.nickname
+		avatar:   row.avatar or { '' }
+		mobile:   row.mobile or { '' }
+		email:    row.email or { '' }
+	}
+
+	return data
+}
+
+struct UserProfileReq {
+	user_id string @[json: 'user_id']
+}
+
+struct UserProfileResp {
+	nickname string @[json: 'nickname']
+	avatar   string @[json: 'avatar']
+	mobile   string @[json: 'mobile']
+	email    string @[json: 'email']
 }

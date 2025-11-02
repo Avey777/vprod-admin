@@ -13,7 +13,9 @@ import internal.structs { Context }
 fn (app &User) update_user_profile_id(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	req := json.decode[UpdateUserProfileReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
 	mut result := update_user_profile_resp(mut ctx, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
@@ -21,7 +23,7 @@ fn (app &User) update_user_profile_id(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-fn update_user_profile_resp(mut ctx Context, req json.Any) !map[string]Any {
+fn update_user_profile_resp(mut ctx Context, req UpdateUserProfileReq) !UpdateUserProfileResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
@@ -31,20 +33,28 @@ fn update_user_profile_resp(mut ctx Context, req json.Any) !map[string]Any {
 		}
 	}
 
-	user_id := req.as_map()['user_id'] or { '' }.str()
-	avatar := req.as_map()['avatar'] or { '' }.str()
-	email := req.as_map()['email'] or { '' }.str()
-	mobile := req.as_map()['mobile'] or { '' }.str()
-	nickname := req.as_map()['nickname'] or { '' }.str()
-
 	mut sys_user := orm.new_query[schema_sys.SysUser](db)
 
-	sys_user.set('avatar = ?', avatar)!
-		.set('email = ?', email)!
-		.set('mobile = ?', mobile)!
-		.set('nickname = ?', nickname)!
-		.where('id = ?', user_id)!
+	sys_user.set('avatar = ?', req.avatar)!
+		.set('email = ?', req.email)!
+		.set('mobile = ?', req.mobile)!
+		.set('nickname = ?', req.nickname)!
+		.where('id = ?', req.user_id)!
 		.update()!
 
-	return map[string]Any{}
+	return UpdateUserProfileResp{
+		msg: 'User profile updated successfully'
+	}
+}
+
+struct UpdateUserProfileReq {
+	user_id  string @[json: 'user_id']
+	avatar   string @[json: 'avatar']
+	email    string @[json: 'email']
+	mobile   string @[json: 'mobile']
+	nickname string @[json: 'nickname']
+}
+
+struct UpdateUserProfileResp {
+	msg string @[json: 'msg']
 }
