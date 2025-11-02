@@ -5,7 +5,7 @@ port = 9009
 timeout = 30
 
 [logging]
-log_level = 'debug' # 默认info [debug info warn error fatal]
+log_level = 'info' # 默认info [debug info warn error fatal]
 
 [i18nconf]
 Dir = './internal/i18n'
@@ -26,7 +26,7 @@ Dir = './internal/i18n'
 # get_timeout = 3  # 默认 3 second
 
 
-[dbconf_sys]
+[dbconf]
 type = 'tidb'
 host = 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com'
 port = '4000'
