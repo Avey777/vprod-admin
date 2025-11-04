@@ -39,5 +39,14 @@ pub fn (app &Base) init_core(mut ctx Context) veb.Result {
 	} or { return ctx.text('error creating table:  ${err}') }
 	log.info('schema_core init_core success')
 
+	log.info('insert core data')
+	sql_commands := [core_api, core_app, core_app_client, core_connector, core_menu, core_project,
+		core_role, core_role_api, core_role_menu, core_role_tenant_member, core_tenant,
+		core_tenant_member, core_tenant_subapp, core_token, core_user, core_user_connector]
+	for cmd in sql_commands {
+		db.exec(cmd) or { return ctx.json(api.json_error_500('执行 ${cmd} SQL失败: ${err}')) }
+		log.info('${cmd} init_core_data success')
+	}
+
 	return ctx.json(api.json_success_200('core database init Successfull'))
 }
