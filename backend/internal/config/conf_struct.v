@@ -45,20 +45,20 @@ pub:
 }
 
 // MiddlewaresConf is the config of middlewares.
-pub struct MddlewaresConf {
-pub:
-	trace      bool @[default: true; json: 'Trace']      // Enable trace middleware
-	log        bool @[default: true; json: 'Log']        // 日志中间件
-	prometheus bool @[default: true; json: 'Prometheus'] // Enable prometheus middleware
-	max_conns  bool @[default: true; json: 'MaxConns']   // Enable max connections middleware
-	breaker    bool @[default: true; json: 'Breaker']    // Enable circuit breaker middleware
-	shedding   bool @[default: true; json: 'Shedding']   // Enable shedding middleware
-	timeout    bool @[default: true; json: 'Timeout']    // 超时中间件
-	recover    bool @[default: true; json: 'Recover']    // Enable recover middleware
-	metrics    bool @[default: true; json: 'Metrics']    // Enable metrics middleware
-	max_bytes  bool @[default: true; json: 'MaxBytes']   // Enable max bytes middleware
-	gunzip     bool @[default: true; json: 'Gunzip']     // Enable gunzip middleware
-	i18n       bool @[default: true; json: 'I18n']       // Enable i18n middleware
-	tenant     bool @[default: false; json: 'Tenant']    // Enable tenant middleware
-	client_ip  bool @[default: false; json: 'ClientIP']  // Enable client IP middleware
-}
+// pub struct MddlewaresConf {
+// pub:
+// 	trace      bool @[default: true; json: 'Trace']      // Enable trace middleware
+// 	log        bool @[default: true; json: 'Log']        // 日志中间件
+// 	prometheus bool @[default: true; json: 'Prometheus'] // Enable prometheus middleware
+// 	max_conns  bool @[default: true; json: 'MaxConns']   // Enable max connections middleware
+// 	breaker    bool @[default: true; json: 'Breaker']    // Enable circuit breaker middleware
+// 	shedding   bool @[default: true; json: 'Shedding']   // Enable shedding middleware
+// 	timeout    bool @[default: true; json: 'Timeout']    // 超时中间件
+// 	recover    bool @[default: true; json: 'Recover']    // Enable recover middleware
+// 	metrics    bool @[default: true; json: 'Metrics']    // Enable metrics middleware
+// 	max_bytes  bool @[default: true; json: 'MaxBytes']   // Enable max bytes middleware
+// 	gunzip     bool @[default: true; json: 'Gunzip']     // Enable gunzip middleware
+// 	i18n       bool @[default: true; json: 'I18n']       // Enable i18n middleware
+// 	tenant     bool @[default: false; json: 'Tenant']    // Enable tenant middleware
+// 	client_ip  bool @[default: false; json: 'ClientIP']  // Enable client IP middleware
+// }
