@@ -2,6 +2,9 @@
   "hello": "Hello",
   "welcome": "Welcome to our service",
   "common": {
-    "success": "Successfully"
+    "success": "Successfully",
+    "msg": {
+      "Failed": "Failed"
+    }
   }
 }
