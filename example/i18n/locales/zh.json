@@ -2,6 +2,9 @@
   "hello": "你好",
   "welcome": "欢迎使用我们的服务",
   "common": {
-    "success": "成功"
+    "success": "成功",
+    "msg": {
+      "Failed": "Failed"
+    }
   }
 }
