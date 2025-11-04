@@ -44,7 +44,7 @@ pub:
 	get_timeout    i64 = 3   // 默认 3 second
 }
 
-// // MiddlewaresConf is the config of middlewares.
+// MiddlewaresConf is the config of middlewares.
 // pub struct MddlewaresConf {
 // pub:
 // 	trace      bool @[default: true; json: 'Trace']      // Enable trace middleware
@@ -61,46 +61,4 @@ pub:
 // 	i18n       bool @[default: true; json: 'I18n']       // Enable i18n middleware
 // 	tenant     bool @[default: false; json: 'Tenant']    // Enable tenant middleware
 // 	client_ip  bool @[default: false; json: 'ClientIP']  // Enable client IP middleware
-// }
-
-// // A PrivateKeyConf is a private key config.
-// struct PrivateKeyConf {
-// 	fingerprint string
-// 	key_file    string
-// }
-
-// // A SignatureConf is a signature config.
-// struct SignatureConf {
-// 	strict       bool          @[default: false; json: 'Strict'] // Enable strict signature validation
-// 	expiry       time.Duration @[default: 1; json: 'Expiry']     // Set the duration for signature expiry
-// 	private_keys []PrivateKeyConf // Configure private keys for signature validation
-// }
-
-// // AuthConf is a JWT config
-// struct AuthConf {
-// 	access_secret string @[json: 'optional,env=AUTH_SECRET'] // Configure access secret for JWT authentication
-// 	access_expire i64    @[json: 'optional,env=AUTH_EXPIRE'] // Configure access expiration time for JWT authentication
-// }
-
-// /* A RestConf is a http service config.
-// Why not name it as Conf, because we need to consider usage like:
-//  type Config struct {
-//     zrpc.RpcConf
-//     rest.RestConf
-//  }
-// if with the name Conf, there will be two Conf inside Config */
-// struct RestConf {
-// 	// service.ServiceConf
-// 	host          string        @[json: 'default=0.0.0.0,env=API_HOST']      // Configure host address for HTTP service
-// 	port          int           @[json: 'env=API_PORT']                      // Configure port number for HTTP service
-// 	cert_file     string        @[json: 'optional,env=API_CERT_FILE']        // Configure certificate file for HTTPS service
-// 	key_file      string        @[json: 'optional,env=API_KEY_FILE']         // Configure key file for HTTPS service
-// 	verbose       bool          @[json: 'optional,env=API_VERBOSE']          // Configure verbose mode for HTTP service
-// 	mmax_conns    int           @[json: 'default=10000,env=API_MAX_CONNS']   // Configure maximum number of concurrent connections for HTTP service
-// 	max_bytes     i64           @[json: 'default=1048576,env=API_MAX_BYTES'] // Configure maximum request body size for HTTP service
-// 	timeout       i64           @[json: 'default=3000,env=API_TIMEOUT']      // [milliseconds] Configure timeout for HTTP service
-// 	cpu_threshold i64           @[json: 'default=900,range=[0:1000)']
-// 	signature     SignatureConf @[json: 'optional,env=API_SIGNATURE']
-// 	// middlewares        MiddlewaresConf // There are default values for all the items in Middlewares
-// 	trace_ignore_paths []string @[json: 'optional'] // TraceIgnorePaths is paths blacklist for trace middleware
 // }
