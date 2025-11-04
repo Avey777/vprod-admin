@@ -10,7 +10,7 @@ pub struct Context {
 	veb.Context
 pub mut:
 	extra map[string]string = map[string]string{}
-	i18n  &I18nStore        = unsafe { nil } // 每个请求的 i18n 实例
+	i18n  &I18nStore        = unsafe { nil }
 }
 
 // ------------------------- I18n -------------------------
@@ -51,7 +51,7 @@ pub fn maybe_reload(mut s I18nStore) {
 	load_translations(mut s) or { eprintln('i18n load failed: ${err}') }
 }
 
-// 热加载 JSON，并支持多文件合并
+// 热加载 JSON，支持多文件合并
 pub fn load_translations(mut s I18nStore) ! {
 	if !os.exists(s.dir) {
 		return
@@ -82,15 +82,19 @@ pub fn load_translations(mut s I18nStore) ! {
 	}
 }
 
-// 查询翻译，先缓存 lang 再查找
+// 查询翻译，支持 fallback 到默认语言
 pub fn (s &I18nStore) t(lang string, key string) string {
 	selected := if lang in s.translations.keys() { lang } else { s.default_lang }
+
+	// 尝试请求语言
 	if key in s.translations[selected] {
 		return s.translations[selected][key]
 	}
+	// 回退到默认语言
 	if key in s.translations[s.default_lang] {
 		return s.translations[s.default_lang][key]
 	}
+	// 都没有就返回 key
 	return key
 }
 
@@ -180,6 +184,7 @@ fn main() {
 
 	mut app := &App{}
 
+	// 全局中间件，闭包显式继承 i18n
 	app.Middleware.global_handlers << fn [i18n] (mut ctx Context) {
 		i18n_middleware(mut ctx, i18n)
 	}

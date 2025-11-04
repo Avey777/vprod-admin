@@ -4,7 +4,7 @@
   "common": {
     "success": "成功",
     "msg": {
-      "Failed": "Failed"
+      "Failed": "失败"
     }
   }
 }
