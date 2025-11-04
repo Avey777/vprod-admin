@@ -46,21 +46,25 @@ REPLACE INTO `core_api` (`id`, `path`, `description`, `api_group`, `service_name
   ('00000000-0000-0000-0000-000000000042', '/core_api/admin/oauth_provider/update', 'apiDesc.updateProvider', 'oauth', 'Core', 'POST', 0, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
   ('00000000-0000-0000-0000-000000000043', '/core_api/admin/oauth_provider/delete', 'apiDesc.deleteProvider', 'oauth', 'Core', 'POST', 0, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
   ('00000000-0000-0000-0000-000000000044', '/core_api/admin/oauth_provider/list', 'apiDesc.getProviderList', 'oauth', 'Core', 'POST', 0, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
-  ('00000000-0000-0000-0000-000000000045', '/core_api/admin/oauth/login', 'apiDesc.oauthLogin', 'oauth', 'Core', 'POST', 1, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
+  ('00000000-0000-0000-0000-000000000045', '/core_api/tenant/oauth/login', 'apiDesc.oauthLogin', 'oauth', 'Core', 'POST', 1, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
   ('00000000-0000-0000-0000-000000000046', '/core_api/admin/oauth_provider', 'apiDesc.getProviderById', 'oauth', 'Core', 'POST', 0, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
-  ('00000000-0000-0000-0000-000000000047', '/core_api/admin/token/create', 'apiDesc.createToken', 'token', 'Core', 'POST', 0, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
-  ('00000000-0000-0000-0000-000000000048', '/core_api/admin/token/update', 'apiDesc.updateToken', 'token', 'Core', 'POST', 0, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
+  ('00000000-0000-0000-0000-000000000047', '/core_api/tenant/token/create', 'apiDesc.createToken', 'token', 'Core', 'POST', 0, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
+  ('00000000-0000-0000-0000-000000000048', '/core_api/tenant/token/update', 'apiDesc.updateToken', 'token', 'Core', 'POST', 0, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
   ('00000000-0000-0000-0000-000000000049', '/core_api/admin/token/delete', 'apiDesc.deleteToken', 'token', 'Core', 'POST', 0, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
   ('00000000-0000-0000-0000-000000000050', '/core_api/admin/token/list', 'apiDesc.getTokenList', 'token', 'Core', 'POST', 0, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
-  ('00000000-0000-0000-0000-000000000051', '/core_api/admin/token/logout', 'apiDesc.forceLoggingOut', 'token', 'Core', 'POST', 0, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
-  ('00000000-0000-0000-0000-000000000052', '/core_api/admin/token', 'apiDesc.getTokenById', 'token', 'Core', 'POST', 0, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
+  ('00000000-0000-0000-0000-000000000051', '/core_api/tenant/token/logout', 'apiDesc.forceLoggingOut', 'token', 'Core', 'POST', 0, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
+  ('00000000-0000-0000-0000-000000000052', '/core_api/tenant/token', 'apiDesc.getTokenById', 'token', 'Core', 'POST', 0, 'tenant', '00000000-0000-0000-0000-000000000000', NULL, '2024-11-18 00:54:02', NULL, '2024-11-18 00:54:02', 0, NULL);
 "
 
-pub const core_app = r'
-'
+pub const core_app = r"
+REPLACE INTO `vcore`.`core_application` (`id`, `project_id`, `name`, `logo`, `homepage_path`, `description`, `is_multi_tenant`, `max_subscribers`, `max_tenant_subscribes`, `subscribe_mode`, `status`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
+('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'WMS', '/logo', '/dashboard', 'WMS_ADMIN', 0, 0, 1, 1, 1, NULL, '2025-11-03 10:34:37', NULL, '2025-11-03 10:34:42', 0, NULL);
+"
 
-pub const core_app_client = r'
-'
+pub const core_app_client = r"
+REPLACE INTO `vcore`.`core_app_client` (`id`, `project_id`, `application_id`, `name`, `client_type`, `secret`, `redirect_url`, `status`, `updater_id`, `updated_at`, `creator_id`, `created_at`, `del_flag`, `deleted_at`) VALUES
+('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'APP', 0, 'jsalkfjlsjflsjldlsadkls', '/home', 1, NULL, '2025-11-03 10:36:16', NULL, '2025-11-03 10:36:14', 0, NULL);
+"
 
 pub const core_menu = r'
 '

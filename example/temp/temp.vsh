@@ -1,4 +1,4 @@
-#!/usr/bin/v run
+#!/usr/bin/env -S v run
 
 import x.json2
 import time
