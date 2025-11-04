@@ -41,7 +41,9 @@ pub fn new_i18n(dir string, default_lang string) !&I18nStore {
 	return s
 }
 
-// 仅在文件修改时才重新加载
+// ------------------------- 动态加载 -------------------------
+
+// 每次请求或定时检查文件修改或新文件
 pub fn maybe_reload(mut s I18nStore) {
 	now := time.now().unix()
 	if now - s.last_check < s.check_interval / 1000 {
@@ -51,7 +53,7 @@ pub fn maybe_reload(mut s I18nStore) {
 	load_translations(mut s) or { eprintln('i18n load failed: ${err}') }
 }
 
-// 热加载 JSON，支持多文件合并
+// 加载目录下所有 JSON 文件（支持新增文件）
 pub fn load_translations(mut s I18nStore) ! {
 	if !os.exists(s.dir) {
 		return
@@ -62,39 +64,40 @@ pub fn load_translations(mut s I18nStore) ! {
 		}
 		full_path := os.join_path(s.dir, file)
 		mod_time := int(os.file_last_mod_unix(full_path))
+
+		// 仅在文件新增或修改时加载
 		if file in s.mod_times && s.mod_times[file] == mod_time {
 			continue
 		}
+
 		content := os.read_file(full_path)!
 		data := json.decode[map[string]json.Any](content)!
 		lang := file.replace('.json', '')
 
 		if lang !in s.translations {
 			s.translations[lang] = map[string]string{}
+			println('New language loaded: ${lang}')
 		}
 
 		flat := flatten_map(data, '')
 		for k, v in flat {
-			s.translations[lang][k] = v // 合并
+			s.translations[lang][k] = v
 		}
 
 		s.mod_times[file] = mod_time
 	}
 }
 
-// 查询翻译，支持 fallback 到默认语言
+// 查询翻译
 pub fn (s &I18nStore) t(lang string, key string) string {
 	selected := if lang in s.translations.keys() { lang } else { s.default_lang }
 
-	// 尝试请求语言
 	if key in s.translations[selected] {
 		return s.translations[selected][key]
 	}
-	// 回退到默认语言
 	if key in s.translations[s.default_lang] {
 		return s.translations[s.default_lang][key]
 	}
-	// 都没有就返回 key
 	return key
 }
 
@@ -184,7 +187,6 @@ fn main() {
 
 	mut app := &App{}
 
-	// 全局中间件，闭包显式继承 i18n
 	app.Middleware.global_handlers << fn [i18n] (mut ctx Context) {
 		i18n_middleware(mut ctx, i18n)
 	}
