@@ -3,13 +3,14 @@ module main
 import os
 import x.json2 as json
 import veb
+import time
 
 // ------------------------- Context -------------------------
 pub struct Context {
 	veb.Context
 pub mut:
 	extra map[string]string = map[string]string{}
-	i18n  &I18nStore        = unsafe { nil } // 每个请求的 i18n 实例
+	i18n  &I18nStore        = unsafe { nil }
 }
 
 // ------------------------- I18n -------------------------
@@ -19,12 +20,14 @@ pub:
 	default_lang string
 	dir          string
 pub mut:
-	translations map[string]map[string]string
-	lang_cache   map[string]string
-	mod_times    map[string]int
+	translations   map[string]map[string]string
+	lang_cache     map[string]string
+	mod_times      map[string]int
+	last_check     i64
+	check_interval i64 = 2000 // 2秒检查一次
 }
 
-// 初始化 i18n
+// 创建 I18nStore
 pub fn new_i18n(dir string, default_lang string) !&I18nStore {
 	mut s := &I18nStore{
 		dir:          dir
@@ -32,9 +35,20 @@ pub fn new_i18n(dir string, default_lang string) !&I18nStore {
 		translations: map[string]map[string]string{}
 		lang_cache:   map[string]string{}
 		mod_times:    map[string]int{}
+		last_check:   0
 	}
 	load_translations(mut s)!
 	return s
+}
+
+// 仅在文件修改时才重新加载
+pub fn maybe_reload(mut s I18nStore) {
+	now := time.now().unix()
+	if now - s.last_check < s.check_interval / 1000 {
+		return
+	}
+	s.last_check = now
+	load_translations(mut s) or { eprintln('i18n load failed: ${err}') }
 }
 
 // 热加载 JSON
@@ -97,17 +111,17 @@ pub fn i18n_middleware(mut ctx Context, i18n &I18nStore) {
 	// 给 Context 注入 i18n 实例
 	ctx.i18n = i18n
 
-	mut s := ctx.i18n
-	load_translations(mut s) or { eprintln('i18n load failed: ${err}') }
+	// 仅在文件修改时才重新加载
+	maybe_reload(mut ctx.i18n)
 
-	lang_header := ctx.req.header.get(.accept_language) or { s.default_lang }
+	lang_header := ctx.req.header.get(.accept_language) or { ctx.i18n.default_lang }
 
-	if lang := s.lang_cache[lang_header] {
+	if lang := ctx.i18n.lang_cache[lang_header] {
 		ctx.extra['lang'] = lang
 	} else {
-		lang := parse_accept_language(lang_header, s)
+		lang := parse_accept_language(lang_header, ctx.i18n)
 		ctx.extra['lang'] = lang
-		s.lang_cache[lang_header] = lang
+		ctx.i18n.lang_cache[lang_header] = lang
 	}
 }
 
@@ -156,7 +170,6 @@ pub fn (app &App) debug_i18n(mut ctx Context) veb.Result {
 
 // ------------------------- Main -------------------------
 fn main() {
-	// 创建堆上 i18n 实例
 	i18n := new_i18n('locales', 'en') or { panic(err) }
 
 	mut app := &App{}
