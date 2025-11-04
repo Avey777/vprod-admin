@@ -10,7 +10,7 @@ pub struct Context {
 	veb.Context
 pub mut:
 	extra map[string]string = map[string]string{}
-	i18n  &I18nStore        = unsafe { nil }
+	i18n  &I18nStore        = unsafe { nil } // 每个请求的 i18n 实例
 }
 
 // ------------------------- I18n -------------------------
@@ -24,7 +24,7 @@ pub mut:
 	lang_cache     map[string]string
 	mod_times      map[string]int
 	last_check     i64
-	check_interval i64 = 2000 // 2秒检查一次
+	check_interval i64 = 2000 // 毫秒
 }
 
 // 创建 I18nStore
@@ -51,7 +51,7 @@ pub fn maybe_reload(mut s I18nStore) {
 	load_translations(mut s) or { eprintln('i18n load failed: ${err}') }
 }
 
-// 热加载 JSON
+// 热加载 JSON，并支持多文件合并
 pub fn load_translations(mut s I18nStore) ! {
 	if !os.exists(s.dir) {
 		return
@@ -68,12 +68,21 @@ pub fn load_translations(mut s I18nStore) ! {
 		content := os.read_file(full_path)!
 		data := json.decode[map[string]json.Any](content)!
 		lang := file.replace('.json', '')
-		s.translations[lang] = flatten_map(data, '')
+
+		if lang !in s.translations {
+			s.translations[lang] = map[string]string{}
+		}
+
+		flat := flatten_map(data, '')
+		for k, v in flat {
+			s.translations[lang][k] = v // 合并
+		}
+
 		s.mod_times[file] = mod_time
 	}
 }
 
-// 查询翻译
+// 查询翻译，先缓存 lang 再查找
 pub fn (s &I18nStore) t(lang string, key string) string {
 	selected := if lang in s.translations.keys() { lang } else { s.default_lang }
 	if key in s.translations[selected] {
@@ -108,10 +117,7 @@ fn flatten_map(data map[string]json.Any, prefix string) map[string]string {
 
 // ------------------------- Middleware -------------------------
 pub fn i18n_middleware(mut ctx Context, i18n &I18nStore) {
-	// 给 Context 注入 i18n 实例
 	ctx.i18n = i18n
-
-	// 仅在文件修改时才重新加载
 	maybe_reload(mut ctx.i18n)
 
 	lang_header := ctx.req.header.get(.accept_language) or { ctx.i18n.default_lang }
@@ -174,7 +180,6 @@ fn main() {
 
 	mut app := &App{}
 
-	// 注册全局中间件，闭包显式继承 i18n
 	app.Middleware.global_handlers << fn [i18n] (mut ctx Context) {
 		i18n_middleware(mut ctx, i18n)
 	}
