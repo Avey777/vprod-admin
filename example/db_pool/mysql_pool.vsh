@@ -1,4 +1,4 @@
-#!/usr/bin/v run
+#!/usr/bin/env -S v run
 
 import db.mysql
 import time

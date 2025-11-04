@@ -1,4 +1,4 @@
-#!/usr/bin/v run
+#!/usr/bin/env -S v run
 
 type Any0 = string | int | f64 | bool | []map[string]Any0
 
