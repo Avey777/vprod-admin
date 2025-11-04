@@ -30,31 +30,45 @@ pub mut:
 pub struct I18nStore {
 pub:
 	default_lang string
+	dir          string
 pub mut:
 	translations map[string]map[string]string
+	lang_cache   map[string]string
+	mod_times    map[string]i64
 }
 
 // 创建 I18nStore
 pub fn new_i18n_store(dir string, default_lang string) !&I18nStore {
-	mut translations := map[string]map[string]string{}
-	if !os.exists(dir) {
-		return &I18nStore{
-			translations: translations
-			default_lang: default_lang
-		}
+	mut store := &I18nStore{
+		dir:          dir
+		default_lang: default_lang
+		translations: map[string]map[string]string{}
+		lang_cache:   map[string]string{}
+		mod_times:    map[string]i64{}
 	}
-	for file in os.ls(dir)! {
+	store.load_translations()!
+	return store
+}
+
+// 加载或刷新 JSON 文件
+pub fn (mut s I18nStore) load_translations() ! {
+	if !os.exists(s.dir) {
+		return
+	}
+	for file in os.ls(s.dir)! {
 		if !file.ends_with('.json') {
 			continue
 		}
+		full_path := os.join_path(s.dir, file)
+		mod_time := os.file_last_mod_unix(full_path)
+		if file in s.mod_times && s.mod_times[file] == mod_time {
+			continue
+		}
+		content := os.read_file(full_path)!
+		data := json.decode[map[string]json.Any](content)!
 		lang := file.replace('.json', '')
-		content := os.read_file(os.join_path(dir, file))!
-		data := json.decode[map[string]json.Any](content)! // 支持嵌套
-		translations[lang] = flatten_map(data, '') // <- 传入空字符串作为前缀
-	}
-	return &I18nStore{
-		translations: translations
-		default_lang: default_lang
+		s.translations[lang] = flatten_map(data, '')
+		s.mod_times[file] = mod_time
 	}
 }
 
@@ -73,9 +87,7 @@ fn flatten_map(data map[string]json.Any, prefix string) map[string]string {
 					result[sk] = sv
 				}
 			}
-			else {
-				// 忽略非 string/map 值
-			}
+			else {}
 		}
 	}
 	return result
@@ -94,10 +106,21 @@ pub fn (s &I18nStore) t(lang string, key string) string {
 }
 
 // ------------------------- Middleware -------------------------
-pub fn i18n_middleware(mut ctx Context, store &I18nStore) {
+pub fn i18n_middleware(mut ctx Context, mut store I18nStore) {
+	// 动态加载 JSON
+	store.load_translations() or { eprintln('failed to load i18n: ${err}') }
+
 	lang_header := ctx.req.header.get(.accept_language) or { store.default_lang }
-	lang := parse_accept_language(lang_header, store)
-	ctx.extra['lang'] = lang
+
+	// 使用缓存
+	if lang := store.lang_cache[lang_header] {
+		ctx.extra['lang'] = lang
+	} else {
+		lang := parse_accept_language(lang_header, store)
+		ctx.extra['lang'] = lang
+		store.lang_cache[lang_header] = lang
+	}
+
 	ctx.i18n = store
 }
 
@@ -125,6 +148,22 @@ pub fn (app &App) index(mut ctx Context) veb.Result {
 	return ctx.text('i18n: ${msg}\n${welcome}\n${success}')
 }
 
+// 调试路由：打印当前语言所有 key/value
+@['/i18n/debug'; get]
+pub fn (app &App) debug_i18n(mut ctx Context) veb.Result {
+	mut lines := []string{}
+	lang := ctx.extra['lang'] or { ctx.i18n.default_lang }
+	translations := if lang in ctx.i18n.translations {
+		ctx.i18n.translations[lang].clone()
+	} else {
+		map[string]string{}
+	}
+	for k, v in translations {
+		lines << '${k} = ${v}'
+	}
+	return ctx.text(lines.join('\n'))
+}
+
 // ------------------------- Main -------------------------
 fn main() {
 	mut store := new_i18n_store('locales', 'en') or { panic(err) }
@@ -134,8 +173,8 @@ fn main() {
 	}
 
 	// 注册全局中间件
-	app.Middleware.global_handlers << fn [store] (mut ctx Context) {
-		i18n_middleware(mut ctx, store)
+	app.Middleware.global_handlers << fn [mut store] (mut ctx Context) {
+		i18n_middleware(mut ctx, mut store)
 	}
 
 	// 启动服务
@@ -145,3 +184,4 @@ fn main() {
 // ------------------------- 测试 -------------------------
 // curl -H "Accept-Language: en" http://localhost:9006/
 // curl -H "Accept-Language: zh" http://localhost:9006/
+// curl -H "Accept-Language: zh" http://localhost:9006/i18n/debug
