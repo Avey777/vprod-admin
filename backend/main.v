@@ -1,7 +1,5 @@
 module main
 
-// import time
-// import sync
 import internal.check
 
 fn main() {
