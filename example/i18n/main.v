@@ -41,9 +41,7 @@ pub fn new_i18n(dir string, default_lang string) !&I18nStore {
 	return s
 }
 
-// ------------------------- 动态加载 -------------------------
-
-// 每次请求或定时检查文件修改或新文件
+// ------------------------- 动态加载 + JSON 校验 + 日志 -------------------------
 pub fn maybe_reload(mut s I18nStore) {
 	now := time.now().unix()
 	if now - s.last_check < s.check_interval / 1000 {
@@ -53,7 +51,6 @@ pub fn maybe_reload(mut s I18nStore) {
 	load_translations(mut s) or { eprintln('i18n load failed: ${err}') }
 }
 
-// 加载目录下所有 JSON 文件（支持新增文件）
 pub fn load_translations(mut s I18nStore) ! {
 	if !os.exists(s.dir) {
 		return
@@ -65,18 +62,24 @@ pub fn load_translations(mut s I18nStore) ! {
 		full_path := os.join_path(s.dir, file)
 		mod_time := int(os.file_last_mod_unix(full_path))
 
-		// 仅在文件新增或修改时加载
 		if file in s.mod_times && s.mod_times[file] == mod_time {
 			continue
 		}
 
 		content := os.read_file(full_path)!
-		data := json.decode[map[string]json.Any](content)!
+
+		// JSON 解码，失败则跳过文件
+		data := json.decode[map[string]json.Any](content) or {
+			eprintln('i18n load failed for ${file}: ${err}')
+			continue
+		}
+
 		lang := file.replace('.json', '')
 
+		mut is_new := false
 		if lang !in s.translations {
 			s.translations[lang] = map[string]string{}
-			println('New language loaded: ${lang}')
+			is_new = true
 		}
 
 		flat := flatten_map(data, '')
@@ -85,10 +88,13 @@ pub fn load_translations(mut s I18nStore) ! {
 		}
 
 		s.mod_times[file] = mod_time
+
+		// 打印加载日志
+		println('i18n loaded: ${lang}, keys: ${s.translations[lang].len}, new: ${is_new}')
 	}
 }
 
-// 查询翻译
+// 查询翻译，支持 fallback
 pub fn (s &I18nStore) t(lang string, key string) string {
 	selected := if lang in s.translations.keys() { lang } else { s.default_lang }
 
@@ -187,6 +193,7 @@ fn main() {
 
 	mut app := &App{}
 
+	// 通过 closure 捕获 i18n
 	app.Middleware.global_handlers << fn [i18n] (mut ctx Context) {
 		i18n_middleware(mut ctx, i18n)
 	}
