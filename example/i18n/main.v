@@ -1,21 +1,15 @@
 module main
 
 import os
-import json
+import x.json2 as json
 import veb
 
+// ------------------------- Context -------------------------
 pub struct Context {
 	veb.Context
 pub mut:
 	extra map[string]string = map[string]string{}
 	i18n  &I18nStore
-}
-
-pub struct App {
-	// 嵌入中间件功能
-	veb.Middleware[Context]
-pub mut:
-	i18n &I18nStore
 }
 
 // Helper：在 Context 上增加 t 方法
@@ -24,7 +18,14 @@ pub fn (ctx &Context) t(key string) string {
 	return ctx.i18n.t(lang, key)
 }
 
-// I18nStore
+// ------------------------- App -------------------------
+pub struct App {
+	veb.Middleware[Context]
+pub mut:
+	i18n &I18nStore
+}
+
+// ------------------------- I18nStore -------------------------
 @[heap]
 pub struct I18nStore {
 pub:
@@ -33,6 +34,7 @@ pub mut:
 	translations map[string]map[string]string
 }
 
+// 创建 I18nStore
 pub fn new_i18n_store(dir string, default_lang string) !&I18nStore {
 	mut translations := map[string]map[string]string{}
 	if !os.exists(dir) {
@@ -47,8 +49,8 @@ pub fn new_i18n_store(dir string, default_lang string) !&I18nStore {
 		}
 		lang := file.replace('.json', '')
 		content := os.read_file(os.join_path(dir, file))!
-		data := json.decode(map[string]string, content)!
-		translations[lang] = data.clone()
+		data := json.decode[map[string]json.Any](content)! // 支持嵌套
+		translations[lang] = flatten_map(data, '') // <- 传入空字符串作为前缀
 	}
 	return &I18nStore{
 		translations: translations
@@ -56,6 +58,30 @@ pub fn new_i18n_store(dir string, default_lang string) !&I18nStore {
 	}
 }
 
+// 将嵌套 map 展平成点号路径 map
+fn flatten_map(data map[string]json.Any, prefix string) map[string]string {
+	mut result := map[string]string{}
+	for k, v in data {
+		full_key := if prefix == '' { k } else { '${prefix}.${k}' }
+		match v {
+			string {
+				result[full_key] = v
+			}
+			map[string]json.Any {
+				sub := flatten_map(v, full_key)
+				for sk, sv in sub {
+					result[sk] = sv
+				}
+			}
+			else {
+				// 忽略非 string/map 值
+			}
+		}
+	}
+	return result
+}
+
+// 查询翻译
 pub fn (s &I18nStore) t(lang string, key string) string {
 	selected := if lang in s.translations { lang } else { s.default_lang }
 	if key in s.translations[selected] {
@@ -67,7 +93,7 @@ pub fn (s &I18nStore) t(lang string, key string) string {
 	return key
 }
 
-// Middleware
+// ------------------------- Middleware -------------------------
 pub fn i18n_middleware(mut ctx Context, store &I18nStore) {
 	lang_header := ctx.req.header.get(.accept_language) or { store.default_lang }
 	lang := parse_accept_language(lang_header, store)
@@ -75,6 +101,7 @@ pub fn i18n_middleware(mut ctx Context, store &I18nStore) {
 	ctx.i18n = store
 }
 
+// 支持多语言优先级选择
 fn parse_accept_language(header string, store &I18nStore) string {
 	mut langs := []string{}
 	for part in header.split(',') {
@@ -89,7 +116,7 @@ fn parse_accept_language(header string, store &I18nStore) string {
 	return store.default_lang
 }
 
-// 路由处理函数
+// ------------------------- 路由 -------------------------
 @['/'; get]
 pub fn (app &App) index(mut ctx Context) veb.Result {
 	msg := ctx.t('hello')
@@ -98,7 +125,7 @@ pub fn (app &App) index(mut ctx Context) veb.Result {
 	return ctx.text('i18n: ${msg}\n${welcome}\n${success}')
 }
 
-// Main
+// ------------------------- Main -------------------------
 fn main() {
 	mut store := new_i18n_store('locales', 'en') or { panic(err) }
 
@@ -115,5 +142,6 @@ fn main() {
 	veb.run[App, Context](mut app, 9006)
 }
 
+// ------------------------- 测试 -------------------------
 // curl -H "Accept-Language: en" http://localhost:9006/
 // curl -H "Accept-Language: zh" http://localhost:9006/
