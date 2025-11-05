@@ -11,7 +11,7 @@ pub struct AliasApp {
 }
 
 // 模拟业务接口
-@['/user';get]
+@['/user'; get]
 fn (app &AliasApp) users(mut ctx Context) veb.Result {
 	mut q := service.new_query('users')
 	service.apply_data_scope(mut q, ctx, 'users')
@@ -19,7 +19,7 @@ fn (app &AliasApp) users(mut ctx Context) veb.Result {
 	return ctx.json(users)
 }
 
-@['/test';get]
+@['/test'; get]
 fn (app &AliasApp) test(mut ctx Context) veb.Result {
 	return ctx.json({
 		'msg': 'test endpoint, no data filter applied'
@@ -36,7 +36,6 @@ fn main() {
 	} else {
 		println('🚫 Data permission middleware disabled')
 	}
-
 
 	veb.run[AliasApp, Context](mut app, port)
 }
