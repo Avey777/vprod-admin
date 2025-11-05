@@ -54,7 +54,7 @@ v-admin
 - [ ] Data permission middleware
 - [x] Config Middleware
 - [x] Database connections pool Middleware
-- [ ] i18n
+- [x] i18n
 - [x] Multitenancy (tenant resolution) [多租户、多团队、多应用]
 - [ ] Support OpenAPI, generate OpenAPI data automatic (go-swagger)
 - [x] Permission: RBAC permission control

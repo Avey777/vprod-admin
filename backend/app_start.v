@@ -5,6 +5,7 @@ import log
 import internal.structs { Context }
 import internal.middleware
 import internal.config
+import internal.i18n
 import internal.routes { AliasApp }
 
 pub fn new_app() {
@@ -16,6 +17,8 @@ pub fn new_app() {
 	doc := loader.get_config() or { panic('Failed to load config: ${err}') }
 	log.debug('${doc}')
 	//********init_config_loader*******/
+
+	i18n_app := i18n.new_i18n('./etc/locales', 'zh') or { return }
 
 	//*******init_db_pool********/
 	log.debug('init_db_pool()')
@@ -34,6 +37,7 @@ pub fn new_app() {
 
 	app.use(middleware.config_middle(doc))
 	app.use(middleware.db_middleware(conn))
+	app.use(middleware.i18n_middleware(i18n_app))
 
 	app.routes_ifdef(conn, doc) // veb.Controller  使用路由控制器 | routes/routes_ifdef.v
 
