@@ -81,3 +81,29 @@ fn (mut app AliasApp) index(mut ctx Context) veb.Result {
 
 	return ctx.html(final_html)
 }
+
+@['/i18n'; get]
+pub fn (app &AliasApp) i18n(mut ctx Context) veb.Result {
+	lang := ctx.extra_i18n['lang'] or { ctx.i18n.default_lang }
+	success := ctx.i18n.t(lang, 'common.success')
+	create_success := ctx.i18n.t(lang, 'common.createSuccess')
+	init := ctx.i18n.t(lang, 'init.alreadyInit')
+	return ctx.text('i18n: ${success}\n${create_success}\n${init}')
+}
+
+@['/i18n/debug'; get]
+pub fn (app &AliasApp) i18n_debug(mut ctx Context) veb.Result {
+	lang := ctx.extra_i18n['lang'] or { ctx.i18n.default_lang }
+
+	translations := if lang in ctx.i18n.translations.keys() {
+		ctx.i18n.translations[lang].clone()
+	} else {
+		map[string]string{}
+	}
+
+	mut lines := []string{}
+	for k, v in translations {
+		lines << '${k} = ${v}'
+	}
+	return ctx.text(lines.join('\n'))
+}

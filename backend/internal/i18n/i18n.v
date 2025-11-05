@@ -1,17 +1,9 @@
-module main
+module i18n
 
-import os
-import x.json2 as json
-import veb
 import time
-
-// ------------------------- Context -------------------------
-pub struct Context {
-	veb.Context
-pub mut:
-	extra_i18n map[string]string = map[string]string{}
-	i18n       &I18nStore        = unsafe { nil }
-}
+import os
+import log
+import x.json2 as json
 
 // ------------------------- I18n -------------------------
 @[heap]
@@ -29,6 +21,8 @@ pub mut:
 
 // 创建 I18nStore
 pub fn new_i18n(dir string, default_lang string) !&I18nStore {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
 	mut s := &I18nStore{
 		dir:          dir
 		default_lang: default_lang
@@ -43,6 +37,8 @@ pub fn new_i18n(dir string, default_lang string) !&I18nStore {
 
 // ------------------------- 动态加载 + JSON 校验 + 日志 -------------------------
 pub fn maybe_reload(mut s I18nStore) {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
 	now := time.now().unix()
 	if now - s.last_check < s.check_interval / 1000 {
 		return
@@ -52,6 +48,8 @@ pub fn maybe_reload(mut s I18nStore) {
 }
 
 pub fn load_translations(mut s I18nStore) ! {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
 	if !os.exists(s.dir) {
 		return
 	}
@@ -96,6 +94,8 @@ pub fn load_translations(mut s I18nStore) ! {
 
 // 查询翻译，支持 fallback
 pub fn (s &I18nStore) t(lang string, key string) string {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
 	selected := if lang in s.translations.keys() { lang } else { s.default_lang }
 
 	if key in s.translations[selected] {
@@ -109,6 +109,8 @@ pub fn (s &I18nStore) t(lang string, key string) string {
 
 // 展平成点号路径
 fn flatten_map(data map[string]json.Any, prefix string) map[string]string {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
 	mut result := map[string]string{}
 	for k, v in data {
 		full_key := if prefix == '' { k } else { '${prefix}.${k}' }
@@ -126,83 +128,4 @@ fn flatten_map(data map[string]json.Any, prefix string) map[string]string {
 		}
 	}
 	return result
-}
-
-// ------------------------- Middleware -------------------------
-pub fn i18n_middleware(i18n &I18nStore) veb.MiddlewareOptions[Context] {
-	return veb.MiddlewareOptions[Context]{
-		handler: fn [i18n] (mut ctx Context) bool {
-			// 绑定 i18n
-			ctx.i18n = i18n
-			maybe_reload(mut ctx.i18n)
-
-			// 获取语言
-			lang_header := ctx.req.header.get(.accept_language) or { ctx.i18n.default_lang }
-
-			if lang := ctx.i18n.lang_cache[lang_header] {
-				ctx.extra_i18n['lang'] = lang
-			} else {
-				lang := parse_accept_language(lang_header, ctx.i18n)
-				ctx.extra_i18n['lang'] = lang
-				ctx.i18n.lang_cache[lang_header] = lang
-			}
-
-			return true // 允许继续处理
-		}
-	}
-}
-
-fn parse_accept_language(header string, s &I18nStore) string {
-	for part in header.split(',') {
-		code := part.split(';')[0].trim_space()
-		if code in s.translations.keys() {
-			return code
-		}
-	}
-	return s.default_lang
-}
-
-// ------------------------- App -------------------------
-pub struct App {
-	veb.Middleware[Context]
-}
-
-// ------------------------- 路由 -------------------------
-@['/'; get]
-pub fn (app &App) index(mut ctx Context) veb.Result {
-	lang := ctx.extra_i18n['lang'] or { ctx.i18n.default_lang }
-	hello := ctx.i18n.t(lang, 'hello')
-	welcome := ctx.i18n.t(lang, 'welcome')
-	success := ctx.i18n.t(lang, 'common.success')
-	msg := ctx.i18n.t(lang, 'common.msg.Failed')
-	return ctx.text('i18n: ${hello}\n${welcome}\n${success}\n${msg}')
-}
-
-@['/i18n/debug'; get]
-pub fn (app &App) debug_i18n(mut ctx Context) veb.Result {
-	lang := ctx.extra_i18n['lang'] or { ctx.i18n.default_lang }
-
-	translations := if lang in ctx.i18n.translations.keys() {
-		ctx.i18n.translations[lang].clone()
-	} else {
-		map[string]string{}
-	}
-
-	mut lines := []string{}
-	for k, v in translations {
-		lines << '${k} = ${v}'
-	}
-	return ctx.text(lines.join('\n'))
-}
-
-// ------------------------- Main -------------------------
-fn main() {
-	i18n_app := new_i18n('locales', 'en') or { panic(err) }
-
-	mut app := &App{}
-
-	// 通过 closure 捕获 i18n
-	app.use(i18n_middleware(i18n_app))
-
-	veb.run[App, Context](mut app, 9006)
 }
