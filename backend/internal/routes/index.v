@@ -82,6 +82,8 @@ fn (mut app AliasApp) index(mut ctx Context) veb.Result {
 	return ctx.html(final_html)
 }
 
+// curl -H "Accept-Language: en" http://localhost:9009/i18n
+// curl -H "Accept-Language: zh" http://localhost:9009/i18n
 @['/i18n'; get]
 pub fn (app &AliasApp) i18n(mut ctx Context) veb.Result {
 	lang := ctx.extra_i18n['lang'] or { ctx.i18n.default_lang }
@@ -91,6 +93,7 @@ pub fn (app &AliasApp) i18n(mut ctx Context) veb.Result {
 	return ctx.text('i18n: ${success}\n${create_success}\n${init}')
 }
 
+// curl -H "Accept-Language: zh" http://localhost:9009/i18n/debug
 @['/i18n/debug'; get]
 pub fn (app &AliasApp) i18n_debug(mut ctx Context) veb.Result {
 	lang := ctx.extra_i18n['lang'] or { ctx.i18n.default_lang }
