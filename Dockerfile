@@ -28,7 +28,7 @@ RUN apk add --no-cache \
 COPY --from=builder /app/app .
 COPY --from=builder /app/static ./static/
 COPY --from=builder /app/etc/config.toml ./etc/
-COPY --from=builder /app/etc/locales ./etc/
+COPY --from=builder /app/etc/locales ./etc/locales
 
 
 EXPOSE 9009

@@ -3,7 +3,7 @@ module middleware
 import veb
 import os
 import structs { Context }
-import data_perm {DataPermContext}
+import data_perm { DataPermContext }
 
 // --------------------------- 中间件实现 ---------------------------
 pub fn data_perm_middleware() veb.MiddlewareOptions[Context] {
