@@ -35,7 +35,7 @@ fn menu_list_resp(mut ctx Context, req GetMenuListByListReq) !GetMenuListByListR
 	mut core_menu := orm.new_query[schema_core.CoreMenu](db)
 	// 总页数查询 - 分页偏移量构造
 	mut count := sql db {
-		select count from schema_core.CoreUser
+		select count from schema_core.CoreMenu
 	}!
 	offset_num := (req.page - 1) * req.page_size
 	//*>>>*/

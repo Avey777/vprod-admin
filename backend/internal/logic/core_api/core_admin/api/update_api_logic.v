@@ -11,7 +11,7 @@ import internal.structs { Context }
 
 // Update api ||更新api
 @['/update_api'; post]
-fn (app &Api) update_token(mut ctx Context) veb.Result {
+fn (app &Api) update_api(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateCoreApiReq](ctx.req.data) or {
@@ -36,8 +36,6 @@ fn update_api_resp(mut ctx Context, req UpdateCoreApiReq) !UpdateCoreApiResp {
 
 	mut sys_api := orm.new_query[schema_core.CoreApi](db)
 
-	id := req.id
-
 	sys_api.set('path = ?', req.path)!
 		.set('description = ?', req.description or { '' })!
 		.set('api_group = ?', req.api_group)!
@@ -47,7 +45,7 @@ fn update_api_resp(mut ctx Context, req UpdateCoreApiReq) !UpdateCoreApiResp {
 		.set('source_type = ?', req.source_type)!
 		.set('source_id = ?', req.source_id)!
 		.set('updated_at = ?', time.now())!
-		.where('id = ?', id)!
+		.where('id = ?', req.id)!
 		.update()!
 
 	return UpdateCoreApiResp{
