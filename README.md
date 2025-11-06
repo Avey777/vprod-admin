@@ -10,21 +10,21 @@ v-admin 是一个后台管理系统，基于 veb构建适用于快速搭建后�
 v-admin
   backend                          # 单个服务目录，一般是某微服务名称
   ├── etc                                 # 静态配置文件目录
+  │   ├── locale
+  │   │   ├── zh.json
+  │   │   └── en.json
   │   └── example.yaml
   ├── app_start.v                         # veb 服务
   ├── main.v                              # 程序启动入口文件
   └── internal                            # 所有服务内部文件
       ├── config                          # 静态配置文件对应的结构体声明目录以及配置代码
-      │   └── check.v
+      │   └── conf.v
       ├── dbpool                          # 数据库连接池目录
       │    └── dbpool.v
       ├── handler                         # 可选，一般http服务会有这一层做外部请求处理，handler为固定后缀
       │   └── app_struct.v
       ├── i18n                            # 国际化(本地化)目录
-      │   ├── locale
-      │   │   ├── zh.json
-      │   │   └── en.json
-      │   └── vars.v
+      │   └── i18n.v
       ├── logic                           # 业务目录，所有业务编码文件都存放在这个目录下面，logic为固定后缀 | services 业务逻辑
       │   ├── sys_api/
       │   ├── pay_api/
@@ -39,8 +39,8 @@ v-admin
       │   └── routes.v
       ├── structs                         # 结构体存放目录 | models ORM模型定义
       │   └── xxx_structs.v
-      └── svc                             # (service context)依赖注入目录，logic的依赖都要在这里进行显式注入
-          └── service_context.v
+      └── check                           # 服务启动前配置以及数据库检查
+          └── check.v
 ```
 
 ---
