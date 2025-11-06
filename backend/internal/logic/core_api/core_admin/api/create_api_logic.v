@@ -2,7 +2,6 @@ module api
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import rand
@@ -36,7 +35,7 @@ fn create_api_resp(mut ctx Context, req CreateCoreApiReq) !CreateCoreApiResp {
 	}
 
 	time_now := time.now()
-	apis := schema_core.CoreApi{
+	data := schema_core.CoreApi{
 		id:           rand.uuid_v7()
 		path:         req.path // or { return error('path is required') }
 		description:  req.description or { '' }
@@ -50,8 +49,9 @@ fn create_api_resp(mut ctx Context, req CreateCoreApiReq) !CreateCoreApiResp {
 		updated_at:   req.updated_at or { time_now }
 	}
 
-	mut sys_api := orm.new_query[schema_core.CoreApi](db)
-	sys_api.insert(apis)!
+	sql db {
+		insert data into schema_core.CoreApi
+	} or { return error('Failed to insert api: ${err}') }
 
 	return CreateCoreApiResp{
 		msg: 'API created successfully'

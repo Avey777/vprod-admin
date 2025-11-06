@@ -35,7 +35,7 @@ fn api_list_resp(mut ctx Context, req GetCoreApiByListReq) !GetCoreApiByListResp
 	mut sys_api := orm.new_query[schema_core.CoreApi](db)
 	// 总页数查询 - 分页偏移量构造
 	mut count := sql db {
-		select count from schema_core.CoreUser
+		select count from schema_core.CoreApi
 	}!
 	offset_num := (req.page - 1) * req.page_size
 	//*>>>*/

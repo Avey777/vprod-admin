@@ -33,9 +33,9 @@ fn delete_menu_resp(mut ctx Context, req DeleteMenuReq) !DeleteCoreMenuResp {
 		}
 	}
 
-	mut sys_menu := orm.new_query[schema_core.CoreMenu](db)
-	sys_menu.delete()!.where('id = ?', req.id)!.update()!
-	// sys_menu.set('del_flag = ?', 1)!.where('id = ?', DeleteMenuReq)!.update()!
+	sql db {
+		delete from schema_core.CoreMenu where id == req.id
+	} or { return error('Failed to delete menu: ${err}') }
 
 	return DeleteCoreMenuResp{
 		msg: 'CoreMenu Deleted successfully'

@@ -2,7 +2,6 @@ module menu
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
 import rand
@@ -65,8 +64,10 @@ fn create_menu_resp(mut ctx Context, req CreateMenuReq) !CreateCoreMenuResp {
 		created_at:            req.created_at
 		updated_at:            req.updated_at
 	}
-	mut core_menu := orm.new_query[schema_core.CoreMenu](db)
-	core_menu.insert(menu)!
+
+	sql db {
+		insert menu into schema_core.CoreMenu
+	} or { return error('Failed to insert menu: ${err}') }
 
 	return CreateCoreMenuResp{
 		msg: 'CoreMenu created successfully'
