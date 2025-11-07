@@ -2,7 +2,6 @@ module menu
 
 import veb
 import log
-import orm
 import x.json2 as json
 import internal.structs.schema_core
 import common.api
