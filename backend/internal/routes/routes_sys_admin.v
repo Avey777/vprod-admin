@@ -25,29 +25,27 @@ fn (mut app AliasApp) routes_sys_admin(conn &dbpool.DatabasePool, doc_conf &conf
 	// 方式二：通过泛型的方式使用全局中间件，适合对多个控制器使用相同的中间件
 
 	//不需要token_jwt 认证
-	app.register_routes_no_token[Authentication, Context](mut &Authentication{}, '/sys_api/admin/authentication',
+	app.register_routes_no_token[Authentication, Context](mut &Authentication{}, '/sys_admin/authentication',
 		conn, doc_conf)
-	app.register_routes_no_token[MFA, Context](mut &MFA{}, '/sys_api/admin/mfa', conn,
-		doc_conf)
+	app.register_routes_no_token[MFA, Context](mut &MFA{}, '/sys_admin/mfa', conn, doc_conf)
 
 	// 必须通过token_jwt 认证
-	app.register_routes_sys[Admin, Context](mut &Admin{}, '/sys_api/admin', conn, doc_conf)
-	app.register_routes_sys[User, Context](mut &User{}, '/sys_api/admin/user', conn, doc_conf)
-	app.register_routes_sys[Token, Context](mut &Token{}, '/sys_api/admin/token', conn,
-		doc_conf)
-	app.register_routes_sys[Role, Context](mut &Role{}, '/sys_api/admin/role', conn, doc_conf)
-	app.register_routes_sys[RolePermission, Context](mut &RolePermission{}, '/sys_api/admin/role_permission',
+	app.register_routes_sys[Admin, Context](mut &Admin{}, '/sys_admin', conn, doc_conf)
+	app.register_routes_sys[User, Context](mut &User{}, '/sys_admin/user', conn, doc_conf)
+	app.register_routes_sys[Token, Context](mut &Token{}, '/sys_admin/token', conn, doc_conf)
+	app.register_routes_sys[Role, Context](mut &Role{}, '/sys_admin/role', conn, doc_conf)
+	app.register_routes_sys[RolePermission, Context](mut &RolePermission{}, '/sys_admin/role_permission',
 		conn, doc_conf)
-	app.register_routes_sys[Position, Context](mut &Position{}, '/sys_api/admin/position',
+	app.register_routes_sys[Position, Context](mut &Position{}, '/sys_admin/position',
 		conn, doc_conf)
-	app.register_routes_sys[Menu, Context](mut &Menu{}, '/sys_api/admin/menu', conn, doc_conf)
-	app.register_routes_sys[Dictionary, Context](mut &Dictionary{}, '/sys_api/admin/dictionary',
+	app.register_routes_sys[Menu, Context](mut &Menu{}, '/sys_admin/menu', conn, doc_conf)
+	app.register_routes_sys[Dictionary, Context](mut &Dictionary{}, '/sys_admin/dictionary',
 		conn, doc_conf)
-	app.register_routes_sys[DictionaryDetail, Context](mut &DictionaryDetail{}, '/sys_api/admin/dictionarydetail',
+	app.register_routes_sys[DictionaryDetail, Context](mut &DictionaryDetail{}, '/sys_admin/dictionarydetail',
 		conn, doc_conf)
-	app.register_routes_sys[Department, Context](mut &Department{}, '/sys_api/admin/department',
+	app.register_routes_sys[Department, Context](mut &Department{}, '/sys_admin/department',
 		conn, doc_conf)
-	app.register_routes_sys[Configuration, Context](mut &Configuration{}, '/sys_api/admin/configuration',
+	app.register_routes_sys[Configuration, Context](mut &Configuration{}, '/sys_admin/configuration',
 		conn, doc_conf)
-	app.register_routes_sys[Api, Context](mut &Api{}, '/sys_api/admin/api', conn, doc_conf)
+	app.register_routes_sys[Api, Context](mut &Api{}, '/sys_admin/api', conn, doc_conf)
 }
