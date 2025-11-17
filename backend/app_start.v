@@ -35,12 +35,22 @@ pub fn new_app() {
 		started: chan bool{cap: 1} // 关键：正确初始化通道
 	} // 实例化 App 结构体 并返回指针
 
-	app.use(middleware.config_middle(doc))
-	app.use(middleware.db_middleware(conn))
-	app.use(middleware.i18n_middleware(i18n_app))
-	app.use(veb.encode_gzip[Context]())
+	// 全局 Context
+	mut ctx := &Context{
+		dbpool: conn
+		config: doc
+		i18n:   i18n_app
+	}
 
-	app.routes_ifdef(conn, doc) // veb.Controller  使用路由控制器 | routes/routes_ifdef.v
+	// 路由控制器,仅作用于非子路由(必须,不然会报错)
+	app.use(middleware.cores_middleware_generic())
+	app.use(middleware.logger_middleware_generic())
+	app.use(middleware.config_middle(ctx.config))
+	app.use(middleware.db_middleware(ctx.dbpool))
+	app.use(middleware.i18n_middleware(ctx.i18n))
+	app.use(veb.encode_gzip[Context]())
+	// 子路由控制器
+	app.setup_conditional_routes(mut ctx)
 
 	veb.run_at[AliasApp, Context](mut app,
 		host:               ''

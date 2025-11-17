@@ -11,7 +11,7 @@ pub struct Context {
 pub mut:
 	dbpool      &dbpool.DatabasePool
 	config      &config.GlobalConfig
-	jwt_payload JwtPayload
+	jwt_payload ?JwtPayload
 
 	i18n       &i18n.I18nStore   = unsafe { nil }
 	extra_i18n map[string]string = map[string]string{}
