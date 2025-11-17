@@ -31,17 +31,15 @@ pub fn new_app() {
 	}
 	//*******init_db_pool********/
 
-
-
 	mut app := &AliasApp{
 		started: chan bool{cap: 1} // 关键：正确初始化通道
 	} // 实例化 App 结构体 并返回指针
 
 	// 全局 Context
 	mut ctx := &Context{
-		dbpool:      conn
-		config:      doc
-		i18n:        i18n_app
+		dbpool: conn
+		config: doc
+		i18n:   i18n_app
 	}
 
 	// 路由控制器,仅作用于非子路由(必须,不然会报错)
