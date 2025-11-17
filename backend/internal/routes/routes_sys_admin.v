@@ -22,9 +22,9 @@ fn (mut app AliasApp) routes_sys_admin(mut ctx Context) {
 	// 方式二：通过泛型的方式使用全局中间件，适合对多个控制器使用相同的中间件
 
 	// 不需要token_jwt 认证
-	app.register_routes_no_token[Authentication, Context](mut &Authentication{}, '/sys_admin/authentication', mut
+	app.register_routes_no_auth[Authentication, Context](mut &Authentication{}, '/sys_admin/authentication', mut
 		ctx)
-	app.register_routes_no_token[MFA, Context](mut &MFA{}, '/sys_admin/mfa', mut ctx)
+	app.register_routes_no_auth[MFA, Context](mut &MFA{}, '/sys_admin/mfa', mut ctx)
 
 	// 必须通过token_jwt 认证
 	app.register_routes_sys[Admin, Context](mut &Admin{}, '/sys_admin', mut ctx)

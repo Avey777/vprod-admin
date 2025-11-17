@@ -49,6 +49,7 @@ pub fn new_app() {
 	app.use(middleware.db_middleware(ctx.dbpool))
 	app.use(middleware.i18n_middleware(ctx.i18n))
 	app.use(veb.encode_gzip[Context]())
+
 	// 子路由控制器
 	app.setup_conditional_routes(mut ctx)
 

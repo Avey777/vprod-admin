@@ -11,7 +11,7 @@ fn (mut app AliasApp) routes_db(mut ctx Context) {
 	mut base_app := &Base{}
 	base_app.use(handler: middleware.cores_middleware)
 	base_app.use(handler: middleware.logger_middleware)
-	// base_app.use(middleware.config_middle(doc_conf))
+	base_app.use(middleware.config_middle(ctx.config))
 	base_app.use(middleware.db_middleware(ctx.dbpool))
 	app.register_controller[Base, Context]('/base', mut base_app) or { log.error('${err}') }
 }
