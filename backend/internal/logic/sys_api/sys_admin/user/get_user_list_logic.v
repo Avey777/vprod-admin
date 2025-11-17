@@ -13,9 +13,18 @@ import internal.structs { Context }
 fn (app &User) user_list(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
+	println('wowowowowowowoow:${ctx.config}')
 	req := json.decode[GetUserListReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
+	// 添加参数验证
+	if req.page_size <= 0 {
+		return ctx.json(api.json_error_500('page_size must be a positive integer'))
+	}
+	if req.page <= 0 {
+		return ctx.json(api.json_error_500('page must be a positive integer'))
+	}
+
 	mut result := user_list_resp(mut ctx, req) or {
 		return ctx.json(api.json_error_500('Internal Server Error:${err}'))
 	}
