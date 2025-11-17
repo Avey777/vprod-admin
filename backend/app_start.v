@@ -2,12 +2,10 @@ module main
 
 import veb
 import log
-import time
 import internal.structs { Context }
 import internal.middleware
 import internal.config
 import internal.i18n
-import common.jwt
 import internal.routes { AliasApp }
 
 pub fn new_app() {
@@ -33,31 +31,20 @@ pub fn new_app() {
 	}
 	//*******init_db_pool********/
 
-	// 创建全局 Context
-	mut ctx := &Context{
-		dbpool:      conn
-		config:      doc
-		i18n:        i18n_app
-		jwt_payload: jwt.JwtPayload{
-			iss: 'vprod-workspase'
-			sub: '0196b736-f807-73f0-8731-7a08c0ed75ea' // 用户唯一标识 (Subject)
-			aud: ['api-service', 'webapp']
-			exp: time.now().add_days(30).unix()
-			nbf: time.now().unix()
-			iat: time.now().unix()
-			jti: '5907af3a-3f5a-4086-aaeb-68eca283d8d2' // JWT唯一标识 (JWT ID)，防重防攻击
-			// 自定义业务字段 (Custom Claims)
-			roles:     ['admin', 'editor']
-			client_ip: '192.168.1.100'
-			device_id: 'device-xyz'
-		} // 根据你的 JwtPayload 结构初始化
-	}
+
 
 	mut app := &AliasApp{
 		started: chan bool{cap: 1} // 关键：正确初始化通道
 	} // 实例化 App 结构体 并返回指针
 
-	// 路由控制器,仅作用于非子路由
+	// 全局 Context
+	mut ctx := &Context{
+		dbpool:      conn
+		config:      doc
+		i18n:        i18n_app
+	}
+
+	// 路由控制器,仅作用于非子路由(必须,不然会报错)
 	app.use(middleware.cores_middleware_generic())
 	app.use(middleware.logger_middleware_generic())
 	app.use(middleware.config_middle(ctx.config))
@@ -65,7 +52,7 @@ pub fn new_app() {
 	app.use(middleware.i18n_middleware(ctx.i18n))
 	app.use(veb.encode_gzip[Context]())
 	// 子路由控制器
-	app.routes_ifdef(mut ctx)
+	app.setup_conditional_routes(mut ctx)
 
 	veb.run_at[AliasApp, Context](mut app,
 		host:               ''

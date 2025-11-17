@@ -7,7 +7,7 @@ import internal.middleware
 import internal.logic.db_api { Base }
 
 // 根据条件编译，选择运行的服务
-pub fn (mut app AliasApp) routes_ifdef(mut ctx Context) {
+pub fn (mut app AliasApp) setup_conditional_routes(mut ctx Context) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	$if fms ? {
