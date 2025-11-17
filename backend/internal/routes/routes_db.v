@@ -3,7 +3,7 @@ module routes
 import log
 import internal.structs { Context }
 import internal.middleware
-import internal.logic.db_api { Base }
+import internal.service.db_api { Base }
 
 fn (mut app AliasApp) routes_db(mut ctx Context) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')

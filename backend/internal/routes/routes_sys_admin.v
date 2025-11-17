@@ -2,20 +2,20 @@ module routes
 
 import log
 import internal.structs { Context }
-import internal.logic.sys_api.sys_admin { Admin } // 必须是路由模块内部声明的结构体
-import internal.logic.sys_api.sys_admin.user { User }
-import internal.logic.sys_api.sys_admin.token { Token }
-import internal.logic.sys_api.sys_admin.role { Role }
-import internal.logic.sys_api.sys_admin.role_permission { RolePermission }
-import internal.logic.sys_api.sys_admin.position { Position }
-import internal.logic.sys_api.sys_admin.menu { Menu }
-import internal.logic.sys_api.sys_admin.mfa { MFA }
-import internal.logic.sys_api.sys_admin.dictionary { Dictionary }
-import internal.logic.sys_api.sys_admin.dictionarydetail { DictionaryDetail }
-import internal.logic.sys_api.sys_admin.department { Department }
-import internal.logic.sys_api.sys_admin.configuration { Configuration }
-import internal.logic.sys_api.sys_admin.authentication { Authentication }
-import internal.logic.sys_api.sys_admin.api { Api }
+import internal.service.sys_api.sys_admin { Admin } // 必须是路由模块内部声明的结构体
+import internal.service.sys_api.sys_admin.user { User }
+import internal.service.sys_api.sys_admin.token { Token }
+import internal.service.sys_api.sys_admin.role { Role }
+import internal.service.sys_api.sys_admin.role_permission { RolePermission }
+import internal.service.sys_api.sys_admin.position { Position }
+import internal.service.sys_api.sys_admin.menu { Menu }
+import internal.service.sys_api.sys_admin.mfa { MFA }
+import internal.service.sys_api.sys_admin.dictionary { Dictionary }
+import internal.service.sys_api.sys_admin.dictionarydetail { DictionaryDetail }
+import internal.service.sys_api.sys_admin.department { Department }
+import internal.service.sys_api.sys_admin.configuration { Configuration }
+import internal.service.sys_api.sys_admin.authentication { Authentication }
+import internal.service.sys_api.sys_admin.api { Api }
 
 fn (mut app AliasApp) routes_sys_admin(mut ctx Context) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
