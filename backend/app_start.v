@@ -38,6 +38,7 @@ pub fn new_app() {
 	app.use(middleware.config_middle(doc))
 	app.use(middleware.db_middleware(conn))
 	app.use(middleware.i18n_middleware(i18n_app))
+	app.use(veb.encode_gzip[Context]())
 
 	app.routes_ifdef(conn, doc) // veb.Controller  使用路由控制器 | routes/routes_ifdef.v
 
