@@ -5,8 +5,7 @@ import orm
 import structs.schema_sys
 
 // ----------------- 数据结构 -----------------
-pub struct SysRole {
-pub:
+struct SysRole {
 	id   string
 	name string
 }
