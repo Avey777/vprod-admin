@@ -1,4 +1,4 @@
-Hexagonal + DDD 风格
+Hexagonal DDD 风格
 
 命名后缀
 

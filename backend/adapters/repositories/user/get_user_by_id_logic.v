@@ -1,14 +1,26 @@
+// ===========================
+// module: adapters.repositories.user
+// ===========================
 module user
 
 import structs { Context }
-import structs.schema_sys { SysRole, SysUser }
+import structs.schema_sys { SysRole, SysUser, SysUserRole }
 import orm
+import parts.sys_admin.user { SysRolePart, SysUserPart }
 
-// 获取单个用户
-pub fn find_user_by_id(mut ctx Context, user_id string) !SysUser {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
+// 实现 UserRepository 接口
+pub struct UserRepoAdapter {
+pub mut:
+	ctx &Context
+}
+
+// 查找单个用户
+pub fn (mut r UserRepoAdapter) find_by_id(user_id string) !SysUserPart {
+	db, conn := r.ctx.dbpool.acquire() or {
+		return error('Failed to acquire DB connection: ${err}')
+	}
 	defer {
-		ctx.dbpool.release(conn) or { println('Failed to release DB connection: ${err}') }
+		r.ctx.dbpool.release(conn) or { println('Failed to release DB connection: ${err}') }
 	}
 
 	mut query := orm.new_query[SysUser](db)
@@ -18,34 +30,56 @@ pub fn find_user_by_id(mut ctx Context, user_id string) !SysUser {
 		return error('User not found')
 	}
 
-	return result[0]
+	user_info := result[0]
+	return SysUserPart{
+		id:          user_info.id
+		username:    user_info.username
+		nickname:    user_info.nickname
+		status:      user_info.status
+		avatar:      user_info.avatar
+		description: user_info.description
+		home_path:   user_info.home_path
+		mobile:      user_info.mobile
+		email:       user_info.email
+		creator_id:  user_info.creator_id
+		updater_id:  user_info.updater_id
+		created_at:  user_info.created_at
+		updated_at:  user_info.updated_at
+		deleted_at:  user_info.deleted_at
+	}
 }
 
-// 获取用户角色
-pub fn find_user_roles_by_userid(mut ctx Context, user_id string) ![]SysRole {
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
+// 查找用户角色（批量查询，避免 N+1）
+pub fn (mut r UserRepoAdapter) find_roles_by_user_id(user_id string) ![]SysRolePart {
+	db, conn := r.ctx.dbpool.acquire() or {
+		return error('Failed to acquire DB connection: ${err}')
+	}
 	defer {
-		ctx.dbpool.release(conn) or { println('Failed to release DB connection: ${err}') }
+		r.ctx.dbpool.release(conn) or { println('Failed to release DB connection: ${err}') }
 	}
 
 	// 查询用户角色表
-	mut user_role_rows := sql db {
-		select from schema_sys.SysUserRole where user_id == user_id
+	user_role_rows := sql db {
+		select from SysUserRole where user_id == user_id
 	}!
 
-	mut roles := []SysRole{}
-
-	for row_urs in user_role_rows {
-		mut role_rows := sql db {
-			select from SysRole where id == row_urs.role_id
-		}!
-		for r in role_rows {
-			roles << SysRole{
-				id:   r.id
-				name: r.name
-			}
-		}
+	if user_role_rows.len == 0 {
+		return []
 	}
+
+	role_ids := user_role_rows.map(it.role_id)
+
+	// 一次性查询所有角色
+	role_rows := sql db {
+		select from SysRole where id in role_ids
+	}!
+
+	roles := role_rows.map(fn (r SysRole) SysRolePart {
+		return SysRolePart{
+			id:   r.id
+			name: r.name
+		}
+	})
 
 	return roles
 }

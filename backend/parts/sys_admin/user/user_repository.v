@@ -1,15 +1,22 @@
+// ===========================
+// module: user
+// ===========================
 module user
 
 import time
 
 //-------------接口--------------------
+
 pub interface UserRepository {
+mut:
 	find_by_id(user_id string) !SysUserPart
 	find_roles_by_user_id(user_id string) ![]SysRolePart
+	// find_by_id(mut x UserRepository, user_id string) !SysUserPart
+	// find_roles_by_user_id(mut x UserRepository, user_id string) ![]SysRolePart
 }
 
 pub struct SysUserPart {
-pub:
+pub mut:
 	id          string
 	username    string
 	nickname    string
@@ -27,24 +34,26 @@ pub:
 }
 
 pub struct SysRolePart {
-pub:
+pub mut:
 	id   string
 	name string
 }
 
 //-------------聚合逻辑--------------------
+@[heap]
 pub struct UserParts {
-pub:
+pub mut:
 	user_repo &UserRepository
 }
 
 pub struct SysUserAggregate {
-pub:
+pub mut:
 	user  SysUserPart
 	roles []SysRolePart
 }
 
-pub fn (p &UserParts) get_user_with_roles(user_id string) !SysUserAggregate {
+// 获取用户及其角色
+pub fn (mut p UserParts) get_user_with_roles(user_id string) !SysUserAggregate {
 	if user_id == '' {
 		return error('user_id cannot be empty')
 	}

@@ -1,10 +1,11 @@
+// ===========================
+// module: services.sys_api.sys_admin.user
+// ===========================
 module user
 
 import time
-import structs { Context }
-import structs.schema_sys { SysRole }
-import dto.sys_admin.user { UserById, UserByIdReq, UserByIdResp }
-import adapters.repositories.user as user2 { find_user_by_id, find_user_roles_by_userid }
+import parts.sys_admin.user as user_part { SysRolePart, UserRepository }
+import dto.sys_admin.user as user2 { UserById, UserByIdReq, UserByIdResp }
 
 // 参数校验
 fn validate_user_id(user_id string) ! {
@@ -14,40 +15,42 @@ fn validate_user_id(user_id string) ! {
 }
 
 // 映射角色 id / name
-fn map_user_roles_to_ids_names(roles []SysRole) ([]string, []string) {
+fn map_user_roles_to_ids_names(roles []SysRolePart) ([]string, []string) {
 	role_ids := roles.map(it.id)
-	role_names := roles.map(fn (r SysRole) string {
-		return r.name
-	})
+	role_names := roles.map(it.name)
 	return role_ids, role_names
 }
 
 // 核心 Usecase
-pub fn find_user_by_id_service(mut ctx Context, req UserByIdReq) !UserByIdResp {
+pub fn find_user_by_id_service(mut repo UserRepository, req UserByIdReq) !UserByIdResp {
 	validate_user_id(req.user_id)!
 
-	user_data := find_user_by_id(mut ctx, req.user_id)!
-	user_roles := find_user_roles_by_userid(mut ctx, req.user_id)!
+	// 使用 Aggregate / UserParts
+	mut user_parts := user_part.UserParts{
+		user_repo: repo
+	}
 
-	role_ids, role_names := map_user_roles_to_ids_names(user_roles)
+	agg := user_parts.get_user_with_roles(req.user_id)!
+
+	role_ids, role_names := map_user_roles_to_ids_names(agg.roles)
 
 	data := UserById{
-		id:         user_data.id
-		username:   user_data.username
-		nickname:   user_data.nickname
-		status:     user_data.status
+		id:         agg.user.id
+		username:   agg.user.username
+		nickname:   agg.user.nickname
+		status:     agg.user.status
 		role_ids:   role_ids
 		role_names: role_names
-		avatar:     user_data.avatar or { '' }
-		desc:       user_data.description or { '' }
-		home_path:  user_data.home_path
-		mobile:     user_data.mobile or { '' }
-		email:      user_data.email or { '' }
-		creator_id: user_data.creator_id or { '' }
-		updater_id: user_data.updater_id or { '' }
-		created_at: user_data.created_at.format_ss()
-		updated_at: user_data.updated_at.format_ss()
-		deleted_at: (user_data.deleted_at or { time.Time{} }).format_ss()
+		avatar:     agg.user.avatar or { '' }
+		desc:       agg.user.description or { '' }
+		home_path:  agg.user.home_path
+		mobile:     agg.user.mobile or { '' }
+		email:      agg.user.email or { '' }
+		creator_id: agg.user.creator_id or { '' }
+		updater_id: agg.user.updater_id or { '' }
+		created_at: agg.user.created_at.format_ss()
+		updated_at: agg.user.updated_at.format_ss()
+		deleted_at: (agg.user.deleted_at or { time.Time{} }).format_ss()
 	}
 
 	return UserByIdResp{
