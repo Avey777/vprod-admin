@@ -72,9 +72,15 @@ my_project/
 │   │   └── user_repo.v
 │   └── dbpool/
 │       └── mysql_pool.v
-├── shared/                 # 通用工具
-│   └── errors.v
+├── common/                 # 通用工具
+│   ├── opt/
+│   ├── utils/
+│   ├── captcha/
+│   ├── encrypt/
+│   ├── jwt/
+│   └── api/
 ├── config/                 # 全局配置
+│   ├── conf.v
 │   ├── app_config.v
 │   └── db_config.v
 └── i18n/                   # 国际化全局资源
