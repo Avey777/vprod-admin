@@ -12,7 +12,7 @@ pub:
 }
 
 // ----------------- 获取单个用户 -----------------
-pub fn get_user_by_id(mut ctx Context, user_id string) !schema_sys.SysUser {
+pub fn find_user_by_id(mut ctx Context, user_id string) !schema_sys.SysUser {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
 		ctx.dbpool.release(conn) or { println('Failed to release DB connection: ${err}') }
@@ -29,7 +29,7 @@ pub fn get_user_by_id(mut ctx Context, user_id string) !schema_sys.SysUser {
 }
 
 // ----------------- 获取用户角色 -----------------
-pub fn get_user_roles(mut ctx Context, user_id string) ![]SysRole {
+pub fn find_user_roles(mut ctx Context, user_id string) ![]SysRole {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
 		ctx.dbpool.release(conn) or { println('Failed to release DB connection: ${err}') }

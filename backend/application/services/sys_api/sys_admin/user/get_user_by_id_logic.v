@@ -29,7 +29,7 @@ fn user_by_id_usecase(mut ctx Context, req UserByIdReq) !UserByIdResp {
 	user_data := user_by_id_domain(mut ctx, req.user_id)!
 
 	// 调用 Repository 获取额外信息
-	user_roles := repo.get_user_roles(mut ctx, req.user_id)!
+	user_roles := repo.find_user_roles(mut ctx, req.user_id)!
 
 	role_ids := user_roles.map(it.id)
 	role_names := user_roles.map(fn (r repo.SysRole) string {
@@ -68,7 +68,7 @@ fn user_by_id_domain(mut ctx Context, user_id string) !SysUser {
 	}
 
 	// 调用 Repository 获取用户数据
-	return repo.get_user_by_id(mut ctx, user_id)!
+	return repo.find_user_by_id(mut ctx, user_id)!
 }
 
 // ----------------- 请求/返回结构 -----------------
