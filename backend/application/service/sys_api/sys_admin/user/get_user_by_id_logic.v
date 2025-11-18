@@ -10,7 +10,7 @@ import adapters.repositories as repo
 import common.api
 
 // ----------------- Handler 层 -----------------
-@['/id_ddd'; post]
+@['/id'; post]
 pub fn (app &User) user_by_id_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
