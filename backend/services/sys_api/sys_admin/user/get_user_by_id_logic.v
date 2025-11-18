@@ -6,8 +6,8 @@ import time
 import x.json2 as json
 import structs { Context }
 import structs.schema_sys { SysUser }
-import adapters.repositories as repo
 import common.api
+import orm
 
 // ----------------- Handler 层 -----------------
 @['/id'; post]
@@ -31,10 +31,10 @@ pub fn find_user_by_id_usecase(mut ctx Context, req UserByIdReq) !UserByIdResp {
 	user_data := user_by_id_domain(mut ctx, req.user_id)!
 
 	// 调用 Repository 获取额外信息
-	user_roles := repo.find_user_roles_by_userid(mut ctx, req.user_id)!
+	user_roles := find_user_roles_by_userid(mut ctx, req.user_id)!
 
 	role_ids := user_roles.map(it.id)
-	role_names := user_roles.map(fn (r repo.SysRole) string {
+	role_names := user_roles.map(fn (r SysRole) string {
 		return r.name
 	})
 
@@ -70,7 +70,7 @@ fn user_by_id_domain(mut ctx Context, user_id string) !SysUser {
 	}
 
 	// 调用 Repository 获取用户数据
-	return repo.find_user_by_id(mut ctx, user_id)!
+	return find_user_by_id(mut ctx, user_id)!
 }
 
 // ----------------- 请求/返回结构 -----------------
@@ -99,4 +99,57 @@ pub struct UserById {
 	created_at string
 	updated_at string
 	deleted_at string
+}
+
+// ----------------- 数据结构 -----------------
+struct SysRole {
+	id   string
+	name string
+}
+
+// ----------------- 获取单个用户 -----------------
+pub fn find_user_by_id(mut ctx Context, user_id string) !SysUser {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or { println('Failed to release DB connection: ${err}') }
+	}
+
+	mut query := orm.new_query[SysUser](db)
+	result := query.select()!.where('id = ?', user_id)!.query()!
+
+	if result.len == 0 {
+		return error('User not found')
+	}
+
+	return result[0]
+}
+
+// ----------------- 获取用户角色 -----------------
+pub fn find_user_roles_by_userid(mut ctx Context, user_id string) ![]SysRole {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or { println('Failed to release DB connection: ${err}') }
+	}
+
+	// 查询用户角色表
+	mut user_role_rows := sql db {
+		select from schema_sys.SysUserRole where user_id == user_id
+	}!
+
+	mut roles := []SysRole{}
+
+	for row_urs in user_role_rows {
+		// 查询角色表获取角色名称
+		mut role_rows := sql db {
+			select from schema_sys.SysRole where id == row_urs.role_id
+		}!
+		for r in role_rows {
+			roles << SysRole{
+				id:   r.id
+				name: r.name
+			}
+		}
+	}
+
+	return roles
 }

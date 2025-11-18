@@ -1,4 +1,4 @@
-module repositories
+module user
 
 import structs { Context }
 import orm
@@ -29,7 +29,7 @@ pub fn find_user_by_id(mut ctx Context, user_id string) !schema_sys.SysUser {
 }
 
 // ----------------- 获取用户角色 -----------------
-pub fn find_user_roles_by_userid(mut ctx Context, user_id string) ![]SysRole {
+pub fn find_user_roles_by_userid(mut ctx Context, user_id string) ![]schema_sys.SysRole {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
 		ctx.dbpool.release(conn) or { println('Failed to release DB connection: ${err}') }
@@ -40,7 +40,7 @@ pub fn find_user_roles_by_userid(mut ctx Context, user_id string) ![]SysRole {
 		select from schema_sys.SysUserRole where user_id == user_id
 	}!
 
-	mut roles := []SysRole{}
+	mut roles := []schema_sys.SysRole{}
 
 	for row_urs in user_role_rows {
 		// 查询角色表获取角色名称
@@ -48,7 +48,7 @@ pub fn find_user_roles_by_userid(mut ctx Context, user_id string) ![]SysRole {
 			select from schema_sys.SysRole where id == row_urs.role_id
 		}!
 		for r in role_rows {
-			roles << SysRole{
+			roles << schema_sys.SysRole{
 				id:   r.id
 				name: r.name
 			}

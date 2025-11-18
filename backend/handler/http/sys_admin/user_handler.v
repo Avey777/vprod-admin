@@ -21,7 +21,7 @@ pub fn (app &User) user_by_id_handler(mut ctx Context) veb.Result {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
 
-	result := user.find_user_by_id_usecase(mut ctx, req) or {
+	result := user.find_user_by_id_usecase_ddd(mut ctx, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
 
