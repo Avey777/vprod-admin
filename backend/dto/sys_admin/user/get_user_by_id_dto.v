@@ -1,17 +1,17 @@
 module user
 
 pub struct UserByIdReq {
-pub mut:
+pub:
 	user_id string
 }
 
 pub struct UserByIdResp {
-pub mut:
+pub:
 	datalist []UserById
 }
 
 pub struct UserById {
-pub mut:
+pub:
 	id         string
 	username   string
 	nickname   string
@@ -28,4 +28,10 @@ pub mut:
 	created_at string
 	updated_at string
 	deleted_at string
+}
+
+pub struct SysRole {
+pub:
+	id   string
+	name string
 }

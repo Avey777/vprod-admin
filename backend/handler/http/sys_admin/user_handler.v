@@ -1,27 +1,26 @@
-module user
+module sys_admin
 
 import veb
 import log
-import common.api
 import x.json2 as json
 import structs { App, Context }
-import services.sys_api.sys_admin.user
-import dto.sys_admin.user as user_dto
+import dto.sys_admin.user { UserByIdReq }
+import services.sys_api.sys_admin.user as user2 { find_user_by_id_service }
+import common.api
 
 pub struct User {
 	App
 }
 
-// ----------------- Handler 层 -----------------
-@['/id/ddd'; post]
-pub fn (app &User) user_by_id_handler(mut ctx Context) veb.Result {
+@['/id'; post]
+pub fn (app &User) find_user_by_id_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[user_dto.UserByIdReq](ctx.req.data) or {
+	req := json.decode[UserByIdReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
 
-	result := user.find_user_by_id_usecase_ddd(mut ctx, req) or {
+	result := find_user_by_id_service(mut ctx, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
 
