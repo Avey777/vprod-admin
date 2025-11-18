@@ -2,9 +2,9 @@ module routes
 
 import log
 import structs
-import application.services.core_api.core_tenant.authentication
-import application.services.core_api.core_tenant.role
-import application.services.core_api.core_tenant.role_permission
+import services.core_api.core_tenant.authentication
+import services.core_api.core_tenant.role
+import services.core_api.core_tenant.role_permission
 
 fn (mut app AliasApp) routes_core_tenant(mut ctx structs.Context) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
