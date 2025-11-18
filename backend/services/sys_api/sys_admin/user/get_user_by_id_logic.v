@@ -11,25 +11,27 @@ import common.api
 
 // ----------------- Handler 层 -----------------
 @['/id'; post]
-pub fn (app &User) user_by_id_handler(mut ctx Context) veb.Result {
+pub fn (app &User) find_user_by_id_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UserByIdReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
 
-	result := user_by_id_usecase(mut ctx, req) or { return ctx.json(api.json_error_500(err.msg())) }
+	result := find_user_by_id_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500(err.msg()))
+	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
 // ----------------- Application / Usecase 层 -----------------
-fn user_by_id_usecase(mut ctx Context, req UserByIdReq) !UserByIdResp {
+pub fn find_user_by_id_usecase(mut ctx Context, req UserByIdReq) !UserByIdResp {
 	// 调用 Domain 层逻辑
 	user_data := user_by_id_domain(mut ctx, req.user_id)!
 
 	// 调用 Repository 获取额外信息
-	user_roles := repo.find_user_roles(mut ctx, req.user_id)!
+	user_roles := repo.find_user_roles_by_userid(mut ctx, req.user_id)!
 
 	role_ids := user_roles.map(it.id)
 	role_names := user_roles.map(fn (r repo.SysRole) string {

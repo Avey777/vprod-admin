@@ -1,5 +1,16 @@
 Hexagonal + DDD 风格
 
+命名后缀
+
+```
+*_handler:
+*_dto :
+*_domian:
+*_repo:
+*_parts:
+*_usecase:
+```
+
 ```
 ┌─────────────────────────────────────┐
 │          Handler                    │
