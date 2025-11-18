@@ -32,7 +32,7 @@ DDD
                 │ 实现依赖                        │
                 ▼                               │
 ┌─────────────────────────────────────┐         │
-│          Infra                      │◀────────┘
+│          Infra/Adapters             │◀────────┘
 │  - 实现 Repository 接口              │
 │  - 实际操作 DB / 缓存 / MQ            │
 │  - 提供 Application/Domain 调用      │
@@ -40,4 +40,44 @@ DDD
 │  - 提供非业务相关服务（邮件、外部 API）  │
 └─────────────────────────────────────┘
 
+```
+
+```
+my_project/
+├── main/                   # 程序入口模块
+│   └── main.v              # 程序入口
+├── routes/                 # HTTP/API 路由
+│   ├── user_routes.v       # 注册路由
+│   └── auth_routes.v
+├── handlers/               # Handler / Controller 层
+│   ├── user_handler.v      # 处理具体请求
+│   └── auth_handler.v
+├── structs/                # 全局模型 structs（数据库模型、共享结构体）
+│   └── user_struct.v
+├── domain/                 # 领域层
+│   ├── user.v              # 领域模型
+│   └── services/
+│       └── create_user.v
+├── application/            # 应用层
+│   ├── dto/                # Data Transfer Object
+│   │   └── user_dto.v
+│   └── services/
+│       └── create_user.v
+├── adapters/               # Hexagonal 风格外部适配器
+│   ├── redis/
+│   │   └── redis.v
+│   ├── mq/
+│   │   └── mq.v
+│   ├── repositories/
+│   │   └── user_repo.v
+│   └── dbpool/
+│       └── mysql_pool.v
+├── shared/                 # 通用工具
+│   └── errors.v
+├── config/                 # 全局配置
+│   ├── app_config.v
+│   └── db_config.v
+└── i18n/                   # 国际化全局资源
+    ├── en.v
+    └── zh.v
 ```
