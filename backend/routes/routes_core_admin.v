@@ -2,10 +2,10 @@ module routes
 
 import log
 import structs
-import application.service.core_api.core_admin.api
-import application.service.core_api.core_admin.menu
-import application.service.core_api.core_admin.oauthprovider
-import application.service.core_api.core_admin.user
+import application.services.core_api.core_admin.api
+import application.services.core_api.core_admin.menu
+import application.services.core_api.core_admin.oauthprovider
+import application.services.core_api.core_admin.user
 
 fn (mut app AliasApp) routes_core_admin(mut ctx structs.Context) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
