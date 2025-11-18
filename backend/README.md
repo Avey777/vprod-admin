@@ -49,7 +49,7 @@ my_project/
 ├── routes/                 # HTTP/API 路由
 │   ├── user_routes.v       # 注册路由
 │   └── auth_routes.v
-├── handlers/               # Handler / Controller 层
+├── handlers/               # Handler / Controller 层, 当前并入services 里面, 函数本身还是独立的
 │   ├── user_handler.v      # 处理具体请求
 │   └── auth_handler.v
 ├── structs/                # 全局模型 structs（数据库模型、共享结构体）

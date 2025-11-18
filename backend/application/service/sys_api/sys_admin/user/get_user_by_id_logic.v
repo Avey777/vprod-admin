@@ -2,73 +2,47 @@ module user
 
 import veb
 import log
-import orm
 import time
 import x.json2 as json
-import structs.schema_sys
-import common.api
 import structs { Context }
+import structs.schema_sys { SysUser }
+import adapters.repositories as repo
+import common.api
 
-@['/id'; post]
-fn (app &User) user_by_id(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/id_ddd'; post]
+pub fn (app &User) user_by_id_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UserByIdReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
 
-	result := user_by_id_resp(mut ctx, req) or { return ctx.json(api.json_error_500(err.msg())) }
+	result := user_by_id_usecase(mut ctx, req) or { return ctx.json(api.json_error_500(err.msg())) }
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn user_by_id_resp(mut ctx Context, req UserByIdReq) !UserByIdResp {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application / Usecase 层 -----------------
+fn user_by_id_usecase(mut ctx Context, req UserByIdReq) !UserByIdResp {
+	// 调用 Domain 层逻辑
+	user_data := user_by_id_domain(mut ctx, req.user_id)!
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
-	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
-	}
+	// 调用 Repository 获取额外信息
+	user_roles := repo.get_user_roles(mut ctx, req.user_id)!
 
-	mut sys_user := orm.new_query[schema_sys.SysUser](db)
-	result := sys_user.select()!.where('id = ?', req.user_id)!.query()!
+	role_ids := user_roles.map(it.id)
+	role_names := user_roles.map(fn (r repo.SysRole) string {
+		return r.name
+	})
 
-	if result.len == 0 {
-		return error('User not found')
-	}
-
-	user_data := result[0]
-
-	// Get user roles
-	mut user_role := sql db {
-		select from schema_sys.SysUserRole where user_id == req.user_id
-	}!
-
-	mut user_role_ids := []string{}
-	mut user_role_names := []string{}
-
-	for row_urs in user_role {
-		user_role_ids << row_urs.role_id
-
-		// Get role names
-		mut role := sql db {
-			select from schema_sys.SysRole where id == row_urs.role_id
-		}!
-		for raw_name in role {
-			user_role_names << raw_name.name
-		}
-	}
-
-	// Create user data
 	data := UserById{
 		id:         user_data.id
 		username:   user_data.username
 		nickname:   user_data.nickname
 		status:     user_data.status
-		role_ids:   user_role_ids
-		role_names: user_role_names
+		role_ids:   role_ids
+		role_names: role_names
 		avatar:     user_data.avatar or { '' }
 		desc:       user_data.description or { '' }
 		home_path:  user_data.home_path
@@ -86,29 +60,41 @@ fn user_by_id_resp(mut ctx Context, req UserByIdReq) !UserByIdResp {
 	}
 }
 
-struct UserByIdReq {
+// ----------------- Domain 层 -----------------
+fn user_by_id_domain(mut ctx Context, user_id string) !SysUser {
+	// 核心业务逻辑，例如参数校验、权限检查等
+	if user_id == '' {
+		return error('user_id cannot be empty')
+	}
+
+	// 调用 Repository 获取用户数据
+	return repo.get_user_by_id(mut ctx, user_id)!
+}
+
+// ----------------- 请求/返回结构 -----------------
+pub struct UserByIdReq {
 	user_id string
 }
 
-struct UserByIdResp {
+pub struct UserByIdResp {
 	datalist []UserById
 }
 
-struct UserById {
-	id         string   @[json: 'id']
-	username   string   @[json: 'username']
-	nickname   string   @[json: 'nickname']
-	status     u8       @[json: 'status']
-	role_ids   []string @[json: 'role_ids']
-	role_names []string @[json: 'role_names']
-	avatar     string   @[json: 'avatar']
-	desc       string   @[json: 'desc']
-	home_path  string   @[json: 'home_path']
-	mobile     string   @[json: 'mobile']
-	email      string   @[json: 'email']
-	creator_id string   @[json: 'creator_id']
-	updater_id string   @[json: 'updater_id']
-	created_at string   @[json: 'created_at']
-	updated_at string   @[json: 'updated_at']
-	deleted_at string   @[json: 'deleted_at']
+pub struct UserById {
+	id         string
+	username   string
+	nickname   string
+	status     u8
+	role_ids   []string
+	role_names []string
+	avatar     string
+	desc       string
+	home_path  string
+	mobile     string
+	email      string
+	creator_id string
+	updater_id string
+	created_at string
+	updated_at string
+	deleted_at string
 }
