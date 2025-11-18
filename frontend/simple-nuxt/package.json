@@ -27,11 +27,11 @@
     "@pinia-plugin-persistedstate/nuxt": "^1.2.1",
     "@unocss/nuxt": "^0.58.9",
     "@unocss/preset-wind": "^0.58.9",
-    "element-plus": "^2.8.7",
+    "element-plus": "^2.11.1",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
-    "nuxt": "^3.13.2",
+    "nuxt": "^3.19.0",
     "nuxt-icon": "^0.6.10",
     "prettier": "^3.3.3"
   },
