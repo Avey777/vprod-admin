@@ -25,7 +25,7 @@ pub fn (app &User) find_user_by_id_handler(mut ctx Context) veb.Result {
 	return ctx.json(api.json_success_200(result))
 }
 
-// ----------------- Application / Usecase 层 -----------------
+// ----------------- Application Service | Usecase 层 -----------------
 pub fn find_user_by_id_usecase(mut ctx Context, req UserByIdReq) !UserByIdResp {
 	// 调用 Domain 层逻辑
 	user_data := user_by_id_domain(mut ctx, req.user_id)!
