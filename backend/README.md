@@ -1,4 +1,4 @@
-Hexagonal DDD 风格
+Hexagonal 风格的 DDD
 
 命名后缀
 
@@ -8,7 +8,7 @@ Hexagonal DDD 风格
 *_domian:
 *_repo:
 *_parts:
-*_usecase:
+*_service:
 ```
 
 ```
