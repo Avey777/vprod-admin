@@ -3,36 +3,26 @@
 // ===========================
 module user
 
-import parts.sys_admin.user as _ { SysRolePart, SysUserAggregate, SysUserPart }
+import parts.sys_admin.user { SysRolePart, SysUserAggregate, SysUserPart }
 
-// ===== Domain 层接口 =====
-// 定义用户仓储接口，这里抽象了数据访问逻辑。
-// Domain 层只关心“做什么”，不关心“怎么做”，体现 DDD 的“领域模型独立于基础设施”思想。
+// Domain 层接口不变
 pub interface UserRepository {
 mut:
-	// 根据用户ID查询用户实体
 	find_user_by_id(user_id string) !SysUserPart
-
-	// 查询用户所拥有的角色列表
 	find_roles_by_user_id(user_id string) ![]SysRolePart
 }
 
-// ===== Domain 层应用逻辑 =====
-// 将用户和角色组合成聚合根对象 SysUserAggregate
+// Domain 组合聚合逻辑（只做轻量清理，不拆分）
 pub fn get_user_aggregate_domain(mut repo UserRepository, user_id string) !SysUserAggregate {
 	if user_id == '' {
 		return error('user_id cannot be empty')
 	}
 
-	// 从仓储获取用户信息
-	user := repo.find_user_by_id(user_id)!
-
-	// 从仓储获取用户角色
+	user_info := repo.find_user_by_id(user_id)!
 	roles := repo.find_roles_by_user_id(user_id)!
 
-	// 聚合用户和角色为聚合根对象返回
 	return SysUserAggregate{
-		user:  user
+		user:  user_info
 		roles: roles
 	}
 }
