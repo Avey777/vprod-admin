@@ -17,7 +17,7 @@ fn map_user_roles_to_ids_names(roles []SysRolePart) ([]string, []string) {
 }
 
 pub fn find_user_by_id_service(mut ctx Context, mut repo UserRepository, req UserByIdReq) !UserByIdResp {
-	//
+	// 领域规则
 	user_domain.find_user_by_id_domain(mut ctx, req.user_id)!
 
 	// 使用 Aggregate / UserParts
