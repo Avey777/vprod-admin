@@ -20,7 +20,7 @@ import adapters.repositories.user as repo_adapter
 
 // 应用服务层入口
 pub fn find_user_by_id_service(mut ctx Context, user_id string) !UserByIdResp {
-	// Repository 实现了 Domain 层的接口
+	// Repository 实现了 Domain 层的接口, domain里的 interface
 	mut repo := repo_adapter.UserRepo{
 		ctx: &ctx
 	}
