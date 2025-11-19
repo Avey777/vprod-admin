@@ -3,21 +3,28 @@
 // ===========================
 module user
 
-import structs { Context }
-import adapters.repositories.user { UserRepo }
-import parts.sys_admin.user as _ { SysUserPart }
+import parts.sys_admin.user as _ { SysRolePart, SysUserAggregate, SysUserPart }
 
-// ----------------- Domain 层 -----------------
-pub fn find_user_by_id_domain(mut ctx Context, user_id string) !SysUserPart {
-	// 核心业务逻辑，例如参数校验、权限检查等
+pub interface UserRepository {
+mut:
+	find_user_by_id(user_id string) !SysUserPart
+	find_roles_by_user_id(user_id string) ![]SysRolePart
+}
+
+pub fn err_user_empty() IError {
+	return error('user_id cannot be empty')
+}
+
+pub fn get_user_aggregate(mut repo UserRepository, user_id string) !SysUserAggregate {
 	if user_id == '' {
-		return error('user_id cannot be empty')
+		return err_user_empty()
 	}
 
-	mut repo := UserRepo{
-		ctx: &ctx
-	}
+	user := repo.find_user_by_id(user_id)!
+	roles := repo.find_roles_by_user_id(user_id)!
 
-	user_info := repo.find_user_by_id_repo(user_id)!
-	return user_info
+	return SysUserAggregate{
+		user:  user
+		roles: roles
+	}
 }

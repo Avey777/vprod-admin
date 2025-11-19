@@ -3,33 +3,18 @@
 // ===========================
 module user
 
-import time
 import structs { Context }
-import parts.sys_admin.user as user_part { SysRolePart, UserRepository }
-import dto.sys_admin.user as _ { UserById, UserByIdReq, UserByIdResp }
-import domain.sys_admin.user as user_domain
+import dto.sys_admin.user as dto { UserByIdResp }
+import parts.sys_admin.user as _ { SysUserAggregate }
+import domain.sys_admin.user as domain
+import adapters.repositories.user as repo_adapter
+import time
 
-// 映射角色 id / name
-fn map_user_roles_to_ids_names(roles []SysRolePart) ([]string, []string) {
-	role_ids := roles.map(it.id)
-	role_names := roles.map(it.name)
-	return role_ids, role_names
-}
+fn map_user_aggregate_to_dto(agg SysUserAggregate) UserByIdResp {
+	role_ids := agg.roles.map(it.id)
+	role_names := agg.roles.map(it.name)
 
-pub fn find_user_by_id_service(mut ctx Context, mut repo UserRepository, req UserByIdReq) !UserByIdResp {
-	// 领域规则
-	user_domain.find_user_by_id_domain(mut ctx, req.user_id)!
-
-	// 使用 Aggregate / UserParts
-	mut user_parts := user_part.UserPart{
-		user_repo: repo
-	}
-
-	agg := user_parts.get_user_with_roles(req.user_id)!
-
-	role_ids, role_names := map_user_roles_to_ids_names(agg.roles)
-
-	data := UserById{
+	data := dto.UserById{
 		id:         agg.user.id
 		username:   agg.user.username
 		nickname:   agg.user.nickname
@@ -51,4 +36,14 @@ pub fn find_user_by_id_service(mut ctx Context, mut repo UserRepository, req Use
 	return UserByIdResp{
 		datalist: [data]
 	}
+}
+
+pub fn find_user_by_id_service(mut ctx Context, user_id string) !UserByIdResp {
+	mut repo := repo_adapter.UserRepo{
+		ctx: &ctx
+	}
+
+	agg := domain.get_user_aggregate(mut repo, user_id)!
+
+	return map_user_aggregate_to_dto(agg)
 }

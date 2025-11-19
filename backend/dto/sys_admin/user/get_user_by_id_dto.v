@@ -32,9 +32,3 @@ pub:
 	updated_at string
 	deleted_at string
 }
-
-pub struct SysRole {
-pub:
-	id   string
-	name string
-}
