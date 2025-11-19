@@ -3,7 +3,7 @@
 // ===========================
 /*
 repo
-依赖 services（调用业务）
+依赖 usecase（调用业务）
 依赖 dto（解析输入、生成输出）
 */
 module sys_admin
@@ -13,7 +13,7 @@ import log
 import x.json2 as json
 import structs { App, Context }
 import dto.sys_admin.user { UserByIdReq }
-import services.sys_api.sys_admin.user as user_app_service
+import usecase.sys_api.sys_admin.user as usecase
 import common.api
 
 pub struct User {
@@ -36,7 +36,7 @@ pub fn (mut app User) find_user_by_id_handler(mut ctx Context) veb.Result {
 	}
 
 	// 调用应用服务层获取数据
-	result := user_app_service.find_user_by_id_service(mut ctx, req.user_id) or {
+	result := usecase.find_user_by_id_usecase(mut ctx, req.user_id) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
 
