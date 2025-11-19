@@ -73,7 +73,7 @@ fn user_by_id_domain(mut ctx Context, user_id string) !SysUser {
 	return find_user_by_id(mut ctx, user_id)!
 }
 
-// ----------------- 请求/返回结构 -----------------
+// ----------------- DTO 层 | 请求/返回结构 -----------------
 pub struct UserByIdReq {
 	user_id string
 }
@@ -101,13 +101,13 @@ pub struct UserById {
 	deleted_at string
 }
 
-// ----------------- 数据结构 -----------------
+// ----------------- AdapterRepository 层 -----------------
 struct SysRole {
 	id   string
 	name string
 }
 
-// ----------------- 获取单个用户 -----------------
+// 获取单个用户
 pub fn find_user_by_id(mut ctx Context, user_id string) !SysUser {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
@@ -124,7 +124,7 @@ pub fn find_user_by_id(mut ctx Context, user_id string) !SysUser {
 	return result[0]
 }
 
-// ----------------- 获取用户角色 -----------------
+// 获取用户角色
 pub fn find_user_roles_by_userid(mut ctx Context, user_id string) ![]SysRole {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
