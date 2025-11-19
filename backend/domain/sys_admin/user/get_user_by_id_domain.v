@@ -18,13 +18,13 @@ mut:
 }
 
 // Domain 组合聚合逻辑（只做轻量清理，不拆分）
-pub fn get_user_aggregate_domain(mut repo UserRepository, user_id string) !SysUserAggregate {
+pub fn get_user_aggregate_domain(mut r UserRepository, user_id string) !SysUserAggregate {
 	if user_id == '' {
 		return error('user_id cannot be empty')
 	}
 
-	user_info := repo.find_user_by_id(user_id)!
-	roles := repo.find_roles_by_user_id(user_id)!
+	user_info := r.find_user_by_id(user_id)!
+	roles := r.find_roles_by_user_id(user_id)!
 
 	return SysUserAggregate{
 		user:  user_info

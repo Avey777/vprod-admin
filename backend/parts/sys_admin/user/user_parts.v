@@ -3,7 +3,7 @@
 // ===========================
 /*
 parts（领域数据结构，可复用定义）
-不依赖 dto（因为 Part 要用 DTO 类型或结构）
+不依赖 dto
 被 repo、domain、services 使用
 */
 module user
