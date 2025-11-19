@@ -16,7 +16,7 @@ import structs { Context }
 import dto.sys_admin.user as dto { UserByIdResp }
 import parts.sys_admin.user as _ { SysUserAggregate }
 import domain.sys_admin.user as domain
-import adapters.repositories.user as repo_adapter
+import adapter.repository.user as repo_adapter
 
 // 应用服务层入口
 pub fn find_user_by_id_usecase(mut ctx Context, user_id string) !UserByIdResp {
