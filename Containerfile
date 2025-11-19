@@ -10,7 +10,7 @@ RUN apk add --no-cache \
     # musl-dev \
     build-base \
     mariadb-connector-c-dev &&\
-    v -prod -o app . && \
+    v -prod -o app ./main && \
     rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
 # 第二阶段：运行时环境
