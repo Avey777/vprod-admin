@@ -5,7 +5,9 @@ module user
 
 import time
 
-// ------------- domain parts / aggregates -------------
+// ===== 领域模型部分对象 (Entity/Value Object) =====
+// DDD 中的 Part 是聚合的一部分，可以组合成 Aggregate
+
 pub struct SysUserPart {
 pub mut:
 	id          string
@@ -30,6 +32,7 @@ pub mut:
 	name string
 }
 
+// 聚合根
 pub struct SysUserAggregate {
 pub mut:
 	user  SysUserPart

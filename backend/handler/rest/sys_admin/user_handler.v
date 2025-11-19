@@ -15,20 +15,26 @@ pub struct User {
 	App
 }
 
+// ===== Handler 层 =====
+// 负责接收 HTTP 请求，调用应用服务层，返回 JSON 响应
 @['/id'; post]
 pub fn (mut app User) find_user_by_id_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD} ${@MOD}.${@FILE_LINE}')
 
+	// 解析请求参数
 	req := json.decode[UserByIdReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
+
 	if req.user_id.trim_space() == '' {
 		return ctx.json(api.json_error_400('user_id cannot be empty'))
 	}
 
+	// 调用应用服务层获取数据
 	result := user_app_service.find_user_by_id_service(mut ctx, req.user_id) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
 
+	// 返回标准 JSON 响应
 	return ctx.json(api.json_success_200(result))
 }
