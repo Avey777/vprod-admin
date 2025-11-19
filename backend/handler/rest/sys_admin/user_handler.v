@@ -2,7 +2,7 @@
 // module: handler.sys_admin
 // ===========================
 /*
-andler
+repo
 依赖 services（调用业务）
 依赖 dto（解析输入、生成输出）
 */

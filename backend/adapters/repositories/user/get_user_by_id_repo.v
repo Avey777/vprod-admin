@@ -12,34 +12,7 @@ module user
 import orm
 import structs { Context }
 import structs.schema_sys { SysRole, SysUser, SysUserRole }
-import parts.sys_admin.user { SysRolePart, SysUserPart }
-
-// ---- 轻量 mapper（最小侵入版本） ----
-fn to_user_part(entity SysUser) SysUserPart {
-	return SysUserPart{
-		id:          entity.id
-		username:    entity.username
-		nickname:    entity.nickname
-		status:      entity.status
-		avatar:      entity.avatar
-		description: entity.description
-		home_path:   entity.home_path
-		mobile:      entity.mobile
-		email:       entity.email
-		creator_id:  entity.creator_id
-		updater_id:  entity.updater_id
-		created_at:  entity.created_at
-		updated_at:  entity.updated_at
-		deleted_at:  entity.deleted_at
-	}
-}
-
-fn to_role_part(entity SysRole) SysRolePart {
-	return SysRolePart{
-		id:   entity.id
-		name: entity.name
-	}
-}
+import parts.sys_admin.user as parts { SysRolePart, SysUserPart }
 
 // Repository 层
 pub struct UserRepo {
@@ -63,7 +36,7 @@ pub fn (mut r UserRepo) find_user_by_id(user_id string) !SysUserPart {
 	}
 
 	// 使用 mapper
-	return to_user_part(result[0])
+	return parts.to_user_part(result[0])
 }
 
 pub fn (mut r UserRepo) find_roles_by_user_id(user_id string) ![]SysRolePart {
@@ -88,5 +61,5 @@ pub fn (mut r UserRepo) find_roles_by_user_id(user_id string) ![]SysRolePart {
 		select from SysRole where id in role_ids
 	}!
 
-	return role_rows.map(to_role_part)
+	return role_rows.map(parts.to_role_part)
 }

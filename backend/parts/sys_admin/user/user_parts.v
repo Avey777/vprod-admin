@@ -3,40 +3,38 @@
 // ===========================
 /*
 parts（领域数据结构，可复用定义）
-依赖 dto（因为 Part 要用 DTO 类型或结构）
+不依赖 dto（因为 Part 要用 DTO 类型或结构）
 被 repo、domain、services 使用
 */
 module user
 
 import time
-import dto.sys_admin.user as dto { UserByIdResp }
-// 将 Domain 层聚合对象转换为 DTO，用于 API 输出
+import structs.schema_sys { SysRole, SysUser }
 
-pub fn map_user_aggregate_to_dto_parts(agg SysUserAggregate) UserByIdResp {
-	role_ids := agg.roles.map(it.id)
-	role_names := agg.roles.map(it.name)
-
-	data := dto.UserById{
-		id:         agg.user.id
-		username:   agg.user.username
-		nickname:   agg.user.nickname
-		status:     agg.user.status
-		role_ids:   role_ids
-		role_names: role_names
-		avatar:     agg.user.avatar or { '' }
-		desc:       agg.user.description or { '' }
-		home_path:  agg.user.home_path
-		mobile:     agg.user.mobile or { '' }
-		email:      agg.user.email or { '' }
-		creator_id: agg.user.creator_id or { '' }
-		updater_id: agg.user.updater_id or { '' }
-		created_at: agg.user.created_at.format_ss()
-		updated_at: agg.user.updated_at.format_ss()
-		deleted_at: (agg.user.deleted_at or { time.Time{} }).format_ss()
+// ---- 轻量 mapper（最小侵入版本） ----
+pub fn to_user_part(entity SysUser) SysUserPart {
+	return SysUserPart{
+		id:          entity.id
+		username:    entity.username
+		nickname:    entity.nickname
+		status:      entity.status
+		avatar:      entity.avatar
+		description: entity.description
+		home_path:   entity.home_path
+		mobile:      entity.mobile
+		email:       entity.email
+		creator_id:  entity.creator_id
+		updater_id:  entity.updater_id
+		created_at:  entity.created_at
+		updated_at:  entity.updated_at
+		deleted_at:  entity.deleted_at
 	}
+}
 
-	return UserByIdResp{
-		datalist: [data]
+pub fn to_role_part(entity SysRole) SysRolePart {
+	return SysRolePart{
+		id:   entity.id
+		name: entity.name
 	}
 }
 
