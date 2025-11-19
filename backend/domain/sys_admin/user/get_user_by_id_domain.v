@@ -1,3 +1,6 @@
+// ===========================
+// module: domain.sys_admin.user
+// ===========================
 module user
 
 import structs { Context }

@@ -1,3 +1,6 @@
+// ===========================
+// module: dto.sys_admin.user
+// ===========================
 module user
 
 pub struct UserByIdReq {

@@ -1,5 +1,5 @@
 // ===========================
-// module: user
+// module: parts.sys_admin.user
 // ===========================
 module user
 
