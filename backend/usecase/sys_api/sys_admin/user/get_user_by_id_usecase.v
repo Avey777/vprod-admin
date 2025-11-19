@@ -1,8 +1,8 @@
 // ===========================
-// module: services.sys_api.sys_admin.user
+// module: usecase.sys_api.sys_admin.user
 // ===========================
 /*
-services（应用服务层）
+usecase（应用服务层）
 依赖 repo
 依赖 domain
 依赖 parts
@@ -16,10 +16,10 @@ import structs { Context }
 import dto.sys_admin.user as dto { UserByIdResp }
 import parts.sys_admin.user as _ { SysUserAggregate }
 import domain.sys_admin.user as domain
-import adapters.repositories.user as repo_adapter
+import adapter.repository.user as repo_adapter
 
 // 应用服务层入口
-pub fn find_user_by_id_service(mut ctx Context, user_id string) !UserByIdResp {
+pub fn find_user_by_id_usecase(mut ctx Context, user_id string) !UserByIdResp {
 	// Repository 实现了 Domain 层的接口, domain里的 interface
 	mut repo := repo_adapter.UserRepo{
 		ctx: &ctx

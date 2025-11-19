@@ -1,9 +1,9 @@
-module routes
+module route
 
 import log
 import structs { Context }
 import middleware
-import services.db_api { Base }
+import service.db_api { Base }
 
 fn (mut app AliasApp) routes_db(mut ctx Context) {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')

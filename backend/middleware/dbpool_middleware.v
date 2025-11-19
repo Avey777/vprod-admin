@@ -4,7 +4,7 @@ import veb
 import log
 import time
 import structs { Context }
-import adapters.dbpool
+import adapter.dbpool
 import config
 
 // 独立中间件生成函数

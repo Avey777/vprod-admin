@@ -6,7 +6,7 @@ import structs { Context }
 import middleware
 import config
 import i18n
-import routes { AliasApp }
+import route { AliasApp }
 
 pub fn new_app() {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')

@@ -2,7 +2,7 @@ module structs
 
 import veb
 import common.jwt { JwtPayload }
-import adapters.dbpool
+import adapter.dbpool
 import config
 import i18n
 

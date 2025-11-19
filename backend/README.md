@@ -118,7 +118,7 @@ v_project/
 │   ├── tenant/
 │   │   └── tenant_parts.v
 │
-├── adapters/                       # Adapter（Infra 引入外部系统）
+├── adapter/                       # Adapter（Infra 引入外部系统）
 │   ├── repository/                 # Ports 的具体实现（Repository / Cache / MQ 等）,实现ports里面接口定义的方法(写实际的orm_sql函数)
 │   │   ├── mysql_user_repo.v       # MySQL 实现 UserRepo
 │   │   ├── pg_product_repo.v       # PostgreSQL 实现 ProductRepo
