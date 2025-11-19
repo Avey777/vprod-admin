@@ -46,7 +46,7 @@ jobs:
           # apk add --no-cache mariadb-connector-c-dev libatomic musl-dev build-base
       - name: Build application
         working-directory: backend
-        run: v -stats -cc gcc -o v-admin .
+        run: v -stats -cc gcc -o v-admin ./main
 
   notification:
     runs-on: ubuntu-latest
