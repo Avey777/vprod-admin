@@ -24,11 +24,11 @@ pub fn (app &User) find_user_by_id_handler(mut ctx Context) veb.Result {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
 
-	mut repo := user_repo.UserRepoAdapter{
+	mut repo := user_repo.UserRepo{
 		ctx: &ctx
 	}
 
-	result := user_service.find_user_by_id_service(mut repo, req) or {
+	result := user_service.find_user_by_id_service(mut ctx, mut repo, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
 

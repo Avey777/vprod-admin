@@ -4,15 +4,10 @@
 module user
 
 import time
+import structs { Context }
 import parts.sys_admin.user as user_part { SysRolePart, UserRepository }
-import dto.sys_admin.user as user2 { UserById, UserByIdReq, UserByIdResp }
-
-// 参数校验
-fn validate_user_id(user_id string) ! {
-	if user_id == '' {
-		return error('user_id cannot be empty')
-	}
-}
+import dto.sys_admin.user as _ { UserById, UserByIdReq, UserByIdResp }
+import domain.sys_admin.user as user_domain
 
 // 映射角色 id / name
 fn map_user_roles_to_ids_names(roles []SysRolePart) ([]string, []string) {
@@ -22,11 +17,11 @@ fn map_user_roles_to_ids_names(roles []SysRolePart) ([]string, []string) {
 }
 
 // 核心 Usecase
-pub fn find_user_by_id_service(mut repo UserRepository, req UserByIdReq) !UserByIdResp {
-	validate_user_id(req.user_id)!
+pub fn find_user_by_id_service(mut ctx Context, mut repo UserRepository, req UserByIdReq) !UserByIdResp {
+	user_domain.find_user_by_id_domain(mut ctx, req.user_id)!
 
 	// 使用 Aggregate / UserParts
-	mut user_parts := user_part.UserParts{
+	mut user_parts := user_part.UserPart{
 		user_repo: repo
 	}
 

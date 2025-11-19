@@ -2,7 +2,7 @@ module routes
 
 import log
 import structs { Context }
-import handler.http.sys_admin as user_ddd
+import handler.rest.sys_admin as user_ddd
 import services.sys_api.sys_admin { Admin } // 必须是路由模块内部声明的结构体
 import services.sys_api.sys_admin.user { User }
 import services.sys_api.sys_admin.token { Token }

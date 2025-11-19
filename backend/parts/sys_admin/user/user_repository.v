@@ -9,10 +9,8 @@ import time
 
 pub interface UserRepository {
 mut:
-	find_by_id(user_id string) !SysUserPart
-	find_roles_by_user_id(user_id string) ![]SysRolePart
-	// find_by_id(mut x UserRepository, user_id string) !SysUserPart
-	// find_roles_by_user_id(mut x UserRepository, user_id string) ![]SysRolePart
+	find_user_by_id_repo(user_id string) !SysUserPart
+	find_roles_by_user_id_repo(user_id string) ![]SysRolePart
 }
 
 pub struct SysUserPart {
@@ -41,7 +39,7 @@ pub mut:
 
 //-------------聚合逻辑--------------------
 @[heap]
-pub struct UserParts {
+pub struct UserPart {
 pub mut:
 	user_repo &UserRepository
 }
@@ -53,16 +51,16 @@ pub mut:
 }
 
 // 获取用户及其角色
-pub fn (mut p UserParts) get_user_with_roles(user_id string) !SysUserAggregate {
+pub fn (mut p UserPart) get_user_with_roles(user_id string) !SysUserAggregate {
 	if user_id == '' {
 		return error('user_id cannot be empty')
 	}
 
-	user := p.user_repo.find_by_id(user_id)!
-	roles := p.user_repo.find_roles_by_user_id(user_id)!
+	user_info := p.user_repo.find_user_by_id_repo(user_id)!
+	roles := p.user_repo.find_roles_by_user_id_repo(user_id)!
 
 	return SysUserAggregate{
-		user:  user
+		user:  user_info
 		roles: roles
 	}
 }

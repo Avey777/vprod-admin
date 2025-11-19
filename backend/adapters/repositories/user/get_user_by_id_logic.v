@@ -9,13 +9,13 @@ import orm
 import parts.sys_admin.user { SysRolePart, SysUserPart }
 
 // 实现 UserRepository 接口
-pub struct UserRepoAdapter {
+pub struct UserRepo {
 pub mut:
 	ctx &Context
 }
 
 // 查找单个用户
-pub fn (mut r UserRepoAdapter) find_by_id(user_id string) !SysUserPart {
+pub fn (mut r UserRepo) find_user_by_id_repo(user_id string) !SysUserPart {
 	db, conn := r.ctx.dbpool.acquire() or {
 		return error('Failed to acquire DB connection: ${err}')
 	}
@@ -50,7 +50,7 @@ pub fn (mut r UserRepoAdapter) find_by_id(user_id string) !SysUserPart {
 }
 
 // 查找用户角色（批量查询，避免 N+1）
-pub fn (mut r UserRepoAdapter) find_roles_by_user_id(user_id string) ![]SysRolePart {
+pub fn (mut r UserRepo) find_roles_by_user_id_repo(user_id string) ![]SysRolePart {
 	db, conn := r.ctx.dbpool.acquire() or {
 		return error('Failed to acquire DB connection: ${err}')
 	}
