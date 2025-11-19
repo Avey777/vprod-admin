@@ -11,13 +11,9 @@ mut:
 	find_roles_by_user_id_repo(user_id string) ![]SysRolePart
 }
 
-pub fn err_user_empty() IError {
-	return error('user_id cannot be empty')
-}
-
-pub fn get_user_aggregate(mut repo UserRepository, user_id string) !SysUserAggregate {
+pub fn get_user_aggregate_domain(mut repo UserRepository, user_id string) !SysUserAggregate {
 	if user_id == '' {
-		return err_user_empty()
+		return error('user_id cannot be empty')
 	}
 
 	user := repo.find_user_by_id_repo(user_id)!

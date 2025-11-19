@@ -22,6 +22,9 @@ pub fn (mut app User) find_user_by_id_handler(mut ctx Context) veb.Result {
 	req := json.decode[UserByIdReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
+	if req.user_id.trim_space() == '' {
+		return ctx.json(api.json_error_400('user_id cannot be empty'))
+	}
 
 	result := user_app_service.find_user_by_id_service(mut ctx, req.user_id) or {
 		return ctx.json(api.json_error_500(err.msg()))

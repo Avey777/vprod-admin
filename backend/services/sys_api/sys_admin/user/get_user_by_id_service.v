@@ -43,7 +43,7 @@ pub fn find_user_by_id_service(mut ctx Context, user_id string) !UserByIdResp {
 		ctx: &ctx
 	}
 
-	agg := domain.get_user_aggregate(mut repo, user_id)!
+	agg := domain.get_user_aggregate_domain(mut repo, user_id)!
 
 	return map_user_aggregate_to_dto(agg)
 }
