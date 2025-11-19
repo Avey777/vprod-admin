@@ -13,13 +13,13 @@ fn test_new_i18n() {
 	// 写入一个示例翻译文件
 	os.write_file(os.join_path(dir, 'en.json'), '{"hello": "Hello"}') or {}
 
-	i18n := new_i18n(dir, 'en') or {
+	i18n_info := new_i18n(dir, 'en') or {
 		assert false, 'failed to create i18n store: ${err}'
 		return
 	}
-	assert i18n.default_lang == 'en'
-	assert 'hello' in i18n.translations['en']
-	assert i18n.translations['en']['hello'] == 'Hello'
+	assert i18n_info.default_lang == 'en'
+	assert 'hello' in i18n_info.translations['en']
+	assert i18n_info.translations['en']['hello'] == 'Hello'
 }
 
 // ------------------------- 测试 maybe_reload -------------------------
