@@ -1,4 +1,4 @@
-module routes
+module route
 
 import log
 import structs { Context }
