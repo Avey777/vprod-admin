@@ -1,0 +1,58 @@
+module api
+
+import veb
+import log
+import orm
+import time
+import x.json2 as json
+import structs.schema_sys
+import common.api
+import structs { Context }
+
+// Update api ||更新api
+@['/update_api'; post]
+fn (app &Api) update_token(mut ctx Context) veb.Result {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
+	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
+	mut result := update_api_resp(mut ctx, req) or {
+		return ctx.json(api.json_error_500(err.msg()))
+	}
+
+	return ctx.json(api.json_success_200(result))
+}
+
+fn update_api_resp(mut ctx Context, req json.Any) !map[string]Any {
+	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+
+	id := req.as_map()['id'] or { '' }.str()
+	path := req.as_map()['path'] or { '' }.str()
+	description := req.as_map()['description'] or { '' }.str()
+	api_group := req.as_map()['api_group'] or { '' }.str()
+	service_name := req.as_map()['service_name'] or { '' }.str()
+	method := req.as_map()['method'] or { '' }.str()
+	is_required := req.as_map()['is_required'] or { 0 }.u8()
+
+	updated_at := req.as_map()['updated_at'] or { time.now() }.to_time()!
+
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or {
+			log.warn('Failed to release connection ${@LOCATION}: ${err}')
+		}
+	}
+
+	mut sys_api := orm.new_query[schema_sys.SysApi](db)
+
+	sys_api.set('path = ?', path)!
+		.set('description = ?', description)!
+		.set('api_group = ?', api_group)!
+		.set('service_name = ?', service_name)!
+		.set('method = ?', method)!
+		.set('is_required = ?', is_required)!
+		.set('updated_at = ?', updated_at)!
+		.where('id = ?', id)!
+		.update()!
+
+	return map[string]Any{}
+}
