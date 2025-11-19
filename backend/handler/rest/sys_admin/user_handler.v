@@ -1,6 +1,11 @@
 // ===========================
 // module: handler.sys_admin
 // ===========================
+/*
+andler
+依赖 services（调用业务）
+依赖 dto（解析输入、生成输出）
+*/
 module sys_admin
 
 import veb

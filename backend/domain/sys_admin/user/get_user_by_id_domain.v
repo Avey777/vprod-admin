@@ -1,6 +1,11 @@
 // ===========================
 // module: domain.sys_admin.user
 // ===========================
+/*
+domain（领域逻辑）
+依赖 parts
+不依赖 repo、不依赖 dto（非常干净）
+*/
 module user
 
 import parts.sys_admin.user { SysRolePart, SysUserAggregate, SysUserPart }

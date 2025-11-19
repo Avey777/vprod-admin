@@ -1,6 +1,12 @@
 // ===========================
 // module: dto.sys_admin.user
 // ===========================
+/*
+dto（数据传输层）
+最底层
+无依赖
+被 handler、services、parts 使用
+*/
 module user
 
 pub struct UserByIdReq {

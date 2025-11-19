@@ -1,6 +1,14 @@
 // ===========================
 // module: services.sys_api.sys_admin.user
 // ===========================
+/*
+services（应用服务层）
+依赖 repo
+依赖 domain
+依赖 parts
+依赖 dto
+服务层串起所有层没问题
+*/
 module user
 
 import structs { Context }

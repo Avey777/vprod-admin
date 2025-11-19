@@ -1,6 +1,12 @@
 // ===========================
 // module: adapters.repositories.user
 // ===========================
+/*
+repo（仓储）
+依赖 parts（返回 Part 类型很合理）
+不依赖 domain（保持干净）
+不依赖 dto（推荐不要依赖） :DTO 是 API 的表层结构，Repo 永远不应该知道它。
+*/
 module user
 
 import orm

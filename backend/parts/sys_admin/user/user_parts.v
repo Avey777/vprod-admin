@@ -1,6 +1,11 @@
 // ===========================
 // module: parts.sys_admin.user
 // ===========================
+/*
+parts（领域数据结构，可复用定义）
+依赖 dto（因为 Part 要用 DTO 类型或结构）
+被 repo、domain、services 使用
+*/
 module user
 
 import time
