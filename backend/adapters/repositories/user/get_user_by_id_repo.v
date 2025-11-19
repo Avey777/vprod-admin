@@ -13,7 +13,7 @@ pub mut:
 	ctx &Context
 }
 
-pub fn (mut r UserRepo) find_user_by_id(user_id string) !SysUserPart {
+pub fn (mut r UserRepo) find_user_by_id_repo(user_id string) !SysUserPart {
 	db, conn := r.ctx.dbpool.acquire() or {
 		return error('Failed to acquire DB connection: ${err}')
 	}
@@ -47,7 +47,7 @@ pub fn (mut r UserRepo) find_user_by_id(user_id string) !SysUserPart {
 	}
 }
 
-pub fn (mut r UserRepo) find_roles_by_user_id(user_id string) ![]SysRolePart {
+pub fn (mut r UserRepo) find_roles_by_user_id_repo(user_id string) ![]SysRolePart {
 	db, conn := r.ctx.dbpool.acquire() or {
 		return error('Failed to acquire DB connection: ${err}')
 	}
