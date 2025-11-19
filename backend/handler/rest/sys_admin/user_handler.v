@@ -16,7 +16,7 @@ pub struct User {
 }
 
 @['/id'; post]
-pub fn find_user_by_id_handler(app &User, mut ctx Context) veb.Result {
+pub fn (mut app User) find_user_by_id_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD} ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UserByIdReq](ctx.req.data) or {
