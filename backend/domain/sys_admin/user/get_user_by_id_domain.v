@@ -11,10 +11,10 @@ import parts.sys_admin.user as _ { SysRolePart, SysUserAggregate, SysUserPart }
 pub interface UserRepository {
 mut:
 	// 根据用户ID查询用户实体
-	find_user_by_id_repo(user_id string) !SysUserPart
+	find_user_by_id(user_id string) !SysUserPart
 
 	// 查询用户所拥有的角色列表
-	find_roles_by_user_id_repo(user_id string) ![]SysRolePart
+	find_roles_by_user_id(user_id string) ![]SysRolePart
 }
 
 // ===== Domain 层应用逻辑 =====
@@ -25,10 +25,10 @@ pub fn get_user_aggregate_domain(mut repo UserRepository, user_id string) !SysUs
 	}
 
 	// 从仓储获取用户信息
-	user := repo.find_user_by_id_repo(user_id)!
+	user := repo.find_user_by_id(user_id)!
 
 	// 从仓储获取用户角色
-	roles := repo.find_roles_by_user_id_repo(user_id)!
+	roles := repo.find_roles_by_user_id(user_id)!
 
 	// 聚合用户和角色为聚合根对象返回
 	return SysUserAggregate{
