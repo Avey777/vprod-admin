@@ -1,13 +1,16 @@
-module main
+#!/usr/bin/env -S v run
 
 import db.pg
 
 // 简化配置
 pub struct DatabaseConfig {
 pub:
-	db_type string
-	host    string
-	port    u32
+	db_type  string
+	host     string
+	port     u32
+	user     string
+	password string
+	dbname   string
 }
 
 // 统一接口
@@ -25,9 +28,9 @@ pub fn new_pg_connection(conf DatabaseConfig) !&PgConnection {
 	db := pg.connect(pg.Config{
 		host:     conf.host
 		port:     int(conf.port)
-		user:     'postgres'
-		password: 'password'
-		dbname:   'test_db'
+		user:     conf.user
+		password: conf.password
+		dbname:   conf.dbname
 	})!
 	return &PgConnection{db}
 }
@@ -62,9 +65,12 @@ pub fn (c &PgConnection) close() ! {}
 // 主函数测试
 fn main() {
 	conf := DatabaseConfig{
-		db_type: 'postgresql'
-		host:    'localhost'
-		port:    5432
+		db_type:  'postgresql'
+		host:     'localhost'
+		port:     5432
+		user:     'root'
+		password: 'pg_123456'
+		dbname:   'postgres'
 	}
 
 	// 测试 PostgreSQL 连接

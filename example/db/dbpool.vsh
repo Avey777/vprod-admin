@@ -1,4 +1,4 @@
-module main
+#!/usr/bin/env -S v run
 
 import db.mysql
 import db.pg
