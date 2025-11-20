@@ -1,13 +1,8 @@
-module main
+module dbpool
 
-fn main() {
-	mysql()!
-	pgsql()!
-}
-
-fn mysql() ! {
+fn test_mysql() ! {
 	conf := DatabaseConfig{
-		db_type:  'mysql' // 或 'pgsql'
+		type:     'mysql' // 或 'pgsql'
 		host:     '127.0.0.1'
 		port:     3306
 		username: 'root'
@@ -31,9 +26,9 @@ fn mysql() ! {
 	d_pool.close()
 }
 
-fn pgsql() ! {
+fn test_pgsql() ! {
 	conf := DatabaseConfig{
-		db_type:  'pgsql' // 或 'pgsql'
+		type:     'pgsql' // 或 'pgsql'
 		host:     '127.0.0.1'
 		port:     5432
 		username: 'root'

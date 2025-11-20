@@ -1,4 +1,4 @@
-module main
+module dbpool
 
 import pool
 
@@ -84,9 +84,9 @@ pub fn (mut p PgPool) close() {
 // 动态创建数据库池
 // ======================================
 pub fn new_db_pool(conf DatabaseConfig) !DatabasePoolable {
-	match conf.db_type.to_lower() {
+	match conf.type.to_lower() {
 		'mysql' { return new_mysql_pool(conf)! }
 		'pgsql', 'postgres', 'postgresql' { return new_pg_pool(conf)! }
-		else { return error('Unsupported db type: ${conf.db_type}') }
+		else { return error('Unsupported db type: ${conf.type}') }
 	}
 }

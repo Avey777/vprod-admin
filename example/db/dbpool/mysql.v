@@ -1,4 +1,4 @@
-module main
+module dbpool
 
 import db.mysql
 
@@ -11,18 +11,26 @@ mut:
 }
 
 pub fn new_mysql_adapter(conf DatabaseConfig) !&MysqlAdapter {
-	db := mysql.connect(mysql.Config{
+	mut config := mysql.Config{
 		host:     conf.host
 		port:     conf.port
 		username: conf.username
 		password: conf.password
 		dbname:   conf.dbname
-	})!
-	return &MysqlAdapter{db}
-}
+	}
 
-pub fn (mut a MysqlAdapter) query(q string) ![]map[string]string {
-	return a.conn.query(q)!.maps()
+	// SSL 配置
+	if conf.ssl_verify {
+		config.ssl_key = conf.ssl_key
+		config.ssl_cert = conf.ssl_cert
+		config.ssl_ca = conf.ssl_ca
+		config.ssl_capath = conf.ssl_capath
+		config.ssl_cipher = conf.ssl_cipher
+		config.flag = conf.flag
+	}
+
+	db := mysql.connect(config)!
+	return &MysqlAdapter{db}
 }
 
 pub fn (mut a MysqlAdapter) execute(q string) !int {
