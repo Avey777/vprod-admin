@@ -1,4 +1,4 @@
-module dbpool
+module main
 
 import db.pg
 

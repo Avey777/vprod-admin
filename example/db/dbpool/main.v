@@ -1,4 +1,4 @@
-module dbpool
+module main
 
 fn test_mysql() ! {
 	conf := DatabaseConfig{
@@ -50,4 +50,10 @@ fn test_pgsql() ! {
 
 	// 关闭连接池
 	d_pool.close()
+}
+
+
+fn main() {
+	test_mysql()
+	test_pgsql()
 }
