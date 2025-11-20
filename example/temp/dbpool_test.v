@@ -12,7 +12,7 @@ fn test_new_db_pool() {
 	mut db_pool := new_db_pool(config)!
 	defer { db_pool.close() }
 	// dump(db_pool)
-	assert typeof(db_pool).name == '&mysql_pool.DatabasePool'
+	assert typeof(db_pool).name == '&dbpool.DatabasePool'
 }
 
 fn test_acquire() {

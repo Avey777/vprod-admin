@@ -114,7 +114,7 @@ v_admin/
 - [x] Cores Middleware
 - [ ] Data permission middleware
 - [x] Config Middleware
-- [x] Database connections pool Middleware
+- [x] Database connections pool Middleware(Mysql,Postgres)
 - [x] i18n
 - [x] Multitenancy (tenant resolution) [多租户、多团队、多应用]
 - [ ] Support OpenAPI, generate OpenAPI data automatic (go-swagger)
