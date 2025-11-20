@@ -1,4 +1,4 @@
-module dbpool
+module main
 
 const config = DatabaseConfig{
 	host:     'mysql2.sqlpub.com'
