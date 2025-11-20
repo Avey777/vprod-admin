@@ -52,7 +52,6 @@ fn test_pgsql() ! {
 	d_pool.close()
 }
 
-
 fn main() {
 	test_mysql()
 	test_pgsql()
