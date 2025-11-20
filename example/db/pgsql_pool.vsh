@@ -8,7 +8,7 @@ pub:
 	db_type  string
 	host     string
 	port     u32
-	user     string
+	username string
 	password string
 	dbname   string
 }
@@ -28,7 +28,7 @@ pub fn new_pg_connection(conf DatabaseConfig) !&PgConnection {
 	db := pg.connect(pg.Config{
 		host:     conf.host
 		port:     int(conf.port)
-		user:     conf.user
+		user:     conf.username
 		password: conf.password
 		dbname:   conf.dbname
 	})!
@@ -68,7 +68,7 @@ fn main() {
 		db_type:  'postgresql'
 		host:     'localhost'
 		port:     5432
-		user:     'root'
+		username: 'root'
 		password: 'pg_123456'
 		dbname:   'postgres'
 	}

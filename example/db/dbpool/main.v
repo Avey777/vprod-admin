@@ -1,6 +1,11 @@
 module main
 
 fn main() {
+	mysql()!
+	pgsql()!
+}
+
+fn mysql() ! {
 	conf := DatabaseConfig{
 		db_type:  'mysql' // 或 'pgsql'
 		host:     '127.0.0.1'
@@ -16,6 +21,32 @@ fn main() {
 
 	// query 测试
 	rows := db.query('SELECT 1') or { panic(err) }
+	println(rows)
+	assert rows.len > 0
+
+	// 释放连接
+	d_pool.release(handler)!
+
+	// 关闭连接池
+	d_pool.close()
+}
+
+fn pgsql() ! {
+	conf := DatabaseConfig{
+		db_type:  'pgsql' // 或 'pgsql'
+		host:     '127.0.0.1'
+		port:     5432
+		username: 'root'
+		password: 'pg_123456'
+		dbname:   'postgres'
+	}
+
+	mut d_pool := new_db_pool(conf) or { panic(err) }
+
+	mut db, handler := d_pool.acquire() or { panic(err) }
+
+	// query 测试
+	rows := db.query('SELECT 1 as test_value') or { panic(err) }
 	println(rows)
 	assert rows.len > 0
 
