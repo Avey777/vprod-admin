@@ -4,60 +4,74 @@ import veb
 import log
 import orm
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysUser }
 import common.api
 import structs { Context }
 
+// ----------------- Handler 层 -----------------
 @['/profile'; get]
-fn (app &User) user_profile(mut ctx Context) veb.Result {
+pub fn user_profile_handler(app &User, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UserProfileReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
-	mut result := user_profile_resp(mut ctx, req) or {
+
+	result := get_user_profile_usecase(mut ctx, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn user_profile_resp(mut ctx Context, req UserProfileReq) !UserProfileResp {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn get_user_profile_usecase(mut ctx Context, req UserProfileReq) !UserProfileResp {
+	// 调用 Domain 层参数校验
+	get_user_profile_domain(req)!
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	// 调用 Repository 层获取用户信息
+	return get_user_profile_repository(mut ctx, req.user_id)!
+}
+
+// ----------------- Domain 层 -----------------
+fn get_user_profile_domain(req UserProfileReq) ! {
+	if req.user_id == '' {
+		return error('user_id cannot be empty')
+	}
+}
+
+// ----------------- DTO 层 | 请求/返回结构 -----------------
+pub struct UserProfileReq {
+	user_id string @[json: 'user_id']
+}
+
+pub struct UserProfileResp {
+	nickname string @[json: 'nickname']
+	avatar   string @[json: 'avatar']
+	mobile   string @[json: 'mobile']
+	email    string @[json: 'email']
+}
+
+// ----------------- AdapterRepository 层 -----------------
+fn get_user_profile_repository(mut ctx Context, user_id string) !UserProfileResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release DB connection: ${err}') }
 	}
 
-	mut sys_user := orm.new_query[schema_sys.SysUser](db)
-	result := sys_user.select('id = ?', req.user_id)!.query()!
-	dump(result)
+	mut q_user := orm.new_query[SysUser](db)
+	result := q_user.select()!.where('id = ?', user_id)!.query()!
 
 	if result.len == 0 {
 		return error('User not found')
 	}
 
 	row := result[0]
-	data := UserProfileResp{
+
+	return UserProfileResp{
 		nickname: row.nickname
 		avatar:   row.avatar or { '' }
 		mobile:   row.mobile or { '' }
 		email:    row.email or { '' }
 	}
-
-	return data
-}
-
-struct UserProfileReq {
-	user_id string @[json: 'user_id']
-}
-
-struct UserProfileResp {
-	nickname string @[json: 'nickname']
-	avatar   string @[json: 'avatar']
-	mobile   string @[json: 'mobile']
-	email    string @[json: 'email']
 }
