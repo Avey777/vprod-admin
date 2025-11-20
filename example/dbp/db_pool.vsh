@@ -1,4 +1,4 @@
-module dbpool
+module main
 
 import db.mysql
 import db.pg
@@ -221,4 +221,31 @@ pub fn new_db_pool(conf DatabaseConfig) !DatabasePoolable {
 		'pgsql', 'postgres', 'postgresql' { return new_pg_pool(conf)! }
 		else { return error('Unsupported db type: ${conf.db_type}') }
 	}
+}
+
+// _______________________
+
+fn main() {
+	conf := DatabaseConfig{
+		db_type:  'mysql' // 或 'pgsql'
+		host:     '127.0.0.1'
+		port:     3306
+		username: 'root'
+		password: 'mysql_123456'
+		dbname:   'vcore'
+	}
+
+	mut d_pool := new_db_pool(conf) or { panic(err) }
+
+	mut db, handler := d_pool.acquire() or { panic(err) }
+
+	// query 测试
+	rows := db.query('SELECT 1') or { panic(err) }
+	assert rows.len > 0
+
+	// 释放连接
+	d_pool.release(handler)!
+
+	// 关闭连接池
+	d_pool.close()
 }
