@@ -45,6 +45,8 @@ pub fn (mut a MysqlAdapter) validate() !bool {
 
 pub fn (mut a MysqlAdapter) reset() ! {}
 
+pub fn (mut a MysqlAdapter) select() ! {}
+
 pub fn (mut a MysqlAdapter) close() ! {
 	a.conn.close()!
 }

@@ -228,6 +228,10 @@ pub fn new_db_pool(conf DatabaseConfig) !DatabasePoolable {
 
 // _______________________
 
+struct User {
+	id string
+}
+
 fn main() {
 	conf := DatabaseConfig{
 		db_type:  'mysql' // 或 'pgsql'
@@ -246,6 +250,11 @@ fn main() {
 	rows := db.query('SELECT 1') or { panic(err) }
 	println(rows)
 	assert rows.len > 0
+
+	// user := sql db {
+	// 	select from User
+	// }!
+	// println(user)
 
 	// 释放连接
 	d_pool.release(handler)!

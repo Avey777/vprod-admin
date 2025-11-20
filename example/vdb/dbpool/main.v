@@ -1,5 +1,9 @@
 module main
 
+struct User {
+	id string
+}
+
 fn test_mysql() ! {
 	conf := DatabaseConfig{
 		type:     'mysql' // 或 'pgsql'
@@ -18,6 +22,11 @@ fn test_mysql() ! {
 	rows := db.query('SELECT 1') or { panic(err) }
 	println(rows)
 	assert rows.len > 0
+
+	// user := sql db {
+	// 	select from User
+	// }!
+	// println(user)
 
 	// 释放连接
 	d_pool.release(handler)!
@@ -53,6 +62,6 @@ fn test_pgsql() ! {
 }
 
 fn main() {
-	test_mysql()
-	test_pgsql()
+	test_mysql()!
+	test_pgsql()!
 }
