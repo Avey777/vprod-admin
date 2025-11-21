@@ -1,6 +1,8 @@
 # Binaries for programs and plugins
 main
 !main/
+app
+!app/
 backend/backend
 vprod
 *.exe
