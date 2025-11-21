@@ -42,7 +42,7 @@
   {
     "label": "v build -cc clang -g",
     "tags": ["v-main"],
-    "command": "v -cc clang -g -no-parallel  -o main ./main",
+    "command": "v -cc clang -g -no-parallel  -o app ./main",
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
     "use_new_terminal": false,
@@ -51,7 +51,7 @@
   {
     "label": "v build -cc gcc -g",
     "tags": ["v-main"],
-    "command": "v -cc gcc -g -no-parallel  -o main ./main",
+    "command": "v -cc gcc -g -no-parallel  -o app ./main",
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
     "use_new_terminal": false,
@@ -60,7 +60,7 @@
   {
     "label": "v build -prod",
     "tags": ["v-main"],
-    "command": "v -prod -o main ./main",
+    "command": "v -prod -o app ./main",
     "args": [],
     "cwd": "$ZED_WORKTREE_ROOT/backend",
     "use_new_terminal": false,
