@@ -5,56 +5,50 @@ import log
 import orm
 import time
 import x.json2 as json
-import structs.schema_core
+import structs.schema_core { CoreProject }
 import common.api
 import structs { Context }
 
-// Update api ||更新Project
-@['/update_api'; post]
-fn (app &Project) update_token(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/project/update'; post]
+pub fn project_update_handler(app &Project, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateCoreProjectReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
-	mut result := update_api_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+
+	result := update_project_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn update_api_resp(mut ctx Context, req UpdateCoreProjectReq) !UpdateCoreProjectResp {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn update_project_usecase(mut ctx Context, req UpdateCoreProjectReq) !UpdateCoreProjectResp {
+	// Domain 层参数校验
+	update_project_domain(req)!
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
-	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+	// Repository 层执行更新
+	return update_project_repo(mut ctx, req)
+}
+
+// ----------------- Domain 层 -----------------
+fn update_project_domain(req UpdateCoreProjectReq) ! {
+	if req.id == '' {
+		return error('id is required')
 	}
-
-	mut sys_api := orm.new_query[schema_core.CoreProject](db)
-
-	sys_api.set('name = ?', req.name)!
-		.set('description = ?', req.description or { '' })!
-		.set('display_name = ?', req.display_name or { '' })!
-		.set('logo = ?', req.logo)!
-		.set('updated_at = ?', time.now())!
-		.where('id = ?', req.id)!
-		.update()!
-
-	// sql db {
-	// 	update schema_core.CoreProject set name = req.name, description = req.description,
-	// 	display_name = req.display_name, logo = req.logo, updated_at = time.now() where id == req.id
-	// } or { return error('Failed to update project: ${err}') }
-
-	return UpdateCoreProjectResp{
-		msg: 'API updated successfully'
+	if req.name == '' {
+		return error('name is required')
+	}
+	if req.logo == '' {
+		return error('logo is required')
 	}
 }
 
-struct UpdateCoreProjectReq {
+// ----------------- DTO 层 -----------------
+pub struct UpdateCoreProjectReq {
 	id           string  @[json: 'id'; required]
 	name         string  @[json: 'name']
 	display_name ?string @[json: 'display_name']
@@ -62,6 +56,28 @@ struct UpdateCoreProjectReq {
 	description  ?string @[json: 'description']
 }
 
-struct UpdateCoreProjectResp {
-	msg string
+pub struct UpdateCoreProjectResp {
+	msg string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
+fn update_project_repo(mut ctx Context, req UpdateCoreProjectReq) !UpdateCoreProjectResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
+	}
+
+	mut q := orm.new_query[CoreProject](db)
+
+	q.set('name = ?', req.name)!
+		.set('description = ?', req.description or { '' })!
+		.set('display_name = ?', req.display_name or { '' })!
+		.set('logo = ?', req.logo)!
+		.set('updated_at = ?', time.now())!
+		.where('id = ?', req.id)!
+		.update()!
+
+	return UpdateCoreProjectResp{
+		msg: 'Project updated successfully'
+	}
 }

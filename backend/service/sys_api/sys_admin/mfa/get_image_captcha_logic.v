@@ -14,33 +14,52 @@ module mfa
 
 import veb
 import log
-// import x.json2 as json
 import common.api
 import structs { Context }
 import common.captcha
 
-// Get captcha image | 获取验证码图片
+// ----------------- Handler 层 -----------------
 @['/captcha'; get; post]
-fn (app &MFA) get_captcha_logic(mut ctx Context) veb.Result {
+pub fn get_captcha_handler(app &MFA, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	// req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := get_captcha_resp(mut ctx) or { return ctx.json(api.json_error_500(err.msg())) }
+	result := get_captcha_usecase(mut ctx) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
+	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn get_captcha_resp(mut ctx Context) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn get_captcha_usecase(mut ctx Context) !GetCaptchaResp {
+	// Domain 层校验（这里可以扩展）
+	get_captcha_domain()!
 
+	// 调用 Repository / Adapter 层生成验证码
+	return get_captcha(mut ctx)
+}
+
+// ----------------- Domain 层 -----------------
+fn get_captcha_domain() ! {
+	// 目前无复杂校验，保留扩展点
+}
+
+// ----------------- DTO 层 -----------------
+pub struct GetCaptchaResp {
+	captcha_token string @[json: 'captcha_token']
+	captcha_image string @[json: 'captcha_image']
+}
+
+// ----------------- Repository / Adapter 层 -----------------
+fn get_captcha(mut ctx Context) !GetCaptchaResp {
 	captcha_token, captcha_image, captcha_text := captcha.captcha_generate() or {
 		return error('Failed to generate captcha')
 	}
 
 	log.debug('Generated captcha text: ${captcha_text}')
 
-	mut data := map[string]Any{}
-	data['captcha_token'] = captcha_token
-	data['captcha_image'] = captcha_image
-	return data
+	return GetCaptchaResp{
+		captcha_token: captcha_token
+		captcha_image: captcha_image
+	}
 }

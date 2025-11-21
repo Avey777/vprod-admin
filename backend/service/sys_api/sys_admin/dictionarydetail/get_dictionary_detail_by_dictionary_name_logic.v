@@ -5,66 +5,107 @@ import log
 import time
 import orm
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysDictionary, SysDictionaryDetail }
 import common.api
 import structs { Context }
 
-@['/id'; post]
-fn (app &DictionaryDetail) dictionarydetail_by_dictionary_name(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/dictionary/detail'; post]
+pub fn dictionarydetail_by_name_handler(app &DictionaryDetail, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := dictionarydetail_by_id_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[GetDictionaryDetailReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := get_dictionary_detail_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn dictionarydetail_by_dictionary_name_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Usecase 层 -----------------
+pub fn get_dictionary_detail_usecase(mut ctx Context, req GetDictionaryDetailReq) !GetDictionaryDetailResp {
+	// 参数校验
+	get_dictionary_detail_domain(req)!
 
-	dictionary_name := req.as_map()['id'] or { '' }.str()
+	// Repository 获取数据
+	return get_dictionary_detail_repo(mut ctx, req)
+}
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+// ----------------- Domain 层 -----------------
+fn get_dictionary_detail_domain(req GetDictionaryDetailReq) ! {
+	if req.dictionary_name == '' {
+		return error('dictionary_name is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct GetDictionaryDetailReq {
+	dictionary_name string @[json: 'dictionary_name']
+}
+
+pub struct DictionaryDetailItem {
+	id            string @[json: 'id']
+	title         string @[json: 'title']
+	status        int    @[json: 'status']
+	key           string @[json: 'key']
+	value         string @[json: 'value']
+	dictionary_id string @[json: 'dictionary_id']
+	sort          int    @[json: 'sort']
+	created_at    string @[json: 'created_at']
+	updated_at    string @[json: 'updated_at']
+	deleted_at    string @[json: 'deleted_at']
+}
+
+pub struct GetDictionaryDetailResp {
+	msg  string                 @[json: 'msg']
+	data []DictionaryDetailItem @[json: 'data']
+}
+
+// ----------------- Repository 层 -----------------
+fn get_dictionary_detail_repo(mut ctx Context, req GetDictionaryDetailReq) !GetDictionaryDetailResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
+	}
+
+	// 查询字典ID
+	mut q_dict := orm.new_query[SysDictionary](db)
+	mut qd := q_dict.select('id')!.where('name = ?', req.dictionary_name)!
+	dict_result := qd.query()!
+	if dict_result.len == 0 {
+		return GetDictionaryDetailResp{
+			msg:  'Dictionary not found'
+			data: []
+		}
+	}
+	dictionary_id := dict_result[0].id
+
+	// 查询字典明细
+	mut q_detail := orm.new_query[SysDictionaryDetail](db)
+	mut qd_detail := q_detail.select()!.where('dictionary_id = ?', dictionary_id)!
+	detail_result := qd_detail.query()!
+
+	mut datalist := []DictionaryDetailItem{}
+	for row in detail_result {
+		datalist << DictionaryDetailItem{
+			id:            row.id
+			title:         row.title
+			status:        int(row.status)
+			key:           row.key
+			value:         row.value
+			dictionary_id: row.dictionary_id
+			sort:          int(row.sort)
+			created_at:    row.created_at.format_ss()
+			updated_at:    row.updated_at.format_ss()
+			deleted_at:    row.deleted_at or { time.Time{} }.format_ss()
 		}
 	}
 
-	mut sys_dictionary := orm.new_query[schema_sys.SysDictionary](db)
-	mut query_dictionary := sys_dictionary.select('id')!
-	if dictionary_name != '' {
-		query_dictionary = query_dictionary.where('name = ?', dictionary_name)!
+	return GetDictionaryDetailResp{
+		msg:  'Success'
+		data: datalist
 	}
-	dictionary_id := query_dictionary.query()!
-
-	mut sys_dictionarydetail := orm.new_query[schema_sys.SysDictionaryDetail](db)
-	mut query := sys_dictionarydetail.select()!
-	if dictionary_id.str() != '' {
-		query = query.where('dictionary_id = ?', dictionary_id.str())!
-	}
-	result := query.query()!
-
-	mut datalist := []map[string]Any{} // map空数组初始化
-	for row in result {
-		mut data := map[string]Any{} // map初始化
-		data['id'] = row.id //主键ID
-		data['title'] = row.title
-		data['status'] = int(row.status)
-		data['key'] = row.key
-		data['value'] = row.value
-		data['dictionary_id'] = row.dictionary_id
-		data['sort'] = int(row.sort)
-
-		data['created_at'] = row.created_at.format_ss()
-		data['updated_at'] = row.updated_at.format_ss()
-		data['deleted_at'] = row.deleted_at or { time.Time{} }.format_ss()
-
-		datalist << data //追加data到maplist 数组
-	}
-
-	return datalist[0]
 }

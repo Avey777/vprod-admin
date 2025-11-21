@@ -5,57 +5,87 @@ import log
 import time
 import orm
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysApi }
 import common.api
 import structs { Context }
 
-@['/id'; post]
-fn (app &Api) api_by_id(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/api/id'; post]
+pub fn api_by_id_handler(app &Api, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := api_by_id_resp(mut ctx, req) or { return ctx.json(api.json_error_500(err.msg())) }
+	req := json.decode[GetApiByIdReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := get_api_by_id_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
+	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn api_by_id_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn get_api_by_id_usecase(mut ctx Context, req GetApiByIdReq) !GetApiByIdResp {
+	// Domain 校验
+	validate_api_by_id_domain(req)!
 
-	api_id := req.as_map()['id'] or { '' }.str()
+	// Repository 查询
+	return get_api_by_id_repo(mut ctx, req)
+}
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+// ----------------- Domain 层 -----------------
+fn validate_api_by_id_domain(req GetApiByIdReq) ! {
+	if req.id == '' {
+		return error('id is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct GetApiByIdReq {
+	id string @[json: 'id']
+}
+
+pub struct GetApiByIdResp {
+	id           string @[json: 'id']
+	path         string @[json: 'path']
+	description  string @[json: 'description']
+	api_group    string @[json: 'api_group']
+	method       string @[json: 'method']
+	is_required  int    @[json: 'is_required']
+	service_name string @[json: 'service_name']
+	created_at   string @[json: 'created_at']
+	updated_at   string @[json: 'updated_at']
+	deleted_at   string @[json: 'deleted_at']
+}
+
+// ----------------- Repository 层 -----------------
+fn get_api_by_id_repo(mut ctx Context, req GetApiByIdReq) !GetApiByIdResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	mut sys_api := orm.new_query[schema_sys.SysApi](db)
-	mut query := sys_api.select()!
-	if api_id != '' {
-		query = query.where('id = ?', api_id)!
-	}
+	mut q := orm.new_query[SysApi](db)
+	mut query := q.select()!.where('id = ?', req.id)!
 	result := query.query()!
 
-	mut datalist := []map[string]Any{} // map空数组初始化
-	for row in result {
-		mut data := map[string]Any{} // map初始化
-		data['id'] = row.id //主键ID
-		data['path'] = row.path
-		data['description'] = row.description or { '' }
-		data['api_group'] = row.api_group
-		data['method'] = row.method
-		data['is_required'] = int(row.is_required)
-		data['service_name'] = row.service_name
-
-		data['created_at'] = row.created_at.format_ss()
-		data['updated_at'] = row.updated_at.format_ss()
-		data['deleted_at'] = row.deleted_at or { time.Time{} }.format_ss()
-
-		datalist << data //追加data到maplist 数组
+	if result.len == 0 {
+		return error('API with id=${req.id} not found')
 	}
 
-	return datalist[0]
+	row := result[0]
+
+	return GetApiByIdResp{
+		id:           row.id
+		path:         row.path
+		description:  row.description or { '' }
+		api_group:    row.api_group
+		method:       row.method
+		is_required:  int(row.is_required)
+		service_name: row.service_name
+		created_at:   row.created_at.format_ss()
+		updated_at:   row.updated_at.format_ss()
+		deleted_at:   (row.deleted_at or { time.Time{} }).format_ss()
+	}
 }

@@ -4,49 +4,92 @@ import veb
 import log
 import orm
 import time
-import x.json2 as json
 import rand
-import structs.schema_sys
+import x.json2 as json
+import structs.schema_sys { SysConfiguration }
 import common.api
 import structs { Context }
 
-// Create configuration | 创建configuration
-@['/create_configuration'; post]
-fn (app &Configuration) create_configuration(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/configuration/create'; post]
+pub fn configuration_create_handler(app &Configuration, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := create_configuration_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[CreateConfigurationReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := create_configuration_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn create_configuration_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn create_configuration_usecase(mut ctx Context, req CreateConfigurationReq) !CreateConfigurationResp {
+	// Domain 校验
+	create_configuration_domain(req)!
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	// Repository 写入数据库
+	return create_configuration_repo(mut ctx, req)
+}
+
+// ----------------- Domain 层 -----------------
+fn create_configuration_domain(req CreateConfigurationReq) ! {
+	if req.name == '' {
+		return error('name is required')
+	}
+	if req.key == '' {
+		return error('key is required')
+	}
+	if req.value == '' {
+		return error('value is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct CreateConfigurationReq {
+	name       string     @[json: 'name']
+	status     u8         @[json: 'status']
+	key        string     @[json: 'key']
+	value      string     @[json: 'value']
+	sort       u32        @[json: 'sort']
+	category   string     @[json: 'category']
+	remark     string     @[json: 'remark']
+	created_at ?time.Time @[json: 'created_at']
+	updated_at ?time.Time @[json: 'updated_at']
+}
+
+pub struct CreateConfigurationResp {
+	msg string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
+fn create_configuration_repo(mut ctx Context, req CreateConfigurationReq) !CreateConfigurationResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	configurations := schema_sys.SysConfiguration{
+	mut q := orm.new_query[SysConfiguration](db)
+
+	config := SysConfiguration{
 		id:         rand.uuid_v7()
-		name:       req.as_map()['name'] or { '' }.str()
-		status:     req.as_map()['status'] or { 0 }.u8()
-		key:        req.as_map()['key'] or { '' }.str()
-		value:      req.as_map()['value'] or { '' }.str()
-		sort:       req.as_map()['sort'] or { 0 }.u32()
-		category:   req.as_map()['category'] or { '' }.str()
-		remark:     req.as_map()['remark'] or { '' }.str()
-		created_at: req.as_map()['created_at'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
-		updated_at: req.as_map()['updated_at'] or { time.now() }.to_time()!
+		name:       req.name
+		status:     req.status
+		key:        req.key
+		value:      req.value
+		sort:       req.sort
+		category:   req.category
+		remark:     req.remark
+		created_at: req.created_at or { time.now() }
+		updated_at: req.updated_at or { time.now() }
 	}
-	mut sys_configuration := orm.new_query[schema_sys.SysConfiguration](db)
-	sys_configuration.insert(configurations)!
 
-	return map[string]Any{}
+	q.insert(config)!
+
+	return CreateConfigurationResp{
+		msg: 'Configuration created successfully'
+	}
 }

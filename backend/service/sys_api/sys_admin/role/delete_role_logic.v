@@ -4,37 +4,62 @@ import veb
 import log
 import orm
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysRole }
 import common.api
 import structs { Context }
 
-// Delete Role | 删除Role
-@['/delete_role'; post]
-fn (app &Role) delete_role(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/role/delete'; post]
+pub fn role_delete_handler(app &Role, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := delete_role_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[DeleteRoleReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := delete_role_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn delete_role_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn delete_role_usecase(mut ctx Context, req DeleteRoleReq) !DeleteRoleResp {
+	// Domain 参数校验
+	delete_role_domain(req)!
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	// Repository 执行删除
+	return delete_role(mut ctx, req)
+}
+
+// ----------------- Domain 层 -----------------
+fn delete_role_domain(req DeleteRoleReq) ! {
+	if req.id == '' {
+		return error('role id is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct DeleteRoleReq {
+	id string @[json: 'id']
+}
+
+pub struct DeleteRoleResp {
+	msg string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
+fn delete_role(mut ctx Context, req DeleteRoleReq) !DeleteRoleResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	role_id := req.as_map()['id'] or { '' }.str()
+	mut q := orm.new_query[SysRole](db)
+	q.set('del_flag = ?', 1)!.where('id = ?', req.id)!.update()!
 
-	mut sys_role := orm.new_query[schema_sys.SysRole](db)
-	sys_role.set('del_flag = ?', 1)!.where('id = ?', role_id)!.update()!
-
-	return map[string]Any{}
+	return DeleteRoleResp{
+		msg: 'Role deleted successfully'
+	}
 }

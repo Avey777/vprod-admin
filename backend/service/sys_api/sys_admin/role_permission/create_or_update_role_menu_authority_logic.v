@@ -3,83 +3,99 @@ module role_permission
 import veb
 import log
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysRoleMenu }
 import common.api
 import structs { Context }
 
-@['/update_menu'; post]
-fn (app &RolePermission) update_menu_permission(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/role_permission/update_menu'; post]
+pub fn update_menu_handler(app &RolePermission, mut ctx Context) veb.Result {
 	log.debug('${@METHOD} ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[UpdateMenuReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400('Invalid request body: ${err.msg()}'))
 	}
 
-	// 参数检查
-	if req.role_id == '' {
-		return ctx.json(api.json_error_400('Missing required fields: role_id '))
-	}
-	if req.menu_ids.len == 0 {
-		return ctx.json(api.json_error_400('menu_ids cannot be empty'))
-	}
-
-	// ✅ 正确的 V 语言错误处理写法
-	mut result := update_menu_permission_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	// Usecase 执行
+	result := update_menu_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-// -------------------------------
-// 核心逻辑：删除旧权限 + 插入新权限
-// -------------------------------
-fn update_menu_permission_resp(mut ctx Context, req UpdateMenuReq) !string {
-	log.debug('${@METHOD} ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn update_menu_usecase(mut ctx Context, req UpdateMenuReq) !UpdateMenuResp {
+	// Domain 校验
+	update_menu_domain(req)!
 
-	mut db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	// Repository 执行数据库操作
+	return update_menu(mut ctx, req)
+}
+
+// ----------------- Domain 层 -----------------
+fn update_menu_domain(req UpdateMenuReq) ! {
+	if req.role_id == '' {
+		return error('role_id is required')
+	}
+	if req.menu_ids.len == 0 {
+		return error('menu_ids cannot be empty')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct UpdateMenuReq {
+	tenant_id string   @[json: 'tenant_id']
+	role_id   string   @[json: 'role_id']
+	menu_ids  []string @[json: 'menu_ids']
+}
+
+pub struct UpdateMenuResp {
+	msg string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
+fn update_menu(mut ctx Context, req UpdateMenuReq) !UpdateMenuResp {
+	mut db, conn := ctx.dbpool.acquire() or {
+		return error('Failed to acquire DB connection: ${err}')
+	}
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	// ✅ 显式开启事务
+	// 开启事务
 	db.begin() or { return error('Failed to begin transaction: ${err}') }
 
-	// Step 1: 删除旧数据
+	// 删除旧权限
 	sql db {
-		delete from schema_sys.SysRoleMenu where role_id == req.role_id
+		delete from SysRoleMenu where role_id == req.role_id
 	} or {
 		db.rollback() or {}
 		return error('Failed to delete old role-menu permissions: ${err}')
 	}
 
-	// Step 2: 插入新菜单权限
+	// 插入新权限
 	for menu_id in req.menu_ids {
-		new_perm := schema_sys.SysRoleMenu{
+		new_perm := SysRoleMenu{
 			role_id: req.role_id
 			menu_id: menu_id
 		}
 		sql db {
-			insert new_perm into schema_sys.SysRoleMenu
+			insert new_perm into SysRoleMenu
 		} or {
 			db.rollback() or {}
 			return error('Failed to insert menu_id=${menu_id}: ${err}')
 		}
 	}
-	// ✅ 成功后提交事务
+
+	// 提交事务
 	db.commit() or {
 		db.rollback() or {}
 		return error('Failed to commit transaction: ${err}')
 	}
 
 	log.info('Updated ${req.menu_ids.len} menu permissions for role=${req.role_id}')
-	return 'Role menu permissions updated successfully'
-}
-
-struct UpdateMenuReq {
-	tenant_id string   @[json: 'tenant_id']
-	role_id   string   @[json: 'role_id']
-	menu_ids  []string @[json: 'menu_ids']
+	return UpdateMenuResp{
+		msg: 'Role menu permissions updated successfully'
+	}
 }

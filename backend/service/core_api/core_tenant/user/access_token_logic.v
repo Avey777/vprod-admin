@@ -6,80 +6,51 @@ import orm
 import time
 import rand
 import x.json2 as json
-import structs.schema_core
+import structs.schema_core { CoreToken, CoreUser }
 import common.api
 import structs { Context }
 import common.jwt
 
-// Create Access Token | 创建 Access Token
+// ----------------- Handler 层 -----------------
 @['/access_token'; post]
-fn (app &User) access_token(mut ctx Context) veb.Result {
+pub fn access_token_handler(app &User, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[AccessTokenReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
-	mut result := access_token_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+
+	result := access_token_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn access_token_resp(mut ctx Context, req AccessTokenReq) !AccessTokenResp {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn access_token_usecase(mut ctx Context, req AccessTokenReq) !AccessTokenResp {
+	// 参数校验
+	access_token_domain(req)!
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
-	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+	// 写入数据库并生成 token
+	return access_token_repo(mut ctx, req)
+}
+
+// ----------------- Domain 层 -----------------
+fn access_token_domain(req AccessTokenReq) ! {
+	if req.user_id == '' {
+		return error('user_id is required')
 	}
-
-	time_now := time.now()
-	expired_at := time_now.add_days(30).unix()
-
-	mut core_user := orm.new_query[schema_core.CoreUser](db)
-	mut username := core_user.select('username')!.where('id = ?', req.user_id)!.limit(1)!.query()!
-
-	// 生成 token
-	mut payload := jwt.JwtPayload{
-		iss: 'v-admin'
-		sub: req.user_id
-		// aud: ['api-service', 'webapp']
-		exp: expired_at
-		nbf: time_now.unix()
-		iat: time_now.unix()
-		jti: rand.uuid_v4()
-		// 自定义业务字段 (Custom Claims)
-		roles:     ['', '']
-		client_ip: ctx.ip()
-		device_id: req.device_id
+	if req.device_id == '' {
+		return error('device_id is required')
 	}
-	token := jwt.jwt_generate(req.secret, payload)
-
-	// token 写入数据库
-	new_token := schema_core.CoreToken{
-		id:         rand.uuid_v7()
-		status:     u8(0)
-		user_id:    req.user_id
-		username:   username.str()
-		token:      token
-		source:     req.source
-		expired_at: time.unix(expired_at)
-		created_at: time_now
-		updated_at: time_now
-	}
-	mut core_token := orm.new_query[schema_core.CoreToken](db)
-	core_token.insert(new_token)!
-
-	return AccessTokenResp{
-		expired_at: time.unix(expired_at)
-		token:      token
+	if req.secret == '' {
+		return error('secret is required')
 	}
 }
 
-struct AccessTokenReq {
+// ----------------- DTO 层 -----------------
+pub struct AccessTokenReq {
 	id        string @[json: 'id']
 	status    u8     @[json: 'status']
 	user_id   string @[json: 'user_id']
@@ -90,7 +61,67 @@ struct AccessTokenReq {
 	device_id string @[json: 'device_id']
 }
 
-struct AccessTokenResp {
+pub struct AccessTokenResp {
 	token      string    @[json: 'token']
 	expired_at time.Time @[json: 'expired_at']
+}
+
+// ----------------- Repository 层 -----------------
+fn access_token_repo(mut ctx Context, req AccessTokenReq) !AccessTokenResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
+	}
+
+	time_now := time.now()
+	expired_at := time_now.add_days(30).unix()
+
+	// 查询 username
+	mut core_user := orm.new_query[CoreUser](db)
+	mut username_rows := core_user.select('username')!.where('id = ?', req.user_id)!.limit(1)!.query()!
+	if username_rows.len == 0 {
+		return error('User not found')
+	}
+	username := username_rows[0].str()
+
+	// 生成 token
+	token := access_token_jwt_generate(req, ctx, int(expired_at))
+
+	// 写入数据库
+	new_token := CoreToken{
+		id:         rand.uuid_v7()
+		status:     u8(0)
+		user_id:    req.user_id
+		username:   username
+		token:      token
+		source:     req.source
+		expired_at: time.unix(expired_at)
+		created_at: time_now
+		updated_at: time_now
+	}
+	mut core_token := orm.new_query[CoreToken](db)
+	core_token.insert(new_token)!
+
+	return AccessTokenResp{
+		token:      token
+		expired_at: time.unix(expired_at)
+	}
+}
+
+// ----------------- JWT 生成逻辑 -----------------
+fn access_token_jwt_generate(req AccessTokenReq, ctx Context, expired_at int) string {
+	time_now := time.now()
+	mut payload := jwt.JwtPayload{
+		iss:       'v-admin'
+		sub:       req.user_id
+		exp:       expired_at
+		nbf:       time_now.unix()
+		iat:       time_now.unix()
+		jti:       rand.uuid_v4()
+		roles:     ['', '']
+		client_ip: ctx.ip()
+		device_id: req.device_id
+	}
+
+	return jwt.jwt_generate(req.secret, payload)
 }

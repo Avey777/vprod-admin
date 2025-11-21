@@ -6,63 +6,116 @@ import orm
 import time
 import x.json2 as json
 import rand
-import structs.schema_sys
+import structs.schema_sys { SysMenu }
 import common.api
 import structs { Context }
 
-// Create menu | 创建Menu
-@['/create_menu'; post]
-fn (app &Menu) create_menu(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/menu/create'; post]
+pub fn menu_create_handler(app &Menu, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := create_menu_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[CreateMenuReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := create_menu_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn create_menu_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn create_menu_usecase(mut ctx Context, req CreateMenuReq) !CreateMenuResp {
+	create_menu_domain(req)!
+	return create_menu_repo(mut ctx, req)
+}
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+// ----------------- Domain 层 -----------------
+fn create_menu_domain(req CreateMenuReq) ! {
+	if req.name == '' {
+		return error('Menu name is required')
+	}
+	if req.path == '' {
+		return error('Menu path is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct CreateMenuReq {
+	parent_id             string     @[json: 'parent_id']
+	menu_level            u64        @[json: 'menu_level']
+	menu_type             u64        @[json: 'menu_type']
+	path                  string     @[json: 'path']
+	name                  string     @[json: 'name']
+	redirect              string     @[json: 'redirect']
+	component             string     @[json: 'component']
+	disabled              u8         @[json: 'disabled']
+	service_name          string     @[json: 'service_name']
+	permission            string     @[json: 'permission']
+	title                 string     @[json: 'title']
+	icon                  string     @[json: 'icon']
+	hide_menu             u8         @[json: 'hide_menu']
+	hide_breadcrumb       u8         @[json: 'hide_breadcrumb']
+	ignore_keep_alive     u8         @[json: 'ignore_keep_alive']
+	hide_tab              u8         @[json: 'hide_tab']
+	frame_src             string     @[json: 'frame_src']
+	carry_param           u8         @[json: 'carry_param']
+	hide_children_in_menu u8         @[json: 'hide_children_in_menu']
+	affix                 u8         @[json: 'affix']
+	dynamic_level         u8         @[json: 'dynamic_level']
+	real_path             string     @[json: 'real_path']
+	sort                  u32        @[json: 'sort']
+	created_at            ?time.Time @[json: 'created_at']
+	updated_at            ?time.Time @[json: 'updated_at']
+}
+
+pub struct CreateMenuResp {
+	msg string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
+fn create_menu_repo(mut ctx Context, req CreateMenuReq) !CreateMenuResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	menu := schema_sys.SysMenu{
+	mut q := orm.new_query[SysMenu](db)
+
+	menu := SysMenu{
 		id:                    rand.uuid_v7()
-		parent_id:             req.as_map()['parent_id'] or { '' }.str()
-		menu_level:            req.as_map()['menu_level'] or { 0 }.u64()
-		menu_type:             req.as_map()['menu_type'] or { 0 }.u64()
-		path:                  req.as_map()['path'] or { '' }.str()
-		name:                  req.as_map()['name'] or { '' }.str()
-		redirect:              req.as_map()['redirect'] or { '' }.str()
-		component:             req.as_map()['component'] or { '' }.str()
-		disabled:              req.as_map()['disabled'] or { 0 }.u8()
-		service_name:          req.as_map()['service_name'] or { '' }.str()
-		permission:            req.as_map()['permission'] or { '' }.str()
-		title:                 req.as_map()['title'] or { '' }.str()
-		icon:                  req.as_map()['icon'] or { '' }.str()
-		hide_menu:             req.as_map()['hide_menu'] or { 0 }.u8()
-		hide_breadcrumb:       req.as_map()['hide_breadcrumb'] or { 0 }.u8()
-		ignore_keep_alive:     req.as_map()['ignore_keep_alive'] or { 0 }.u8()
-		hide_tab:              req.as_map()['hide_tab'] or { 0 }.u8()
-		frame_src:             req.as_map()['frame_src'] or { '' }.str()
-		carry_param:           req.as_map()['carry_param'] or { 0 }.u8()
-		hide_children_in_menu: req.as_map()['hide_children_in_menu'] or { 0 }.u8()
-		affix:                 req.as_map()['affix'] or { 20 }.u8()
-		dynamic_level:         req.as_map()['dynamic_level'] or { 0 }.u8()
-		real_path:             req.as_map()['real_path'] or { '' }.str()
-		sort:                  req.as_map()['sort'] or { 0 }.u32()
-		created_at:            req.as_map()['created_at'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
-		updated_at:            req.as_map()['updated_at'] or { time.now() }.to_time()!
+		parent_id:             req.parent_id
+		menu_level:            req.menu_level
+		menu_type:             req.menu_type
+		path:                  req.path
+		name:                  req.name
+		redirect:              req.redirect
+		component:             req.component
+		disabled:              req.disabled
+		service_name:          req.service_name
+		permission:            req.permission
+		title:                 req.title
+		icon:                  req.icon
+		hide_menu:             req.hide_menu
+		hide_breadcrumb:       req.hide_breadcrumb
+		ignore_keep_alive:     req.ignore_keep_alive
+		hide_tab:              req.hide_tab
+		frame_src:             req.frame_src
+		carry_param:           req.carry_param
+		hide_children_in_menu: req.hide_children_in_menu
+		affix:                 req.affix
+		dynamic_level:         req.dynamic_level
+		real_path:             req.real_path
+		sort:                  req.sort
+		created_at:            req.created_at or { time.now() }
+		updated_at:            req.updated_at or { time.now() }
 	}
-	mut sys_menu := orm.new_query[schema_sys.SysMenu](db)
-	sys_menu.insert(menu)!
 
-	return map[string]Any{}
+	q.insert(menu)!
+
+	return CreateMenuResp{
+		msg: 'Menu created successfully'
+	}
 }

@@ -5,57 +5,85 @@ import log
 import time
 import orm
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysPosition }
 import common.api
 import structs { Context }
 
-@['/id'; post]
-fn (app &Position) position_by_id(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/position/id'; post]
+pub fn position_by_id_handler(app &Position, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := position_by_id_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[GetPositionByIdReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := get_position_by_id_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn position_by_id_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Usecase 层 -----------------
+pub fn get_position_by_id_usecase(mut ctx Context, req GetPositionByIdReq) !GetPositionByIdResp {
+	// Domain 层参数校验
+	get_position_by_id_domain(req)!
 
-	position_id := req.as_map()['id'] or { '' }.str()
+	// Repository 层查询
+	return get_position_by_id(mut ctx, req)
+}
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+// ----------------- Domain 层 -----------------
+fn get_position_by_id_domain(req GetPositionByIdReq) ! {
+	if req.id == '' {
+		return error('id is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct GetPositionByIdReq {
+	id string @[json: 'id']
+}
+
+pub struct GetPositionByIdResp {
+	id         string @[json: 'id']
+	status     u8     @[json: 'status']
+	name       string @[json: 'name']
+	code       string @[json: 'code']
+	remark     string @[json: 'remark']
+	sort       u32    @[json: 'sort']
+	created_at string @[json: 'created_at']
+	updated_at string @[json: 'updated_at']
+	deleted_at string @[json: 'deleted_at']
+}
+
+// ----------------- Repository 层 -----------------
+fn get_position_by_id(mut ctx Context, req GetPositionByIdReq) !GetPositionByIdResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	mut sys_position := orm.new_query[schema_sys.SysPosition](db)
-	mut query := sys_position.select()!
-	if position_id != '' {
-		query = query.where('id = ?', position_id)!
-	}
+	mut q := orm.new_query[SysPosition](db)
+	mut query := q.select()!.where('id = ?', req.id)!
 	result := query.query()!
 
-	mut datalist := []map[string]Any{} // map空数组初始化
-	for row in result {
-		mut data := map[string]Any{} // map初始化
-		data['id'] = row.id //主键ID
-		data['status'] = int(row.status)
-		data['name'] = row.name
-		data['code'] = row.code
-		data['remark'] = row.remark or { '' }
-		data['sort'] = int(row.sort)
-		data['created_at'] = row.created_at.format_ss()
-		data['updated_at'] = row.updated_at.format_ss()
-		data['deleted_at'] = row.deleted_at or { time.Time{} }.format_ss()
-
-		datalist << data //追加data到maplist 数组
+	if result.len == 0 {
+		return error('Position not found')
 	}
 
-	return datalist[0]
+	row := result[0]
+
+	return GetPositionByIdResp{
+		id:         row.id
+		status:     row.status
+		name:       row.name
+		code:       row.code
+		remark:     row.remark or { '' }
+		sort:       row.sort
+		created_at: row.created_at.format_ss()
+		updated_at: row.updated_at.format_ss()
+		deleted_at: row.deleted_at or { time.Time{} }.format_ss()
+	}
 }

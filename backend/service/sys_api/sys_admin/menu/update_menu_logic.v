@@ -5,87 +5,118 @@ import log
 import orm
 import time
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysMenu }
 import common.api
 import structs { Context }
 
-// Update menu ||更新menu
-@['/update_menu'; post]
-fn (app &Menu) update_menu(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/menu/update'; post]
+pub fn update_menu_handler(app &Menu, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := update_menu_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[UpdateMenuReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := update_menu_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn update_menu_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn update_menu_usecase(mut ctx Context, req UpdateMenuReq) !UpdateMenuResp {
+	// Domain 校验
+	update_menu_domain(req)!
 
-	id := req.as_map()['id'] or { '' }.str()
-	parent_id := req.as_map()['parent_id'] or { '' }.str()
-	menu_level := req.as_map()['menu_level'] or { 0 }.u64()
-	menu_type := req.as_map()['menu_type'] or { 0 }.u64()
-	path := req.as_map()['path'] or { '' }.str()
-	name := req.as_map()['name'] or { '' }.str()
-	redirect := req.as_map()['redirect'] or { '' }.str()
-	component := req.as_map()['component'] or { '' }.str()
-	disabled := req.as_map()['disabled'] or { 0 }.u8()
-	service_name := req.as_map()['service_name'] or { '' }.str()
-	permission := req.as_map()['permission'] or { '' }.str()
-	title := req.as_map()['title'] or { '' }.str()
-	icon := req.as_map()['icon'] or { '' }.str()
-	hide_menu := req.as_map()['hide_menu'] or { 0 }.u8()
-	hide_breadcrumb := req.as_map()['hide_breadcrumb'] or { 0 }.u8()
-	ignore_keep_alive := req.as_map()['ignore_keep_alive'] or { 0 }.u8()
-	hide_tab := req.as_map()['hide_tab'] or { 0 }.u8()
-	frame_src := req.as_map()['frame_src'] or { '' }.str()
-	carry_param := req.as_map()['carry_param'] or { 0 }.u8()
-	hide_children_in_menu := req.as_map()['hide_children_in_menu'] or { 0 }.u8()
-	affix := req.as_map()['affix'] or { 20 }.u8()
-	dynamic_level := req.as_map()['dynamic_level'] or { 0 }.u64()
-	real_path := req.as_map()['real_path'] or { '' }.str()
-	sort := req.as_map()['sort'] or { 0 }.u64()
-	updated_at := req.as_map()['updated_at'] or { time.now() }.to_time()!
+	// Repository 执行更新
+	return update_menu_repo(mut ctx, req)
+}
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+// ----------------- Domain 层 -----------------
+fn update_menu_domain(req UpdateMenuReq) ! {
+	if req.id == '' {
+		return error('menu id is required')
+	}
+	if req.name == '' {
+		return error('menu name is required')
+	}
+	if req.path == '' {
+		return error('menu path is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct UpdateMenuReq {
+	id                    string     @[json: 'id']
+	parent_id             string     @[json: 'parent_id']
+	menu_level            u64        @[json: 'menu_level']
+	menu_type             u64        @[json: 'menu_type']
+	path                  string     @[json: 'path']
+	name                  string     @[json: 'name']
+	redirect              string     @[json: 'redirect']
+	component             string     @[json: 'component']
+	disabled              u8         @[json: 'disabled']
+	service_name          string     @[json: 'service_name']
+	permission            string     @[json: 'permission']
+	title                 string     @[json: 'title']
+	icon                  string     @[json: 'icon']
+	hide_menu             u8         @[json: 'hide_menu']
+	hide_breadcrumb       u8         @[json: 'hide_breadcrumb']
+	ignore_keep_alive     u8         @[json: 'ignore_keep_alive']
+	hide_tab              u8         @[json: 'hide_tab']
+	frame_src             string     @[json: 'frame_src']
+	carry_param           u8         @[json: 'carry_param']
+	hide_children_in_menu u8         @[json: 'hide_children_in_menu']
+	affix                 u8         @[json: 'affix']
+	dynamic_level         u64        @[json: 'dynamic_level']
+	real_path             string     @[json: 'real_path']
+	sort                  u64        @[json: 'sort']
+	updated_at            ?time.Time @[json: 'updated_at']
+}
+
+pub struct UpdateMenuResp {
+	msg string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
+fn update_menu_repo(mut ctx Context, req UpdateMenuReq) !UpdateMenuResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	mut sys_menu := orm.new_query[schema_sys.SysMenu](db)
+	mut q := orm.new_query[SysMenu](db)
 
-	sys_menu.set('parent_id = ?', parent_id)!
-		.set('menu_level = ?', menu_level)!
-		.set('menu_type = ?', menu_type)!
-		.set('path = ?', path)!
-		.set('name = ?', name)!
-		.set('redirect = ?', redirect)!
-		.set('component = ?', component)!
-		.set('disabled = ?', disabled)!
-		.set('service_name = ?', service_name)!
-		.set('permission = ?', permission)!
-		.set('title = ?', title)!
-		.set('icon = ?', icon)!
-		.set('hide_menu = ?', hide_menu)!
-		.set('hide_breadcrumb = ?', hide_breadcrumb)!
-		.set('ignore_keep_alive = ?', ignore_keep_alive)!
-		.set('hide_tab = ?', hide_tab)!
-		.set('frame_src = ?', frame_src)!
-		.set('carry_param = ?', carry_param)!
-		.set('hide_children_in_menu = ?', hide_children_in_menu)!
-		.set('affix = ?', affix)!
-		.set('dynamic_level = ?', dynamic_level)!
-		.set('real_path = ?', real_path)!
-		.set('sort = ?', sort)!
-		.set('updated_at = ?', updated_at)!
-		.where('id = ?', id)!
+	q.set('parent_id = ?', req.parent_id)!
+		.set('menu_level = ?', req.menu_level)!
+		.set('menu_type = ?', req.menu_type)!
+		.set('path = ?', req.path)!
+		.set('name = ?', req.name)!
+		.set('redirect = ?', req.redirect)!
+		.set('component = ?', req.component)!
+		.set('disabled = ?', req.disabled)!
+		.set('service_name = ?', req.service_name)!
+		.set('permission = ?', req.permission)!
+		.set('title = ?', req.title)!
+		.set('icon = ?', req.icon)!
+		.set('hide_menu = ?', req.hide_menu)!
+		.set('hide_breadcrumb = ?', req.hide_breadcrumb)!
+		.set('ignore_keep_alive = ?', req.ignore_keep_alive)!
+		.set('hide_tab = ?', req.hide_tab)!
+		.set('frame_src = ?', req.frame_src)!
+		.set('carry_param = ?', req.carry_param)!
+		.set('hide_children_in_menu = ?', req.hide_children_in_menu)!
+		.set('affix = ?', req.affix)!
+		.set('dynamic_level = ?', req.dynamic_level)!
+		.set('real_path = ?', req.real_path)!
+		.set('sort = ?', req.sort)!
+		.set('updated_at = ?', req.updated_at or { time.now() })!
+		.where('id = ?', req.id)!
 		.update()!
 
-	return map[string]Any{}
+	return UpdateMenuResp{
+		msg: 'Menu updated successfully'
+	}
 }

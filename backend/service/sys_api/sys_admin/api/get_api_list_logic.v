@@ -5,86 +5,122 @@ import log
 import time
 import orm
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysApi }
 import common.api
 import structs { Context }
 
-@['/list'; post]
-fn (app &Api) api_list(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/api/list'; post]
+pub fn api_list_handler(app &Api, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := api_list_resp(mut ctx, req) or { return ctx.json(api.json_error_500(err.msg())) }
+	req := json.decode[ApiListReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := api_list_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
+	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn api_list_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn api_list_usecase(mut ctx Context, req ApiListReq) !ApiListResp {
+	// Domain 校验
+	api_list_domain(req)!
 
-	page := req.as_map()['page'] or { 1 }.int()
-	page_size := req.as_map()['page_size'] or { 10 }.int()
-	path := req.as_map()['path'] or { '' }.str()
-	api_group := req.as_map()['api_group'] or { '' }.str()
-	service_name := req.as_map()['service_name'] or { '' }.str()
-	method := req.as_map()['method'] or { '' }.str()
-	is_required := req.as_map()['is_required'] or { 100 }.u8()
+	// Repository 获取数据
+	return api_list_repo(mut ctx, req)
+}
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+// ----------------- Domain 层 -----------------
+fn api_list_domain(req ApiListReq) ! {
+	if req.page <= 0 || req.page_size <= 0 {
+		return error('page and page_size must be positive integers')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct ApiListReq {
+	page         int    @[json: 'page']
+	page_size    int    @[json: 'page_size']
+	path         string @[json: 'path']
+	api_group    string @[json: 'api_group']
+	service_name string @[json: 'service_name']
+	method       string @[json: 'method']
+	is_required  u8     @[json: 'is_required']
+}
+
+pub struct ApiListResp {
+	total int           @[json: 'total']
+	data  []ApiListData @[json: 'data']
+}
+
+pub struct ApiListData {
+	id           string @[json: 'id']
+	path         string @[json: 'path']
+	description  string @[json: 'description']
+	api_group    string @[json: 'api_group']
+	method       string @[json: 'method']
+	is_required  int    @[json: 'is_required']
+	service_name string @[json: 'service_name']
+	created_at   string @[json: 'created_at']
+	updated_at   string @[json: 'updated_at']
+	deleted_at   string @[json: 'deleted_at']
+}
+
+// ----------------- Repository 层 -----------------
+fn api_list_repo(mut ctx Context, req ApiListReq) !ApiListResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
+	}
+
+	// 总数统计
+	mut count := sql db {
+		select count from SysApi
+	}!
+
+	offset_num := (req.page - 1) * req.page_size
+	mut q := orm.new_query[SysApi](db).select()!
+
+	if req.path != '' {
+		q = q.where('path = ?', req.path)!
+	}
+	if req.api_group != '' {
+		q = q.where('api_group = ?', req.api_group)!
+	}
+	if req.service_name != '' {
+		q = q.where('service_name = ?', req.service_name)!
+	}
+	if req.is_required in [0, 1] {
+		q = q.where('is_required = ?', req.is_required)!
+	}
+	if req.method != '' {
+		q = q.where('method = ?', req.method)!
+	}
+
+	result := q.limit(req.page_size)!.offset(offset_num)!.query()!
+
+	mut datalist := []ApiListData{}
+	for row in result {
+		datalist << ApiListData{
+			id:           row.id
+			path:         row.path
+			description:  row.description or { '' }
+			api_group:    row.api_group
+			method:       row.method
+			is_required:  int(row.is_required)
+			service_name: row.service_name
+			created_at:   row.created_at.format_ss()
+			updated_at:   row.updated_at.format_ss()
+			deleted_at:   (row.deleted_at or { time.Time{} }).format_ss()
 		}
 	}
 
-	mut sys_api := orm.new_query[schema_sys.SysApi](db)
-	// 总页数查询 - 分页偏移量构造
-	mut count := sql db {
-		select count from schema_sys.SysUser
-	}!
-	offset_num := (page - 1) * page_size
-	//*>>>*/
-	mut query := sys_api.select()!
-	if path != '' {
-		query = query.where('path = ?', path)!
+	return ApiListResp{
+		total: count
+		data:  datalist
 	}
-	if api_group != '' {
-		query = query.where('api_group = ?', api_group)!
-	}
-	if service_name != '' {
-		query = query.where('service_name = ?', service_name)!
-	}
-	if is_required !in [0, 1] {
-		query = query.where('is_required = ?', is_required)!
-	}
-	if method != '' {
-		query = query.where('method = ?', method)!
-	}
-
-	result := query.limit(page_size)!.offset(offset_num)!.query()!
-	//*<<<*/
-	mut datalist := []map[string]Any{} // map空数组初始化
-	for row in result {
-		mut data := map[string]Any{} // map初始化
-		data['id'] = row.id //主键ID
-		data['path'] = row.path
-		data['description'] = row.description or { '' }
-		data['api_group'] = row.api_group
-		data['method'] = row.method
-		data['is_required'] = int(row.is_required)
-		data['service_name'] = row.service_name
-
-		data['created_at'] = row.created_at.format_ss()
-		data['updated_at'] = row.updated_at.format_ss()
-		data['deleted_at'] = row.deleted_at or { time.Time{} }.format_ss()
-
-		datalist << data //追加data到maplist 数组
-	}
-
-	mut result_data := map[string]Any{}
-	result_data['total'] = count
-	result_data['data'] = datalist
-
-	return result_data
 }

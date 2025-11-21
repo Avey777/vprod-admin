@@ -4,47 +4,62 @@ import veb
 import log
 import orm
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysUser }
 import common.api
 import structs { Context }
 
-// Delete User | 删除用户
+// ----------------- Handler 层 -----------------
 @['/delete_user'; post]
-fn (app &User) delete_user(mut ctx Context) veb.Result {
+pub fn (app &User) delete_user_handler(mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[DeleteUserReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
-	mut result := delete_user_resp(mut ctx, req) or {
+
+	result := delete_user_usecase(mut ctx, req) or {
 		return ctx.json(api.json_error_500(err.msg()))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn delete_user_resp(mut ctx Context, req DeleteUserReq) !DeleteUserResp {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn delete_user_usecase(mut ctx Context, req DeleteUserReq) !DeleteUserResp {
+	// 调用 Domain 层检查逻辑
+	delete_user_domain(req)!
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
-	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
-	}
-
-	mut sys_user := orm.new_query[schema_sys.SysUser](db)
-	sys_user.set('del_flag = ?', 1)!.where('id = ?', req.user_id)!.update()!
+	// 调用 Repository 执行删除操作
+	delete_user(mut ctx, req.user_id)!
 
 	return DeleteUserResp{
 		msg: 'User deleted successfully'
 	}
 }
 
-struct DeleteUserReq {
+// ----------------- Domain 层 -----------------
+fn delete_user_domain(req DeleteUserReq) ! {
+	if req.user_id == '' {
+		return error('user_id cannot be empty')
+	}
+}
+
+// ----------------- DTO 层 | 请求/返回结构 -----------------
+pub struct DeleteUserReq {
 	user_id string
 }
 
-struct DeleteUserResp {
+pub struct DeleteUserResp {
 	msg string
+}
+
+// ----------------- AdapterRepository 层 -----------------
+fn delete_user(mut ctx Context, user_id string) ! {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
+	}
+
+	mut q_user := orm.new_query[SysUser](db)
+	q_user.set('del_flag = ?', 1)!.where('id = ?', user_id)!.update()!
 }

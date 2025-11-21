@@ -5,101 +5,151 @@ import log
 import time
 import orm
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysMenu, SysRoleMenu }
 import common.api
 import structs { Context }
 
-//根据role获取menu
+// ----------------- Handler 层 -----------------
 @['/role/list'; get]
-fn (app &Menu) role_menu_list(mut ctx Context) veb.Result {
+pub fn role_menu_list_handler(app &Menu, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	dump('4646466')
-	mut result := role_menu_list_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[RoleMenuListReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := role_menu_list_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn role_menu_list_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Usecase 层 -----------------
+pub fn role_menu_list_usecase(mut ctx Context, req RoleMenuListReq) !RoleMenuListResp {
+	role_menu_list_domain(req)!
+	return role_menu_list_repo(mut ctx, req)
+}
 
-	page := req.as_map()['page'] or { 1 }.int()
-	page_size := req.as_map()['page_size'] or { 10000 }.int()
-	role_id := req.as_map()['role_id'] or { '' }.str()
+// ----------------- Domain 层 -----------------
+fn role_menu_list_domain(req RoleMenuListReq) ! {
+	if req.page <= 0 {
+		return error('page must be positive integer')
+	}
+	if req.page_size <= 0 {
+		return error('page_size must be positive integer')
+	}
+}
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+// ----------------- DTO 层 -----------------
+pub struct RoleMenuListReq {
+	page      int    @[json: 'page']
+	page_size int    @[json: 'page_size']
+	role_id   string @[json: 'role_id']
+}
+
+pub struct MenuDataList {
+	id                    string @[json: 'id']
+	parent_id             string @[json: 'parent_id']
+	menu_level            string @[json: 'menu_level']
+	menu_type             string @[json: 'menu_type']
+	path                  string @[json: 'path']
+	name                  string @[json: 'name']
+	redirect              string @[json: 'redirect']
+	component             string @[json: 'component']
+	disabled              int    @[json: 'disabled']
+	service_name          string @[json: 'service_name']
+	permission            string @[json: 'permission']
+	title                 string @[json: 'title']
+	icon                  string @[json: 'icon']
+	hide_menu             int    @[json: 'hide_menu']
+	hide_breadcrumb       int    @[json: 'hide_breadcrumb']
+	ignore_keep_alive     int    @[json: 'ignore_keep_alive']
+	hide_tab              int    @[json: 'hide_tab']
+	frame_src             string @[json: 'frame_src']
+	carry_param           int    @[json: 'carry_param']
+	hide_children_in_menu int    @[json: 'hide_children_in_menu']
+	affix                 int    @[json: 'affix']
+	dynamic_level         int    @[json: 'dynamic_level']
+	real_path             string @[json: 'real_path']
+	sort                  int    @[json: 'sort']
+	created_at            string @[json: 'created_at']
+	updated_at            string @[json: 'updated_at']
+	deleted_at            string @[json: 'deleted_at']
+}
+
+pub struct RoleMenuListResp {
+	total int            @[json: 'total']
+	data  []MenuDataList @[json: 'data']
+}
+
+// ----------------- Repository 层 -----------------
+fn role_menu_list_repo(mut ctx Context, req RoleMenuListReq) !RoleMenuListResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release DB connection: ${err}') }
 	}
 
-	mut sys_role_menu := orm.new_query[schema_sys.SysRoleMenu](db)
-	mut sys_menu := orm.new_query[schema_sys.SysMenu](db)
-	// 分页偏移量构造
-	offset_num := (page - 1) * page_size
-	//*>>>*/
-	mut query_menus := sys_role_menu.select('menu_id')!
-	if role_id != '' {
-		query_menus = query_menus.where('role_id = ?', role_id)!
-	}
-	menu_id_arr := query_menus.limit(page_size)!.offset(offset_num)!.query()!
+	offset_num := (req.page - 1) * req.page_size
 
-	// 2. 提取所需的 ID 值到基础类型切片
+	mut q_role_menu := orm.new_query[SysRoleMenu](db)
+	mut query_menus := q_role_menu.select('menu_id')!
+	if req.role_id != '' {
+		query_menus = query_menus.where('role_id = ?', req.role_id)!
+	}
+	menu_id_arr := query_menus.limit(req.page_size)!.offset(offset_num)!.query()!
+
 	mut menu_ids := []orm.Primitive{}
 	for item in menu_id_arr {
 		menu_ids << item.menu_id
 	}
-	// 3. 检查空数组避免 SQL 错误
 	if menu_ids.len == 0 {
-		return map[string]Any{}
+		return RoleMenuListResp{
+			total: 0
+			data:  []
+		}
 	}
 
-	mut query := sys_menu.select()!.where('id IN ?', menu_ids)!
-	mut count := query.count()! // 数据总数量
-	result := query.limit(page_size)!.offset(offset_num)!.query()!
-	//*<<<*/
-	mut datalist := []map[string]Any{} // map空数组初始化
+	mut q_menu := orm.new_query[SysMenu](db)
+	query := q_menu.select()!.where('id IN ?', menu_ids)!
+	total_count := query.count()!
+	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
+
+	mut datalist := []MenuDataList{}
 	for row in result {
-		mut data := map[string]Any{} // map初始化
-		data['id'] = row.id //主键ID
-		data['parent_id'] = row.parent_id or { '' }
-		data['menu_level'] = row.menu_level.str()
-		data['menu_type'] = row.menu_type.str()
-		data['path'] = row.path or { '' }
-		data['name'] = row.name.str()
-		data['redirect'] = row.redirect or { '' }
-		data['component'] = row.component or { '' }
-		data['disabled'] = int(row.disabled or { 0 })
-		data['service_name'] = row.service_name or { '' }
-		data['permission'] = row.permission or { '' }
-		data['title'] = row.title.str()
-		data['icon'] = row.icon.str()
-		data['hide_menu'] = int(row.hide_menu or { 0 })
-		data['hide_breadcrumb'] = int(row.hide_breadcrumb or { 0 })
-		data['ignore_keep_alive'] = int(row.ignore_keep_alive or { 0 })
-		data['hide_tab'] = int(row.hide_tab or { 0 })
-		data['frame_src'] = row.frame_src or { '' }.str()
-		data['carry_param'] = int(row.carry_param or { 0 })
-		data['hide_children_in_menu'] = int(row.hide_children_in_menu or { 0 })
-		data['affix'] = int(row.affix or { 0 })
-		data['dynamic_level'] = int(row.dynamic_level or { 20 })
-		data['real_path'] = row.real_path or { '' }.str()
-		data['sort'] = int(row.sort)
-		data['created_at'] = row.created_at.format_ss()
-		data['updated_at'] = row.updated_at.format_ss()
-		data['deleted_at'] = row.deleted_at or { time.Time{} }.format_ss()
-
-		datalist << data //追加data到maplist 数组
+		datalist << MenuDataList{
+			id:                    row.id
+			parent_id:             row.parent_id or { '' }
+			menu_level:            row.menu_level.str()
+			menu_type:             row.menu_type.str()
+			path:                  row.path or { '' }
+			name:                  row.name.str()
+			redirect:              row.redirect or { '' }
+			component:             row.component or { '' }
+			disabled:              int(row.disabled or { 0 })
+			service_name:          row.service_name or { '' }
+			permission:            row.permission or { '' }
+			title:                 row.title.str()
+			icon:                  row.icon.str()
+			hide_menu:             int(row.hide_menu or { 0 })
+			hide_breadcrumb:       int(row.hide_breadcrumb or { 0 })
+			ignore_keep_alive:     int(row.ignore_keep_alive or { 0 })
+			hide_tab:              int(row.hide_tab or { 0 })
+			frame_src:             row.frame_src or { '' }
+			carry_param:           int(row.carry_param or { 0 })
+			hide_children_in_menu: int(row.hide_children_in_menu or { 0 })
+			affix:                 int(row.affix or { 0 })
+			dynamic_level:         int(row.dynamic_level or { 20 })
+			real_path:             row.real_path or { '' }
+			sort:                  int(row.sort)
+			created_at:            row.created_at.format_ss()
+			updated_at:            row.updated_at.format_ss()
+			deleted_at:            (row.deleted_at or { time.Time{} }).format_ss()
+		}
 	}
 
-	mut result_data := map[string]Any{}
-	result_data['total'] = count
-	result_data['data'] = datalist
-
-	return result_data
+	return RoleMenuListResp{
+		total: total_count
+		data:  datalist
+	}
 }

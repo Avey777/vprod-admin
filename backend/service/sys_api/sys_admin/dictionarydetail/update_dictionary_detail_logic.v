@@ -5,55 +5,80 @@ import log
 import orm
 import time
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysDictionaryDetail }
 import common.api
 import structs { Context }
 
-// Update dictionarydetail ||更新dictionarydetail
-@['/update_dictionarydetail'; post]
-fn (app &DictionaryDetail) update_dictionarydetail(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/dictionarydetail/update'; post]
+pub fn dictionarydetail_update_handler(app &DictionaryDetail, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := update_dictionarydetail_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[UpdateDictionaryDetailReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := update_dictionarydetail_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn update_dictionarydetail_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn update_dictionarydetail_usecase(mut ctx Context, req UpdateDictionaryDetailReq) !UpdateDictionaryDetailResp {
+	// Domain 校验
+	update_dictionarydetail_domain(req)!
 
-	id := req.as_map()['id'] or { '' }.str()
-	name := req.as_map()['name'] or { '' }.str()
-	title := req.as_map()['title'] or { '' }.str()
-	key := req.as_map()['key'] or { '' }.str()
-	value := req.as_map()['value'] or { '' }.str()
-	dictionary_id := req.as_map()['dictionary_id'] or { '' }.str()
-	sort := req.as_map()['sort'] or { 0 }.u32()
-	status := req.as_map()['status'] or { 0 }.u8()
-	updated_at := req.as_map()['updated_at'] or { time.now() }.to_time()!
+	// Repository 执行更新
+	return update_dictionarydetail_repo(mut ctx, req)
+}
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+// ----------------- Domain 层 -----------------
+fn update_dictionarydetail_domain(req UpdateDictionaryDetailReq) ! {
+	if req.id == '' {
+		return error('id is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct UpdateDictionaryDetailReq {
+	id            string     @[json: 'id']
+	name          string     @[json: 'name']
+	title         string     @[json: 'title']
+	key           string     @[json: 'key']
+	value         string     @[json: 'value']
+	dictionary_id string     @[json: 'dictionary_id']
+	sort          u32        @[json: 'sort']
+	status        u8         @[json: 'status']
+	updated_at    ?time.Time @[json: 'updated_at']
+}
+
+pub struct UpdateDictionaryDetailResp {
+	msg string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
+fn update_dictionarydetail_repo(mut ctx Context, req UpdateDictionaryDetailReq) !UpdateDictionaryDetailResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	mut sys_dictionarydetail := orm.new_query[schema_sys.SysDictionaryDetail](db)
+	mut q := orm.new_query[SysDictionaryDetail](db)
 
-	sys_dictionarydetail.set('title = ?', title)!
-		.set('name = ?', name)!
-		.set('key = ?', key)!
-		.set('value = ?', value)!
-		.set('sort = ?', sort)!
-		.set('status = ?', status)!
-		.set('dictionary_id = ?', dictionary_id)!
-		.set('updated_at = ?', updated_at)!
-		.where('id = ?', id)!
+	q.set('title = ?', req.title)!
+		.set('name = ?', req.name)!
+		.set('key = ?', req.key)!
+		.set('value = ?', req.value)!
+		.set('sort = ?', req.sort)!
+		.set('status = ?', req.status)!
+		.set('dictionary_id = ?', req.dictionary_id)!
+		.set('updated_at = ?', req.updated_at or { time.now() })!
+		.where('id = ?', req.id)!
 		.update()!
 
-	return map[string]Any{}
+	return UpdateDictionaryDetailResp{
+		msg: 'Dictionary detail updated successfully'
+	}
 }
