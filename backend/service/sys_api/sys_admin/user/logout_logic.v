@@ -28,7 +28,7 @@ pub fn logout_usecase(mut ctx Context, req LogoutReq) !LogoutResp {
 	logout_domain(req)!
 
 	// 调用 Repository 层执行登出逻辑
-	return logout_repository(mut ctx, req.user_id)!
+	return logout(mut ctx, req.user_id)!
 }
 
 // ----------------- Domain 层 -----------------
@@ -48,7 +48,7 @@ pub struct LogoutResp {
 }
 
 // ----------------- AdapterRepository 层 -----------------
-fn logout_repository(mut ctx Context, user_id string) !LogoutResp {
+fn logout(mut ctx Context, user_id string) !LogoutResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release DB connection: ${err}') }

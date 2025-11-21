@@ -30,7 +30,7 @@ pub fn delete_user_usecase(mut ctx Context, req DeleteUserReq) !DeleteUserResp {
 	delete_user_domain(req)!
 
 	// 调用 Repository 执行删除操作
-	delete_user_repository(mut ctx, req.user_id)!
+	delete_user(mut ctx, req.user_id)!
 
 	return DeleteUserResp{
 		msg: 'User deleted successfully'
@@ -54,7 +54,7 @@ pub struct DeleteUserResp {
 }
 
 // ----------------- AdapterRepository 层 -----------------
-fn delete_user_repository(mut ctx Context, user_id string) ! {
+fn delete_user(mut ctx Context, user_id string) ! {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }

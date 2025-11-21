@@ -33,7 +33,7 @@ pub fn create_user_usecase(mut ctx Context, req CreateUserReq) !CreateUserResp {
 	user_id, password_hash := create_user_domain(req)!
 
 	// 调用 Repository 保存用户、角色、职位
-	create_user_repository(mut ctx, req, user_id, password_hash)!
+	create_user(mut ctx, req, user_id, password_hash)!
 
 	return CreateUserResp{
 		msg: 'User created successfully'
@@ -76,7 +76,7 @@ pub struct CreateUserResp {
 }
 
 // ----------------- AdapterRepository 层 -----------------
-fn create_user_repository(mut ctx Context, req CreateUserReq, user_id string, password_hash string) ! {
+fn create_user(mut ctx Context, req CreateUserReq, user_id string, password_hash string) ! {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }

@@ -33,7 +33,7 @@ pub fn refresh_token_usecase(mut ctx Context, req RefreshTokenReq) !RefreshToken
 	refresh_token_domain(req)!
 
 	// 调用 Repository 层刷新 token
-	return refresh_token_repository(mut ctx, req)!
+	return refresh_token(mut ctx, req)!
 }
 
 // ----------------- Domain 层 -----------------
@@ -61,7 +61,7 @@ pub struct RefreshTokenResp {
 }
 
 // ----------------- AdapterRepository 层 -----------------
-fn refresh_token_repository(mut ctx Context, req RefreshTokenReq) !RefreshTokenResp {
+fn refresh_token(mut ctx Context, req RefreshTokenReq) !RefreshTokenResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release DB connection: ${err}') }

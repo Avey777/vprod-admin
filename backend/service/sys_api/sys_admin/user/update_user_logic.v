@@ -31,7 +31,7 @@ pub fn update_user_usecase(mut ctx Context, req UpdateUserReq) !UpdateUserResp {
 	update_user_domain(req)!
 
 	// 调用 Repository 层更新用户信息
-	return update_user_repository(mut ctx, req)!
+	return update_user(mut ctx, req)!
 }
 
 // ----------------- Domain 层 -----------------
@@ -67,7 +67,7 @@ pub struct UpdateUserResp {
 }
 
 // ----------------- AdapterRepository 层 -----------------
-fn update_user_repository(mut ctx Context, req UpdateUserReq) !UpdateUserResp {
+fn update_user(mut ctx Context, req UpdateUserReq) !UpdateUserResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release DB connection: ${err}') }

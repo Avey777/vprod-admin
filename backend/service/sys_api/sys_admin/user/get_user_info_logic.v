@@ -30,7 +30,7 @@ pub fn get_user_info_usecase(mut ctx Context, req GetUserInfoReq) !GetUserInfoRe
 	get_user_info_domain(req)!
 
 	// 调用 Repository 层获取用户信息
-	return get_user_info_repository(mut ctx, req.user_id)!
+	return get_user_info(mut ctx, req.user_id)!
 }
 
 // ----------------- Domain 层 -----------------
@@ -57,7 +57,7 @@ pub struct GetUserInfoResp {
 }
 
 // ----------------- AdapterRepository 层 -----------------
-fn get_user_info_repository(mut ctx Context, user_id string) !GetUserInfoResp {
+fn get_user_info(mut ctx Context, user_id string) !GetUserInfoResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
