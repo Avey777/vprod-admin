@@ -6,69 +6,107 @@ import orm
 import time
 import rand
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysToken }
 import common.api
 import structs { Context }
 import common.jwt
 
-// Create Token | 创建Token
-@['/create_token'; post]
-fn (app &Token) create_token(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/token/create'; post]
+pub fn token_create_handler(app &Token, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := create_token_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[CreateTokenReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	// Usecase 执行
+	result := create_token_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn create_token_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn create_token_usecase(mut ctx Context, req CreateTokenReq) !CreateTokenResp {
+	// Domain 校验层
+	create_token_domain(req)!
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
-	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
-	}
-
-	tokens := schema_sys.SysToken{
-		id:         rand.uuid_v7()
-		status:     req.as_map()['status'] or { 0 }.u8()
-		user_id:    req.as_map()['user_id'] or { '' }.str()
-		username:   req.as_map()['username'] or { '' }.str()
-		token:      token_jwt_generate(mut ctx, req)
-		source:     req.as_map()['source'] or { 'Core' }.str()
-		expired_at: req.as_map()['expired_at'] or { time.now().add_days(30).unix() }.to_time()!
-		created_at: req.as_map()['created_at'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
-		updated_at: req.as_map()['updated_at'] or { time.now() }.to_time()!
-	}
-	mut sys_token := orm.new_query[schema_sys.SysToken](db)
-	sys_token.insert(tokens)!
-
-	return map[string]Any{}
+	// Repository 写入数据库
+	return create_token(mut ctx, req)
 }
 
-fn token_jwt_generate(mut ctx Context, req json.Any) string {
-	// secret := req.as_map()['Secret'] or { '' }.str()
+// ----------------- Domain 层 -----------------
+fn create_token_domain(req CreateTokenReq) ! {
+	if req.user_id == '' {
+		return error('user_id is required')
+	}
+	if req.username == '' {
+		return error('username is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct CreateTokenReq {
+	status     u8         @[json: 'status']
+	user_id    string     @[json: 'user_id']
+	username   string     @[json: 'username']
+	source     string     @[json: 'source']
+	expired_at ?time.Time @[json: 'expired_at']
+	created_at ?time.Time @[json: 'created_at']
+	updated_at ?time.Time @[json: 'updated_at']
+	login_ip   string     @[json: 'login_ip']
+	device_id  string     @[json: 'device_id']
+}
+
+pub struct CreateTokenResp {
+	msg string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
+fn create_token(mut ctx Context, req CreateTokenReq) !CreateTokenResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
+	}
+
+	mut q := orm.new_query[SysToken](db)
+
+	tokens := SysToken{
+		id:         rand.uuid_v7()
+		status:     req.status
+		user_id:    req.user_id
+		username:   req.username
+		token:      token_jwt_generate(mut ctx, req)
+		source:     req.source
+		expired_at: req.expired_at or { time.now().add_days(30) }
+		created_at: req.created_at or { time.now() }
+		updated_at: req.updated_at or { time.now() }
+	}
+
+	q.insert(tokens)!
+
+	return CreateTokenResp{
+		msg: 'Token created successfully'
+	}
+}
+
+// ----------------- JWT 生成逻辑 -----------------
+fn token_jwt_generate(mut ctx Context, req CreateTokenReq) string {
 	secret := ctx.get_custom_header('secret') or { '' }
 
 	mut payload := jwt.JwtPayload{
-		iss: 'v-admin' // 签发者 (Issuer) your-app-name
-		sub: req.as_map()['user_id'] or { '' }.str() // 用户唯一标识 (Subject)
-		// aud: ['api-service', 'webapp'] // 接收方 (Audience)，可以是数组或字符串
-		exp: time.now().add_days(30).unix() // 过期时间 (Expiration Time) 7天后
-		nbf: time.now().unix() // 生效时间 (Not Before)，立即生效
-		iat: time.now().unix() // 签发时间 (Issued At)
-		jti: rand.uuid_v4() // JWT唯一标识 (JWT ID)，防重防攻击
-		// 自定义业务字段 (Custom Claims)
-		roles:     ['admin', 'editor'] // 用户角色
-		client_ip: req.as_map()['login_ip'] or { '' }.str() // ip地址
-		device_id: req.as_map()['device_id'] or { '' }.str() // 设备id
+		iss:       'v-admin'
+		sub:       req.user_id
+		exp:       time.now().add_days(30).unix()
+		nbf:       time.now().unix()
+		iat:       time.now().unix()
+		jti:       rand.uuid_v4()
+		roles:     ['admin', 'editor']
+		client_ip: req.login_ip
+		device_id: req.device_id
 	}
 
-	token := jwt.jwt_generate(secret, payload)
-	return token
+	return jwt.jwt_generate(secret, payload)
 }

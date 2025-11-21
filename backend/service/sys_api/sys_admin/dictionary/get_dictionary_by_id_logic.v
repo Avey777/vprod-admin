@@ -5,57 +5,80 @@ import log
 import time
 import orm
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysDictionary }
 import common.api
 import structs { Context }
 
-@['/id'; post]
-fn (app &Dictionary) dictionary_by_id(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/dictionary/get_by_id'; post]
+pub fn dictionary_by_id_handler(app &Dictionary, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := dictionary_by_id_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[DictionaryByIdReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := dictionary_by_id_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn dictionary_by_id_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn dictionary_by_id_usecase(mut ctx Context, req DictionaryByIdReq) !DictionaryByIdResp {
+	dictionary_by_id_domain(req)!
+	return dictionary_by_id_repo(mut ctx, req)
+}
 
-	dictionary_id := req.as_map()['id'] or { '' }.str()
+// ----------------- Domain 层 -----------------
+fn dictionary_by_id_domain(req DictionaryByIdReq) ! {
+	if req.id == '' {
+		return error('dictionary id is required')
+	}
+}
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+// ----------------- DTO 层 -----------------
+pub struct DictionaryByIdReq {
+	id string @[json: 'id']
+}
+
+pub struct DictionaryByIdResp {
+	id         string @[json: 'id']
+	title      string @[json: 'title']
+	status     int    @[json: 'status']
+	name       string @[json: 'name']
+	desc       string @[json: 'desc']
+	created_at string @[json: 'created_at']
+	updated_at string @[json: 'updated_at']
+	deleted_at string @[json: 'deleted_at']
+}
+
+// ----------------- Repository 层 -----------------
+fn dictionary_by_id_repo(mut ctx Context, req DictionaryByIdReq) !DictionaryByIdResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	mut sys_dictionary := orm.new_query[schema_sys.SysDictionary](db)
-	mut query := sys_dictionary.select()!
-	if dictionary_id != '' {
-		query = query.where('id = ?', dictionary_id)!
-	}
+	mut q := orm.new_query[SysDictionary](db)
+	query := q.select()!.where('id = ?', req.id)!
 	result := query.query()!
 
-	mut datalist := []map[string]Any{} // map空数组初始化
-	for row in result {
-		mut data := map[string]Any{} // map初始化
-		data['id'] = row.id //主键ID
-		data['title'] = row.title
-		data['status'] = int(row.status)
-		data['name'] = row.name
-		data['desc'] = row.desc or { '' }
-
-		data['created_at'] = row.created_at.format_ss()
-		data['updated_at'] = row.updated_at.format_ss()
-		data['deleted_at'] = row.deleted_at or { time.Time{} }.format_ss()
-
-		datalist << data //追加data到maplist 数组
+	if result.len == 0 {
+		return error('dictionary not found')
 	}
 
-	return datalist[0]
+	row := result[0]
+
+	return DictionaryByIdResp{
+		id:         row.id
+		title:      row.title
+		status:     int(row.status)
+		name:       row.name
+		desc:       row.desc or { '' }
+		created_at: row.created_at.format_ss()
+		updated_at: row.updated_at.format_ss()
+		deleted_at: (row.deleted_at or { time.Time{} }).format_ss()
+	}
 }

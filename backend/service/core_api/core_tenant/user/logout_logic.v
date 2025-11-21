@@ -4,47 +4,62 @@ import veb
 import log
 import orm
 import x.json2 as json
-import structs.schema_core
+import structs.schema_core { CoreToken }
 import common.api
 import structs { Context }
 
-// Logout | 退出登入
+// ----------------- Handler 层 -----------------
 @['/login_out'; post]
-fn (app &User) logout_logic(mut ctx Context) veb.Result {
+pub fn logout_handler(app &User, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
 	req := json.decode[LogoutReq](ctx.req.data) or {
 		return ctx.json(api.json_error_400(err.msg()))
 	}
-	mut result := logout_resp(mut ctx, req) or { return ctx.json(api.json_error_500(err.msg())) }
+
+	result := logout_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
+	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn logout_resp(mut ctx Context, req LogoutReq) !LogoutResp {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn logout_usecase(mut ctx Context, req LogoutReq) !LogoutResp {
+	// Domain 校验
+	logout_domain(req)!
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
-	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
-	}
-
-	mut sys_token := orm.new_query[schema_core.CoreToken](db)
-	sys_token.set('status = ?', '1')!.where('id = ?', req.user_id)!.update()!
-
-	mut data := LogoutResp{
-		logout: 'Logout successfull'
-	}
-
-	return data
+	// Repository 执行更新
+	return logout_repo(mut ctx, req)
 }
 
-struct LogoutReq {
+// ----------------- Domain 层 -----------------
+fn logout_domain(req LogoutReq) ! {
+	if req.user_id == '' {
+		return error('user_id is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct LogoutReq {
 	user_id string @[json: 'user_id']
 }
 
-struct LogoutResp {
+pub struct LogoutResp {
 	logout string @[json: 'logout']
+}
+
+// ----------------- Repository 层 -----------------
+fn logout_repo(mut ctx Context, req LogoutReq) !LogoutResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
+	}
+
+	mut q := orm.new_query[CoreToken](db)
+	q.set('status = ?', '1')!.where('id = ?', req.user_id)!.update()!
+
+	return LogoutResp{
+		logout: 'Logout successful'
+	}
 }

@@ -5,57 +5,85 @@ import log
 import orm
 import time
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysDepartment }
 import common.api
 import structs { Context }
 
-// Update department ||更新department
-@['/update_department'; post]
-fn (app &Department) update_token(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/department/update'; post]
+pub fn department_update_handler(app &Department, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := update_department_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[UpdateDepartmentReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := update_department_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn update_department_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn update_department_usecase(mut ctx Context, req UpdateDepartmentReq) !UpdateDepartmentResp {
+	// Domain 校验
+	update_department_domain(req)!
 
-	id := req.as_map()['id'] or { '' }.str()
-	name := req.as_map()['name'] or { '' }.str()
-	leader := req.as_map()['leader'] or { '' }.str()
-	phone := req.as_map()['phone'] or { '' }.str()
-	email := req.as_map()['email'] or { '' }.str()
-	remark := req.as_map()['remark'] or { '' }.str()
-	parent_id := req.as_map()['parent_id'] or { '00000000-0000-0000-0000-000000000000' }.str()
-	status := req.as_map()['status'] or { 0 }.u8()
-	sort := req.as_map()['sort'] or { 0 }.u64()
-	updated_at := req.as_map()['updated_at'] or { time.now() }.to_time()!
+	// Repository 执行更新
+	return update_department_repo(mut ctx, req)
+}
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+// ----------------- Domain 层 -----------------
+fn update_department_domain(req UpdateDepartmentReq) ! {
+	if req.id == '' {
+		return error('id is required')
+	}
+	if req.name == '' {
+		return error('name is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct UpdateDepartmentReq {
+	id         string     @[json: 'id']
+	name       string     @[json: 'name']
+	leader     string     @[json: 'leader']
+	phone      string     @[json: 'phone']
+	email      string     @[json: 'email']
+	remark     string     @[json: 'remark']
+	parent_id  string     @[json: 'parent_id']
+	status     u8         @[json: 'status']
+	sort       u64        @[json: 'sort']
+	updated_at ?time.Time @[json: 'updated_at']
+}
+
+pub struct UpdateDepartmentResp {
+	msg string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
+fn update_department_repo(mut ctx Context, req UpdateDepartmentReq) !UpdateDepartmentResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	mut sys_department := orm.new_query[schema_sys.SysDepartment](db)
+	mut q := orm.new_query[SysDepartment](db)
 
-	sys_department.set('parent_id = ?', parent_id)!
-		.set('name = ?', name)!
-		.set('leader = ?', leader)!
-		.set('phone = ?', phone)!
-		.set('email = ?', email)!
-		.set('remark = ?', remark)!
-		.set('status = ?', status)!
-		.set('sort = ?', sort)!
-		.set('updated_at = ?', updated_at)!
-		.where('id = ?', id)!
+	q.set('parent_id = ?', req.parent_id)!
+		.set('name = ?', req.name)!
+		.set('leader = ?', req.leader)!
+		.set('phone = ?', req.phone)!
+		.set('email = ?', req.email)!
+		.set('remark = ?', req.remark)!
+		.set('status = ?', req.status)!
+		.set('sort = ?', req.sort)!
+		.set('updated_at = ?', req.updated_at or { time.now() })!
+		.where('id = ?', req.id)!
 		.update()!
 
-	return map[string]Any{}
+	return UpdateDepartmentResp{
+		msg: 'Department updated successfully'
+	}
 }

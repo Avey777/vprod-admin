@@ -5,80 +5,124 @@ import log
 import time
 import orm
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysDepartment }
 import common.api
 import structs { Context }
 
-@['/list'; post]
-fn (app &Department) department_list(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/department/list'; post]
+pub fn department_list_handler(app &Department, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := department_list_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[GetDepartmentListReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := get_department_list_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn department_list_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn get_department_list_usecase(mut ctx Context, req GetDepartmentListReq) !GetDepartmentListResp {
+	// Domain 校验
+	get_department_list_domain(req)!
 
-	page := req.as_map()['page'] or { 1 }.int()
-	page_size := req.as_map()['page_size'] or { 10 }.int()
-	name := req.as_map()['name'] or { '' }.str()
-	leader := req.as_map()['leader'] or { '' }.str()
-	status := req.as_map()['status'] or { 0 }.u8()
+	// Repository 查询
+	return find_department_list(mut ctx, req)
+}
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+// ----------------- Domain 层 -----------------
+fn get_department_list_domain(req GetDepartmentListReq) ! {
+	if req.page <= 0 {
+		return error('page must be greater than 0')
+	}
+	if req.page_size <= 0 {
+		return error('page_size must be greater than 0')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct GetDepartmentListReq {
+	page      int    @[json: 'page']
+	page_size int    @[json: 'page_size']
+	name      string @[json: 'name']
+	leader    string @[json: 'leader']
+	status    u8     @[json: 'status']
+}
+
+pub struct DepartmentItem {
+	id         string @[json: 'id']
+	parent_id  string @[json: 'parent_id']
+	status     int    @[json: 'status']
+	name       string @[json: 'name']
+	leader     string @[json: 'leader']
+	remark     string @[json: 'remark']
+	sort       int    @[json: 'sort']
+	phone      string @[json: 'phone']
+	email      string @[json: 'email']
+	created_at string @[json: 'created_at']
+	updated_at string @[json: 'updated_at']
+	deleted_at string @[json: 'deleted_at']
+}
+
+pub struct GetDepartmentListResp {
+	total int
+	data  []DepartmentItem
+}
+
+// ----------------- Repository 层 -----------------
+fn find_department_list(mut ctx Context, req GetDepartmentListReq) !GetDepartmentListResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
+	}
+
+	mut q := orm.new_query[SysDepartment](db)
+
+	offset_num := (req.page - 1) * req.page_size
+
+	// 总数统计
+	mut count := sql db {
+		select count from SysDepartment
+	}!
+
+	// 条件查询
+	mut query := q.select()!
+	if req.name != '' {
+		query = query.where('name = ?', req.name)!
+	}
+	if req.leader != '' {
+		query = query.where('leader = ?', req.leader)!
+	}
+	if req.status in [0, 1] {
+		query = query.where('status = ?', req.status)!
+	}
+
+	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
+
+	mut datalist := []DepartmentItem{}
+	for row in result {
+		datalist << DepartmentItem{
+			id:         row.id
+			parent_id:  row.parent_id
+			status:     int(row.status)
+			name:       row.name
+			leader:     row.leader or { '' }
+			remark:     row.remark or { '' }
+			sort:       int(row.sort)
+			phone:      row.phone or { '' }
+			email:      row.email or { '' }
+			created_at: row.created_at.format_ss()
+			updated_at: row.updated_at.format_ss()
+			deleted_at: row.deleted_at or { time.Time{} }.format_ss()
 		}
 	}
 
-	mut sys_department := orm.new_query[schema_sys.SysDepartment](db)
-	// 总页数查询 - 分页偏移量构造
-	mut count := sql db {
-		select count from schema_sys.SysUser
-	}!
-	offset_num := (page - 1) * page_size
-	//*>>>*/
-	mut query := sys_department.select()!
-	if name != '' {
-		query = query.where('name = ?', name)!
+	return GetDepartmentListResp{
+		total: count
+		data:  datalist
 	}
-	if leader != '' {
-		query = query.where('leader = ?', leader)!
-	}
-	if status in [0, 1] {
-		query = query.where('status = ?', status)!
-	}
-	result := query.limit(page_size)!.offset(offset_num)!.query()!
-	//*<<<*/
-	mut datalist := []map[string]Any{} // map空数组初始化
-	for row in result {
-		mut data := map[string]Any{} // map初始化
-		data['id'] = row.id //主键ID
-		data['parent_id'] = row.parent_id
-		data['status'] = int(row.status)
-		data['name'] = row.name
-		data['leader'] = row.leader or { '' }
-		data['remark'] = row.remark or { '' }
-		data['sort'] = int(row.sort)
-		data['phone'] = row.phone or { '' }
-		data['email'] = row.email or { '' }
-		data['created_at'] = row.created_at.format_ss()
-		data['updated_at'] = row.updated_at.format_ss()
-		data['deleted_at'] = row.deleted_at or { time.Time{} }.format_ss()
-
-		datalist << data //追加data到maplist 数组
-	}
-
-	mut result_data := map[string]Any{}
-	result_data['total'] = count
-	result_data['data'] = datalist
-
-	return result_data
 }

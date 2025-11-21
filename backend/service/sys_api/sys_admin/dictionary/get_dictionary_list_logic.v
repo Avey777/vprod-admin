@@ -5,76 +5,116 @@ import log
 import time
 import orm
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysDictionary }
 import common.api
 import structs { Context }
 
-@['/list'; post]
-fn (app &Dictionary) dictionary_list(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/dictionary/list'; post]
+pub fn dictionary_list_handler(app &Dictionary, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := dictionary_list_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[GetDictionaryListReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := get_dictionary_list_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn dictionary_list_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn get_dictionary_list_usecase(mut ctx Context, req GetDictionaryListReq) !GetDictionaryListResp {
+	// Domain 校验
+	get_dictionary_list_domain(req)!
 
-	page := req.as_map()['page'] or { 1 }.int()
-	page_size := req.as_map()['page_size'] or { 10 }.int()
-	name := req.as_map()['name'] or { '' }.str()
-	leader := req.as_map()['leader'] or { '' }.str()
-	status := req.as_map()['status'] or { 0 }.u8()
+	// Repository 查询
+	return find_dictionary_list(mut ctx, req)
+}
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+// ----------------- Domain 层 -----------------
+fn get_dictionary_list_domain(req GetDictionaryListReq) ! {
+	if req.page <= 0 {
+		return error('page must be a positive integer')
+	}
+	if req.page_size <= 0 {
+		return error('page_size must be a positive integer')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct GetDictionaryListReq {
+	page      int    @[json: 'page']
+	page_size int    @[json: 'page_size']
+	name      string @[json: 'name']
+	leader    string @[json: 'leader']
+	status    u8     @[json: 'status']
+}
+
+pub struct DictionaryData {
+	id         string @[json: 'id']
+	title      string @[json: 'title']
+	name       string @[json: 'name']
+	desc       string @[json: 'desc']
+	status     u8     @[json: 'status']
+	created_at string @[json: 'created_at']
+	updated_at string @[json: 'updated_at']
+	deleted_at string @[json: 'deleted_at']
+}
+
+pub struct GetDictionaryListResp {
+	total int
+	data  []DictionaryData
+}
+
+// ----------------- Repository 层 -----------------
+fn find_dictionary_list(mut ctx Context, req GetDictionaryListReq) !GetDictionaryListResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
+	}
+
+	offset_num := (req.page - 1) * req.page_size
+
+	mut q := orm.new_query[SysDictionary](db)
+	mut query := q.select()!
+
+	// 条件过滤
+	if req.name != '' {
+		query = query.where('name = ?', req.name)!
+	}
+	if req.leader != '' {
+		query = query.where('leader = ?', req.leader)!
+	}
+	if req.status in [0, 1] {
+		query = query.where('status = ?', req.status)!
+	}
+
+	// 总数统计
+	mut count := sql db {
+		select count from SysDictionary
+	}!
+
+	result := query.limit(req.page_size)!.offset(offset_num)!.query()!
+
+	mut datalist := []DictionaryData{}
+	for row in result {
+		datalist << DictionaryData{
+			id:         row.id
+			title:      row.title
+			name:       row.name
+			desc:       row.desc or { '' }
+			status:     row.status
+			created_at: row.created_at.format_ss()
+			updated_at: row.updated_at.format_ss()
+			deleted_at: (row.deleted_at or { time.Time{} }).format_ss()
 		}
 	}
 
-	mut sys_dictionary := orm.new_query[schema_sys.SysDictionary](db)
-	// 总页数查询 - 分页偏移量构造
-	mut count := sql db {
-		select count from schema_sys.SysUser
-	}!
-	offset_num := (page - 1) * page_size
-	//*>>>*/
-	mut query := sys_dictionary.select()!
-	if name != '' {
-		query = query.where('name = ?', name)!
+	return GetDictionaryListResp{
+		total: count
+		data:  datalist
 	}
-	if leader != '' {
-		query = query.where('leader = ?', leader)!
-	}
-	if status in [0, 1] {
-		query = query.where('status = ?', status)!
-	}
-	result := query.limit(page_size)!.offset(offset_num)!.query()!
-	//*<<<*/
-	mut datalist := []map[string]Any{} // map空数组初始化
-	for row in result {
-		mut data := map[string]Any{} // map初始化
-		data['id'] = row.id //主键ID
-		data['title'] = row.title
-		data['status'] = int(row.status)
-		data['name'] = row.name
-		data['desc'] = row.desc or { '' }
-		data['created_at'] = row.created_at.format_ss()
-		data['updated_at'] = row.updated_at.format_ss()
-		data['deleted_at'] = row.deleted_at or { time.Time{} }.format_ss()
-
-		datalist << data //追加data到maplist 数组
-	}
-
-	mut result_data := map[string]Any{}
-	result_data['total'] = count
-	result_data['data'] = datalist
-
-	return result_data
 }

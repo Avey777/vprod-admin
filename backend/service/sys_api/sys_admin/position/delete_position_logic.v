@@ -4,38 +4,65 @@ import veb
 import log
 import orm
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysPosition }
 import common.api
 import structs { Context }
 
-// Delete position | 删除Position
-@['/delete_position'; post]
-fn (app &Position) delete_position(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/position/delete'; post]
+pub fn position_delete_handler(app &Position, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := delete_position_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[DeletePositionReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	// Usecase 执行
+	result := delete_position_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn delete_position_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn delete_position_usecase(mut ctx Context, req DeletePositionReq) !DeletePositionResp {
+	// Domain 校验
+	delete_position_domain(req)!
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	// Repository 执行删除
+	return delete_position(mut ctx, req)
+}
+
+// ----------------- Domain 层 -----------------
+fn delete_position_domain(req DeletePositionReq) ! {
+	if req.id == '' {
+		return error('position id is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct DeletePositionReq {
+	id string @[json: 'id']
+}
+
+pub struct DeletePositionResp {
+	msg string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
+fn delete_position(mut ctx Context, req DeletePositionReq) !DeletePositionResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	position_id := req.as_map()['id'] or { '' }.str()
+	mut q := orm.new_query[SysPosition](db)
+	q.delete()!.where('id = ?', req.id)!.update()!
+	// 或者逻辑删除：
+	// q.set('del_flag = ?', 1)!.where('id = ?', req.id)!.update()!
 
-	mut sys_position := orm.new_query[schema_sys.SysPosition](db)
-	sys_position.delete()!.where('id = ?', position_id)!.update()!
-	// sys_position.set('del_flag = ?', 1)!.where('id = ?', position_id)!.update()!
-
-	return map[string]Any{}
+	return DeletePositionResp{
+		msg: 'Position deleted successfully'
+	}
 }

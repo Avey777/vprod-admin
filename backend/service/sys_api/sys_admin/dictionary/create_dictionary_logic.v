@@ -4,46 +4,83 @@ import veb
 import log
 import orm
 import time
-import x.json2 as json
 import rand
-import structs.schema_sys
+import x.json2 as json
+import structs.schema_sys { SysDictionary }
 import common.api
 import structs { Context }
 
-// Create dictionary | 创建dictionary
-@['/create_dictionary'; post]
-fn (app &Dictionary) create_dictionary(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/dictionary/create'; post]
+pub fn dictionary_create_handler(app &Dictionary, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := create_dictionary_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[CreateDictionaryReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := create_dictionary_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn create_dictionary_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn create_dictionary_usecase(mut ctx Context, req CreateDictionaryReq) !CreateDictionaryResp {
+	// Domain 校验
+	create_dictionary_domain(req)!
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	// Repository 写入数据库
+	return create_dictionary_repo(mut ctx, req)
+}
+
+// ----------------- Domain 层 -----------------
+fn create_dictionary_domain(req CreateDictionaryReq) ! {
+	if req.title == '' {
+		return error('title is required')
+	}
+	if req.name == '' {
+		return error('name is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct CreateDictionaryReq {
+	title      string     @[json: 'title']
+	name       string     @[json: 'name']
+	desc       string     @[json: 'desc']
+	status     u8         @[json: 'status']
+	created_at ?time.Time @[json: 'created_at']
+	updated_at ?time.Time @[json: 'updated_at']
+}
+
+pub struct CreateDictionaryResp {
+	msg string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
+fn create_dictionary_repo(mut ctx Context, req CreateDictionaryReq) !CreateDictionaryResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	dictionarys := schema_sys.SysDictionary{
+	mut q := orm.new_query[SysDictionary](db)
+
+	dict := SysDictionary{
 		id:         rand.uuid_v7()
-		title:      req.as_map()['title'] or { '' }.str()
-		name:       req.as_map()['name'] or { '' }.str()
-		desc:       req.as_map()['desc'] or { '' }.str()
-		status:     req.as_map()['status'] or { 0 }.u8()
-		created_at: req.as_map()['created_at'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
-		updated_at: req.as_map()['updated_at'] or { time.now() }.to_time()!
+		title:      req.title
+		name:       req.name
+		desc:       req.desc
+		status:     req.status
+		created_at: req.created_at or { time.now() }
+		updated_at: req.updated_at or { time.now() }
 	}
-	mut sys_dictionary := orm.new_query[schema_sys.SysDictionary](db)
-	sys_dictionary.insert(dictionarys)!
 
-	return map[string]Any{}
+	q.insert(dict)!
+
+	return CreateDictionaryResp{
+		msg: 'Dictionary created successfully'
+	}
 }

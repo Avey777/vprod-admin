@@ -4,38 +4,64 @@ import veb
 import log
 import orm
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysDictionaryDetail }
 import common.api
 import structs { Context }
 
-// Delete dictionarydetail | 删除dictionarydetail
-@['/delete_dictionarydetail'; post]
-fn (app &DictionaryDetail) delete_dictionarydetail(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/dictionarydetail/delete'; post]
+pub fn dictionarydetail_delete_handler(app &DictionaryDetail, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := delete_dictionarydetail_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[DeleteDictionaryDetailReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := delete_dictionarydetail_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn delete_dictionarydetail_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn delete_dictionarydetail_usecase(mut ctx Context, req DeleteDictionaryDetailReq) !DeleteDictionaryDetailResp {
+	// Domain 校验层
+	delete_dictionarydetail_domain(req)!
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	// Repository 层操作
+	return delete_dictionarydetail_repo(mut ctx, req)
+}
+
+// ----------------- Domain 层 -----------------
+fn delete_dictionarydetail_domain(req DeleteDictionaryDetailReq) ! {
+	if req.id == '' {
+		return error('dictionarydetail id is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct DeleteDictionaryDetailReq {
+	id string @[json: 'id']
+}
+
+pub struct DeleteDictionaryDetailResp {
+	msg string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
+fn delete_dictionarydetail_repo(mut ctx Context, req DeleteDictionaryDetailReq) !DeleteDictionaryDetailResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	dictionarydetail_id := req.as_map()['id'] or { '' }.str()
+	mut q := orm.new_query[SysDictionaryDetail](db)
+	q.delete()!.where('id = ?', req.id)!.update()!
+	// 如果需要逻辑删除：
+	// q.set('del_flag = ?', 1)!.where('id = ?', req.id)!.update()!
 
-	mut sys_dictionarydetail := orm.new_query[schema_sys.SysDictionaryDetail](db)
-	sys_dictionarydetail.delete()!.where('id = ?', dictionarydetail_id)!.update()!
-	// sys_dictionarydetail.set('del_flag = ?', 1)!.where('id = ?', dictionarydetail_id)!.update()!
-
-	return map[string]Any{}
+	return DeleteDictionaryDetailResp{
+		msg: 'DictionaryDetail deleted successfully'
+	}
 }

@@ -5,57 +5,88 @@ import log
 import orm
 import time
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysRole }
 import common.api
 import structs { Context }
 
-// Update Role ||更新Role
-@['/update_role'; post]
-fn (app &Role) update_role(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/role/update'; post]
+pub fn role_update_handler(app &Role, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := update_role_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[UpdateRoleReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := update_role_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn update_role_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Usecase 层 -----------------
+pub fn update_role_usecase(mut ctx Context, req UpdateRoleReq) !UpdateRoleResp {
+	// 参数校验
+	update_role_domain(req)!
 
-	id := req.as_map()['id'] or { '' }.str()
-	status := req.as_map()['status'] or { 0 }.u8()
-	name := req.as_map()['name'] or { '' }.str()
-	code := req.as_map()['code'] or { '' }.str()
-	default_router := req.as_map()['default_router'] or { '' }.str()
-	remark := req.as_map()['remark'] or { '' }.str()
-	sort := req.as_map()['sort'] or { 1 }.u64()
-	data_scope := req.as_map()['data_scope'] or { 1 }.u8()
-	custom_dept_ids := req.as_map()['custom_dept_ids'] or { '' }.str()
-	updated_at := req.as_map()['updated_at'] or { time.now() }.to_time()!
+	// 执行数据库更新
+	return update_role(mut ctx, req)
+}
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+// ----------------- Domain 层 -----------------
+fn update_role_domain(req UpdateRoleReq) ! {
+	if req.id == '' {
+		return error('id is required')
+	}
+	if req.name == '' {
+		return error('name is required')
+	}
+	if req.code == '' {
+		return error('code is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct UpdateRoleReq {
+	id              string     @[json: 'id']
+	status          u8         @[json: 'status']
+	name            string     @[json: 'name']
+	code            string     @[json: 'code']
+	default_router  string     @[json: 'default_router']
+	remark          string     @[json: 'remark']
+	sort            u64        @[json: 'sort']
+	data_scope      u8         @[json: 'data_scope']
+	custom_dept_ids string     @[json: 'custom_dept_ids']
+	updated_at      ?time.Time @[json: 'updated_at']
+}
+
+pub struct UpdateRoleResp {
+	msg string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
+fn update_role(mut ctx Context, req UpdateRoleReq) !UpdateRoleResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	mut sys_role := orm.new_query[schema_sys.SysRole](db)
+	mut q := orm.new_query[SysRole](db)
 
-	sys_role.set('status = ?', status)!
-		.set('name = ?', name)!
-		.set('code = ?', code)!
-		.set('default_router = ?', default_router)!
-		.set('remark = ?', remark)!
-		.set('sort = ?', sort)!
-		.set('data_scope = ?', data_scope)!
-		.set('custom_dept_ids = ?', custom_dept_ids)!
-		.set('updated_at = ?', updated_at)!
-		.where('id = ?', id)!
+	q.set('status = ?', req.status)!
+		.set('name = ?', req.name)!
+		.set('code = ?', req.code)!
+		.set('default_router = ?', req.default_router)!
+		.set('remark = ?', req.remark)!
+		.set('sort = ?', req.sort)!
+		.set('data_scope = ?', req.data_scope)!
+		.set('custom_dept_ids = ?', req.custom_dept_ids)!
+		.set('updated_at = ?', req.updated_at or { time.now() })!
+		.where('id = ?', req.id)!
 		.update()!
 
-	return map[string]Any{}
+	return UpdateRoleResp{
+		msg: 'Role updated successfully'
+	}
 }

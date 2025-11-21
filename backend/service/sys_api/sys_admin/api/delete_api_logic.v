@@ -4,38 +4,64 @@ import veb
 import log
 import orm
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysApi }
 import common.api
 import structs { Context }
 
-// Delete api | 删除api
-@['/delete_api'; post]
-fn (app &Api) delete_api(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/api/delete'; post]
+pub fn api_delete_handler(app &Api, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := delete_api_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[DeleteApiReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := delete_api_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn delete_api_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn delete_api_usecase(mut ctx Context, req DeleteApiReq) !DeleteApiResp {
+	// Domain 校验
+	delete_api_domain(req)!
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	// Repository 执行删除
+	return delete_api_repo(mut ctx, req)
+}
+
+// ----------------- Domain 层 -----------------
+fn delete_api_domain(req DeleteApiReq) ! {
+	if req.id == '' {
+		return error('id is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct DeleteApiReq {
+	id string @[json: 'id']
+}
+
+pub struct DeleteApiResp {
+	msg string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
+fn delete_api_repo(mut ctx Context, req DeleteApiReq) !DeleteApiResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	api_id := req.as_map()['id'] or { '' }.str()
+	mut q := orm.new_query[SysApi](db)
+	q.delete()!.where('id = ?', req.id)!.update()!
+	// 若需要逻辑删除可以改成：
+	// q.set('del_flag = ?', 1)!.where('id = ?', req.id)!.update()!
 
-	mut sys_api := orm.new_query[schema_sys.SysApi](db)
-	sys_api.delete()!.where('id = ?', api_id)!.update()!
-	// sys_api.set('del_flag = ?', 1)!.where('id = ?', api_id)!.update()!
-
-	return map[string]Any{}
+	return DeleteApiResp{
+		msg: 'API deleted successfully'
+	}
 }

@@ -4,38 +4,62 @@ import veb
 import log
 import orm
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysConfiguration }
 import common.api
 import structs { Context }
 
-// Delete configuration | 删除configuration
-@['/delete_configuration'; post]
-fn (app &Configuration) delete_configuration(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/configuration/delete'; post]
+pub fn configuration_delete_handler(app &Configuration, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := delete_configuration_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[DeleteConfigurationReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := delete_configuration_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn delete_configuration_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn delete_configuration_usecase(mut ctx Context, req DeleteConfigurationReq) !DeleteConfigurationResp {
+	// Domain 校验
+	delete_configuration_domain(req)!
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	// Repository 删除数据
+	return delete_configuration_repo(mut ctx, req)
+}
+
+// ----------------- Domain 层 -----------------
+fn delete_configuration_domain(req DeleteConfigurationReq) ! {
+	if req.id == '' {
+		return error('configuration id is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct DeleteConfigurationReq {
+	id string @[json: 'id']
+}
+
+pub struct DeleteConfigurationResp {
+	msg string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
+fn delete_configuration_repo(mut ctx Context, req DeleteConfigurationReq) !DeleteConfigurationResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	configuration_id := req.as_map()['id'] or { '' }.str()
+	mut q := orm.new_query[SysConfiguration](db)
+	q.delete()!.where('id = ?', req.id)!.update()!
 
-	mut sys_configuration := orm.new_query[schema_sys.SysConfiguration](db)
-	sys_configuration.delete()!.where('id = ?', configuration_id)!.update()!
-	// sys_configuration.set('del_flag = ?', 1)!.where('id = ?', configuration_id)!.update()!
-
-	return map[string]Any{}
+	return DeleteConfigurationResp{
+		msg: 'Configuration deleted successfully'
+	}
 }

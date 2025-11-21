@@ -32,7 +32,7 @@ pub fn user_list_handler(app &User, mut ctx Context) veb.Result {
 
 // ----------------- Application Service | Usecase 层 -----------------
 pub fn get_user_list_usecase(mut ctx Context, req GetUserListReq) !GetUserListResp {
-	return get_user_list(mut ctx, req)
+	return find_user_list(mut ctx, req)
 }
 
 // ----------------- Domain 层 -----------------
@@ -77,7 +77,7 @@ pub struct GetUserList {
 }
 
 // ----------------- AdapterRepository 层 -----------------
-fn get_user_list(mut ctx Context, req GetUserListReq) !GetUserListResp {
+fn find_user_list(mut ctx Context, req GetUserListReq) !GetUserListResp {
 	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
 		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }

@@ -5,80 +5,124 @@ import log
 import time
 import orm
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysConfiguration }
 import common.api
 import structs { Context }
 
-@['/list'; post]
-fn (app &Configuration) configuration_list(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/configuration/list'; post]
+pub fn configuration_list_handler(app &Configuration, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := configuration_list_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[GetConfigurationListReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	// Usecase 执行
+	result := get_configuration_list_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn configuration_list_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn get_configuration_list_usecase(mut ctx Context, req GetConfigurationListReq) !GetConfigurationListResp {
+	// Domain 校验
+	get_configuration_list_domain(req)!
 
-	page := req.as_map()['page'] or { 1 }.int()
-	page_size := req.as_map()['page_size'] or { 10 }.int()
-	name := req.as_map()['name'] or { '' }.str()
-	key := req.as_map()['key'] or { '' }.str()
-	category := req.as_map()['category'] or { 0 }.u8()
+	// Repository 查询
+	return get_configuration_list_repo(mut ctx, req)
+}
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+// ----------------- Domain 层 -----------------
+fn get_configuration_list_domain(req GetConfigurationListReq) ! {
+	if req.page <= 0 || req.page_size <= 0 {
+		return error('page and page_size must be positive integers')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct GetConfigurationListReq {
+	page      int    @[json: 'page']
+	page_size int    @[json: 'page_size']
+	name      string @[json: 'name']
+	key       string @[json: 'key']
+	category  u8     @[json: 'category']
+}
+
+pub struct ConfigurationData {
+	id         string @[json: 'id']
+	status     int    @[json: 'status']
+	name       string @[json: 'name']
+	key        string @[json: 'key']
+	value      string @[json: 'value']
+	category   string @[json: 'category']
+	remark     string @[json: 'remark']
+	sort       int    @[json: 'sort']
+	created_at string @[json: 'created_at']
+	updated_at string @[json: 'updated_at']
+	deleted_at string @[json: 'deleted_at']
+}
+
+pub struct GetConfigurationListResp {
+	total int
+	data  []ConfigurationData
+}
+
+// ----------------- Repository 层 -----------------
+fn get_configuration_list_repo(mut ctx Context, req GetConfigurationListReq) !GetConfigurationListResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
+	}
+
+	mut q := orm.new_query[SysConfiguration](db)
+
+	// 条件查询
+	if req.name != '' {
+		q = q.select()!.where('name = ?', req.name)!
+	} else {
+		q = q.select()!
+	}
+
+	if req.key != '' {
+		q = q.where('key = ?', req.key)!
+	}
+
+	if req.category in [0, 1] {
+		q = q.where('category = ?', req.category)!
+	}
+
+	// 总数统计
+	mut count := sql db {
+		select count from SysConfiguration
+	}!
+
+	// 分页
+	offset_num := (req.page - 1) * req.page_size
+	result := q.limit(req.page_size)!.offset(offset_num)!.query()!
+
+	// 数据封装
+	mut datalist := []ConfigurationData{}
+	for row in result {
+		datalist << ConfigurationData{
+			id:         row.id
+			status:     int(row.status)
+			name:       row.name
+			key:        row.key
+			value:      row.value
+			category:   row.category
+			remark:     row.remark or { '' }
+			sort:       int(row.sort)
+			created_at: row.created_at.format_ss()
+			updated_at: row.updated_at.format_ss()
+			deleted_at: row.deleted_at or { time.Time{} }.format_ss()
 		}
 	}
 
-	mut sys_configuration := orm.new_query[schema_sys.SysConfiguration](db)
-	// 总页数查询 - 分页偏移量构造
-	mut count := sql db {
-		select count from schema_sys.SysUser
-	}!
-	offset_num := (page - 1) * page_size
-	//*>>>*/
-	mut query := sys_configuration.select()!
-	if name != '' {
-		query = query.where('name = ?', name)!
+	return GetConfigurationListResp{
+		total: count
+		data:  datalist
 	}
-	if key != '' {
-		query = query.where('leader = ?', key)!
-	}
-	if category in [0, 1] {
-		query = query.where('status = ?', category)!
-	}
-	result := query.limit(page_size)!.offset(offset_num)!.query()!
-	//*<<<*/
-	mut datalist := []map[string]Any{} // map空数组初始化
-	for row in result {
-		mut data := map[string]Any{} // map初始化
-		data['id'] = row.id //主键ID
-		data['status'] = int(row.status)
-		data['name'] = row.name
-		data['key'] = row.key
-		data['value'] = row.value
-		data['category'] = row.category
-		data['remark'] = row.remark or { '' }
-		data['Sosortrt'] = int(row.sort)
-
-		data['created_at'] = row.created_at.format_ss()
-		data['updated_at'] = row.updated_at.format_ss()
-		data['deleted_at'] = row.deleted_at or { time.Time{} }.format_ss()
-
-		datalist << data //追加data到maplist 数组
-	}
-
-	mut result_data := map[string]Any{}
-	result_data['total'] = count
-	result_data['data'] = datalist
-
-	return result_data
 }

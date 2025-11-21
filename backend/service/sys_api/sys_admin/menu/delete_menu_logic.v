@@ -4,38 +4,62 @@ import veb
 import log
 import orm
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysMenu }
 import common.api
 import structs { Context }
 
-// Delete menu | 删除menu
-@['/delete_menu'; post]
-fn (app &Menu) delete_menu(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/menu/delete'; post]
+pub fn delete_menu_handler(app &Menu, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := delete_menu_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[DeleteMenuReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := delete_menu_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn delete_menu_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Usecase 层 -----------------
+pub fn delete_menu_usecase(mut ctx Context, req DeleteMenuReq) !DeleteMenuResp {
+	// 参数校验
+	delete_menu_domain(req)!
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	// 执行数据库删除
+	return delete_menu_repo(mut ctx, req)
+}
+
+// ----------------- Domain 层 -----------------
+fn delete_menu_domain(req DeleteMenuReq) ! {
+	if req.id == '' {
+		return error('menu id is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct DeleteMenuReq {
+	id string @[json: 'id']
+}
+
+pub struct DeleteMenuResp {
+	msg string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
+fn delete_menu_repo(mut ctx Context, req DeleteMenuReq) !DeleteMenuResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	menu_id := req.as_map()['id'] or { '' }.str()
+	mut q := orm.new_query[SysMenu](db)
+	q.delete()!.where('id = ?', req.id)!.update()!
 
-	mut sys_menu := orm.new_query[schema_sys.SysMenu](db)
-	sys_menu.delete()!.where('id = ?', menu_id)!.update()!
-	// sys_menu.set('del_flag = ?', 1)!.where('id = ?', menu_id)!.update()!
-
-	return map[string]Any{}
+	return DeleteMenuResp{
+		msg: 'Menu deleted successfully'
+	}
 }

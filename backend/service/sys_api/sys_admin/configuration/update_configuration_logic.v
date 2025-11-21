@@ -5,55 +5,86 @@ import log
 import orm
 import time
 import x.json2 as json
-import structs.schema_sys
+import structs.schema_sys { SysConfiguration }
 import common.api
 import structs { Context }
 
-// Update configuration ||更新configuration
-@['/update_configuration'; post]
-fn (app &Configuration) update_token(mut ctx Context) veb.Result {
+// ----------------- Handler 层 -----------------
+@['/configuration/update'; post]
+pub fn configuration_update_handler(app &Configuration, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := update_configuration_resp(mut ctx, req) or {
-		return ctx.json(api.json_error_500(err.msg()))
+	req := json.decode[UpdateConfigurationReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := update_configuration_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
 	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-fn update_configuration_resp(mut ctx Context, req json.Any) !map[string]Any {
-	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
+// ----------------- Application Service | Usecase 层 -----------------
+pub fn update_configuration_usecase(mut ctx Context, req UpdateConfigurationReq) !UpdateConfigurationResp {
+	// Domain 参数校验
+	update_configuration_domain(req)!
 
-	id := req.as_map()['id'] or { '' }.str()
-	name := req.as_map()['name'] or { '' }.str()
-	key := req.as_map()['key'] or { '' }.str()
-	value := req.as_map()['value'] or { '' }.str()
-	category := req.as_map()['category'] or { '' }.str()
-	remark := req.as_map()['remark'] or { '' }.str()
-	status := req.as_map()['status'] or { 0 }.u8()
-	sort := req.as_map()['sort'] or { 0 }.u64()
-	updated_at := req.as_map()['updated_at'] or { time.now() }.to_time()!
+	// Repository 写入数据库
+	return update_configuration_repo(mut ctx, req)
+}
 
-	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+// ----------------- Domain 层 -----------------
+fn update_configuration_domain(req UpdateConfigurationReq) ! {
+	if req.id == '' {
+		return error('id is required')
+	}
+	if req.name == '' {
+		return error('name is required')
+	}
+	if req.key == '' {
+		return error('key is required')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct UpdateConfigurationReq {
+	id         string     @[json: 'id']
+	name       string     @[json: 'name']
+	key        string     @[json: 'key']
+	value      string     @[json: 'value']
+	category   string     @[json: 'category']
+	remark     string     @[json: 'remark']
+	status     u8         @[json: 'status']
+	sort       u64        @[json: 'sort']
+	updated_at ?time.Time @[json: 'updated_at']
+}
+
+pub struct UpdateConfigurationResp {
+	msg string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
+fn update_configuration_repo(mut ctx Context, req UpdateConfigurationReq) !UpdateConfigurationResp {
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire DB connection: ${err}') }
 	defer {
-		ctx.dbpool.release(conn) or {
-			log.warn('Failed to release connection ${@LOCATION}: ${err}')
-		}
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
 	}
 
-	mut sys_configuration := orm.new_query[schema_sys.SysConfiguration](db)
+	mut q := orm.new_query[SysConfiguration](db)
 
-	sys_configuration.set('name = ?', name)!
-		.set('key = ?', key)!
-		.set('value = ?', value)!
-		.set('category = ?', category)!
-		.set('remark = ?', remark)!
-		.set('status = ?', status)!
-		.set('sort = ?', sort)!
-		.set('updated_at = ?', updated_at)!
-		.where('id = ?', id)!
+	q.set('name = ?', req.name)!
+		.set('key = ?', req.key)!
+		.set('value = ?', req.value)!
+		.set('category = ?', req.category)!
+		.set('remark = ?', req.remark)!
+		.set('status = ?', req.status)!
+		.set('sort = ?', req.sort)!
+		.set('updated_at = ?', req.updated_at or { time.now() })!
+		.where('id = ?', req.id)!
 		.update()!
 
-	return map[string]Any{}
+	return UpdateConfigurationResp{
+		msg: 'Configuration updated successfully'
+	}
 }

@@ -1,65 +1,80 @@
 module mfa
 
-// import rand
 import veb
 import log
-// import time
-// import orm
 import x.json2 as json
-// import structs.schema_sys
-import common.api
 import structs { Context }
 import regex
+import common.api
 import common.opt
 
+// ----------------- Handler 层 -----------------
 @['/login_by_email'; post]
-fn (app &MFA) email_list(mut ctx Context) veb.Result {
+pub fn mfa_email_handler(app &MFA, mut ctx Context) veb.Result {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	// log.debug('ctx.req.data type: ${typeof(ctx.req.data).name}')
 
-	req := json.decode[json.Any](ctx.req.data) or { return ctx.json(api.json_error_400(err.msg())) }
-	mut result := email_resp(mut ctx, req) or { return ctx.json(api.json_error_500(err.msg())) }
+	req := json.decode[EmailLoginReq](ctx.req.data) or {
+		return ctx.json(api.json_error_400(err.msg()))
+	}
+
+	result := email_login_usecase(mut ctx, req) or {
+		return ctx.json(api.json_error_500('Internal Server Error: ${err}'))
+	}
 
 	return ctx.json(api.json_success_200(result))
 }
 
-// 模块级常量（编译时初始化） - panic只会发生在编译阶段
+// ----------------- Usecase 层 -----------------
+pub fn email_login_usecase(mut ctx Context, req EmailLoginReq) !EmailLoginResp {
+	// Domain 参数校验
+	email_login_domain(req)!
+
+	// Repository 层生成 OTP
+	return email_login(mut ctx, req)
+}
+
+// ----------------- Domain 层 -----------------
+fn email_login_domain(req EmailLoginReq) ! {
+	if req.email == '' {
+		return error('email is required')
+	}
+	if !email_re.matches_string(req.email) {
+		return error('invalid email format')
+	}
+}
+
+// ----------------- DTO 层 -----------------
+pub struct EmailLoginReq {
+	email string @[json: 'email']
+}
+
+pub struct EmailLoginResp {
+	code      string @[json: 'code']
+	token_opt string @[json: 'token_opt']
+	msg       string @[json: 'msg']
+}
+
+// ----------------- Repository 层 -----------------
 const email_re = regex.regex_opt(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$') or {
 	panic('Invalid email regex pattern')
 }
 
-fn email_resp(mut ctx Context, req json.Any) !map[string]Any {
+fn email_login(mut ctx Context, req EmailLoginReq) !EmailLoginResp {
 	log.debug('${@METHOD}  ${@MOD}.${@FILE_LINE}')
-	mut req_email := req.as_map()['email'] or { '' }.str()
-	if req_email == '' {
-		return error('Email error')
-	}
-	if !email_re.matches_string(req_email) { //验证邮箱格式
-		return error('Invalid email format')
-	}
 
 	token_opt, opt_num := opt.opt_generate()
 
-	// db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
-	// defer {
-	// 	ctx.dbpool.release(conn) or {
-	// 		log.warn('Failed to release connection ${@LOCATION}: ${err}')
-	// 	}
-	// }
+	// 未来可以在这里插入 DB 日志
+	/*
+	db, conn := ctx.dbpool.acquire() or { return error('Failed to acquire connection: ${err}') }
+	defer {
+		ctx.dbpool.release(conn) or { log.warn('Failed to release connection: ${err}') }
+	}
+	*/
 
-	// infos := schema_sys.SysMFAlog{
-	// 	id:            rand.uuid_v7()
-	// 	verify_source: req_email
-	// 	method:        'Email'
-	// 	code:          opt_num.str()
-	// 	created_at:    req.as_map()['created_at'] or { time.now() }.to_time()! //时间传入必须是字符串格式{ "createdAt": "2025-04-18 17:02:38"}
-	// }
-	// mut sys_info := orm.new_query[schema_sys.SysMFAlog](db)
-	// sys_info.insert(infos)!
-
-	mut data := map[string]Any{}
-	data['code'] = opt_num
-	data['token_opt'] = token_opt
-
-	return data
+	return EmailLoginResp{
+		code:      opt_num
+		token_opt: token_opt
+		msg:       'OTP generated successfully'
+	}
 }
